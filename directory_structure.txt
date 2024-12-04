@@ -3,9 +3,31 @@
 ├── CONTRIBUTING.md
 ├── LICENSE
 ├── README.md
+├── School Management System PRD.pdf
 ├── backend
 │   ├── Dockerfile
 │   ├── README.md
+│   ├── dist
+│   │   ├── app.controller.d.ts
+│   │   ├── app.controller.js
+│   │   ├── app.controller.js.map
+│   │   ├── app.module.d.ts
+│   │   ├── app.module.js
+│   │   ├── app.module.js.map
+│   │   ├── app.service.d.ts
+│   │   ├── app.service.js
+│   │   ├── app.service.js.map
+│   │   ├── auth
+│   │   ├── configuration.d.ts
+│   │   ├── configuration.interface.d.ts
+│   │   ├── configuration.interface.js
+│   │   ├── configuration.interface.js.map
+│   │   ├── configuration.js
+│   │   ├── configuration.js.map
+│   │   ├── main.d.ts
+│   │   ├── main.js
+│   │   ├── main.js.map
+│   │   └── tsconfig.build.tsbuildinfo
 │   ├── nest-cli.json
 │   ├── node_modules
 │   │   ├── @ampproject
@@ -545,6 +567,12 @@
     │   ├── globals.css
     │   ├── layout.tsx
     │   └── page.tsx
+    ├── components
+    │   ├── Auth
+    │   ├── Layout
+    │   └── Users
+    ├── contexts
+    │   └── AuthContext.tsx
     ├── lib
     │   └── config.ts
     ├── next-env.d.ts
@@ -554,6 +582,7 @@
     │   ├── @emnapi
     │   ├── @eslint
     │   ├── @eslint-community
+    │   ├── @hookform
     │   ├── @humanwhocodes
     │   ├── @img
     │   ├── @isaacs
@@ -589,6 +618,7 @@
     │   ├── ast-types-flow
     │   ├── available-typed-arrays
     │   ├── axe-core
+    │   ├── axios -> .pnpm/axios@1.7.9/node_modules/axios
     │   ├── axobject-query
     │   ├── balanced-match
     │   ├── binary-extensions
@@ -635,15 +665,17 @@
     │   ├── es-shim-unscopables
     │   ├── es-to-primitive
     │   ├── escape-string-regexp
-    │   ├── eslint
-    │   ├── eslint-config-next
+    │   ├── eslint -> .pnpm/eslint@8.57.1/node_modules/eslint
+    │   ├── eslint-config-next -> .pnpm/eslint-config-next@15.0.3_eslint@8.57.1_typescript@5.7.2/node_modules/eslint-config-next
+    │   ├── eslint-config-prettier -> .pnpm/eslint-config-prettier@9.1.0_eslint@8.57.1/node_modules/eslint-config-prettier
     │   ├── eslint-import-resolver-node
     │   ├── eslint-import-resolver-typescript
     │   ├── eslint-module-utils
     │   ├── eslint-plugin-import
     │   ├── eslint-plugin-jsx-a11y
-    │   ├── eslint-plugin-react
-    │   ├── eslint-plugin-react-hooks
+    │   ├── eslint-plugin-prettier -> .pnpm/eslint-plugin-prettier@5.2.1_eslint-config-prettier@9.1.0_eslint@8.57.1__eslint@8.57.1_prettier@3.4.2/node_modules/eslint-plugin-prettier
+    │   ├── eslint-plugin-react -> .pnpm/eslint-plugin-react@7.37.2_eslint@8.57.1/node_modules/eslint-plugin-react
+    │   ├── eslint-plugin-react-hooks -> .pnpm/eslint-plugin-react-hooks@5.0.0_eslint@8.57.1/node_modules/eslint-plugin-react-hooks
     │   ├── eslint-scope
     │   ├── eslint-visitor-keys
     │   ├── espree
@@ -751,7 +783,7 @@
     │   ├── mz
     │   ├── nanoid
     │   ├── natural-compare
-    │   ├── next
+    │   ├── next -> .pnpm/next@15.0.3_react-dom@19.0.0-rc-66855b96-20241106_react@19.0.0-rc-66855b96-20241106__react@19.0.0-rc-66855b96-20241106/node_modules/next
     │   ├── normalize-path
     │   ├── object-assign
     │   ├── object-hash
@@ -778,7 +810,7 @@
     │   ├── pify
     │   ├── pirates
     │   ├── possible-typed-array-names
-    │   ├── postcss
+    │   ├── postcss -> .pnpm/postcss@8.4.49/node_modules/postcss
     │   ├── postcss-import
     │   ├── postcss-js
     │   ├── postcss-load-config
@@ -786,11 +818,14 @@
     │   ├── postcss-selector-parser
     │   ├── postcss-value-parser
     │   ├── prelude-ls
+    │   ├── prettier -> .pnpm/prettier@3.4.2/node_modules/prettier
+    │   ├── prettier-linter-helpers -> .pnpm/prettier-linter-helpers@1.0.0/node_modules/prettier-linter-helpers
     │   ├── prop-types
     │   ├── punycode
     │   ├── queue-microtask
-    │   ├── react
-    │   ├── react-dom
+    │   ├── react -> .pnpm/react@19.0.0-rc-66855b96-20241106/node_modules/react
+    │   ├── react-dom -> .pnpm/react-dom@19.0.0-rc-66855b96-20241106_react@19.0.0-rc-66855b96-20241106/node_modules/react-dom
+    │   ├── react-hook-form -> .pnpm/react-hook-form@7.53.2_react@19.0.0-rc-66855b96-20241106/node_modules/react-hook-form
     │   ├── react-is
     │   ├── read-cache
     │   ├── readdirp
@@ -833,7 +868,7 @@
     │   ├── sucrase
     │   ├── supports-color
     │   ├── supports-preserve-symlinks-flag
-    │   ├── tailwindcss
+    │   ├── tailwindcss -> .pnpm/tailwindcss@3.4.16/node_modules/tailwindcss
     │   ├── tapable
     │   ├── text-table
     │   ├── thenify
@@ -849,7 +884,7 @@
     │   ├── typed-array-byte-length
     │   ├── typed-array-byte-offset
     │   ├── typed-array-length
-    │   ├── typescript
+    │   ├── typescript -> .pnpm/typescript@5.7.2/node_modules/typescript
     │   ├── unbox-primitive
     │   ├── undici-types
     │   ├── uri-js
@@ -864,9 +899,27 @@
     │   ├── wrap-ansi-cjs
     │   ├── wrappy
     │   ├── yaml
-    │   └── yocto-queue
+    │   ├── yocto-queue
+    │   └── yup -> .pnpm/yup@1.5.0/node_modules/yup
+    ├── out
+    │   ├── 404.html
+    │   ├── _next
+    │   ├── favicon.ico
+    │   ├── file.svg
+    │   ├── globe.svg
+    │   ├── index.html
+    │   ├── index.txt
+    │   ├── next.svg
+    │   ├── vercel.svg
+    │   └── window.svg
     ├── package-lock.json
     ├── package.json
+    ├── pages
+    │   ├── admin
+    │   ├── login.tsx
+    │   ├── students
+    │   └── teachers
+    ├── pnpm-lock.yaml
     ├── postcss.config.mjs
     ├── public
     │   ├── file.svg
@@ -875,6 +928,8 @@
     │   ├── vercel.svg
     │   └── window.svg
     ├── tailwind.config.ts
-    └── tsconfig.json
+    ├── tsconfig.json
+    └── utils
+        └── api.ts
 
-836 directories, 42 files
+858 directories, 75 files
