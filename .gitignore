@@ -1,59 +1,191 @@
+# ============================
 # Node.js
-node_modules/
+# ============================
+
+# Frontend Node modules
 frontend/node_modules/
+
+# Backend Node modules
 backend/node_modules/
 
+# Optional: Root node_modules if applicable
+/node_modules/
+
+# Yarn PnP
+.pnp
+.pnp.*
+
+# ============================
 # Logs
+# ============================
+
 logs/
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
+# ============================
 # Environment Variables
-.env
-frontend/.env
-backend/.env
-frontend/.env.local
-backend/.env.local
-frontend/.env.production
-backend/.env.production
-frontend/.env.test
-backend/.env.test
+# ============================
 
+# Frontend environment variables
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Backend environment variables
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+
+# ============================
 # Build Output
+# ============================
+
+# Frontend build outputs
 frontend/.next/
 frontend/out/
+
+# Backend build outputs
 backend/dist/
 backend/build/
 
+# ============================
 # Dependency Directories
+# ============================
+
+# Frontend coverage
 frontend/coverage/
+
+# Backend coverage
 backend/coverage/
 
-# OS Files
+# ============================
+# Operating System Files
+# ============================
+
+# macOS
 .DS_Store
+
+# Windows
 Thumbs.db
+
+# Linux
+*~
+
+# Vim swap files
 *.swp
 
+# ============================
 # IDE and Editor Directories
+# ============================
+
+# VSCode
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 
+# Sublime Text
+*.sublime-workspace
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# ============================
 # Docker
+# ============================
+
+# Docker Compose override files
 docker-compose.override.yml
-docker-compose.yml~
+
+# Dockerfiles
 Dockerfile.dev
 Dockerfile.prod
 *.dockerfile
 
+# ============================
 # Miscellaneous
-*.pem
+# ============================
+
+# Temporary files
 *.tmp
-*.env.*
+*.temp
+.temp/
+.temp/
+
+# Backup files
 *.bak
 *.backup
+
+# Private keys and certificates
+*.pem
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# ============================
+# TypeScript
+# ============================
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Next.js environment types
+next-env.d.ts
+
+# ============================
+# Testing
+# ============================
+
+# Coverage directories
+/coverage/
+/.nyc_output/
+
+# ============================
+# Next.js Specific
+# ============================
+
+# Next.js build output
+/.next/
+/out/
+
+# ============================
+# Production
+# ============================
+
+# Production build directories
+/build/
+/dist/
+
+# ============================
+# Others
+# ============================
+
+# Ignore all environment files (optional)
+.env*
