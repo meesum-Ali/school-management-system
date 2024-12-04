@@ -1,3 +1,7 @@
+   ![License](https://img.shields.io/github/license/yourusername/your-repo-name)
+   ![Contributors](https://img.shields.io/github/contributors/yourusername/your-repo-name)
+   ![Issues](https://img.shields.io/github/issues/yourusername/your-repo-name)
+
 # Codebase
 
 Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestjs.com/) backend application. This project serves as a School Management System, offering efficient and scalable solutions for educational institutions.
