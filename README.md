@@ -109,3 +109,43 @@ Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestj
     Open [http://localhost:3000](http://localhost:3000) to view the frontend and [http://localhost:5000/api](http://localhost:5000/api) for the backend API.
 
 ## Project Structure
+
+## Contributing
+
+Contributions are welcome! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to proceed.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Code of Conduct
+
+Please adhere to the [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming and respectful environment for all contributors.
+
+## Support
+
+If you encounter any issues or have questions, feel free to reach out:
+
+- **GitHub Issues:** [Open an Issue](https://github.com/meesum-Ali/Codebase/issues)
+- **Email:** [meesumdex@gmail.com](mailto:meesumdex@gmail.com)
+
+## Contact
+
+For any inquiries or further information, you can contact:
+
+**Syed Meesum Ali**  
+Email: [syedmeesumali@example.com](mailto:meesumdex@gmail.com)  
+GitHub: [@syedmeesumali](https://github.com/meesum-ali)  
+LinkedIn: [Syed Meesum Ali](https://linkedin.com/in/smeesumali)
+
+## Acknowledgements
+
+- [Next.js](https://nextjs.org/) for powering the frontend.
+- [NestJS](https://nestjs.com/) for the robust backend framework.
+- [Docker](https://www.docker.com/) for containerization.
+- [pnpm](https://pnpm.io/) for efficient package management.
+- [Tailwind CSS](https://tailwindcss.com/) for the stylish and responsive design.
+
+---
+
+> *This project follows the [Contributor Covenant](https://www.contributor-covenant.org/version/2/0/code_of_conduct/) Code of Conduct. By participating, you are expected to uphold this code.*
