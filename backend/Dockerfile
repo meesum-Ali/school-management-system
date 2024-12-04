@@ -1,43 +1,44 @@
-# Backend Dockerfile
-
-# Use the official Node.js image as the base
+# Stage 1: Builder
 FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm
 
 # Copy package.json and pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Install dependencies
 RUN pnpm install
 
-# Copy the rest of the application files
+# Copy the rest of the application code
 COPY . .
 
 # Build the NestJS application
-RUN pnpm run build
+RUN pnpm build
 
-# Production image
-FROM node:18-alpine AS runner
+# Debugging step: List directory contents to verify build
+RUN ls -al dist
+
+# Stage 2: Production
+FROM node:18-alpine
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Install pnpm globally
+RUN npm install -g pnpm
 
-# Copy built files from builder
+# Copy built files from the builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
 
 # Install only production dependencies
 RUN pnpm install --prod
 
-# Expose the application port
+# Expose the desired port
 EXPOSE 5000
 
-# Start the NestJS application
-CMD ["node", "dist/main"]
+# Define the startup command
+CMD ["pnpm", "start:prod"]
