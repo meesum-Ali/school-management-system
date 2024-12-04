@@ -1,6 +1,6 @@
-   ![License](https://img.shields.io/github/license/yourusername/your-repo-name)
-   ![Contributors](https://img.shields.io/github/contributors/yourusername/your-repo-name)
-   ![Issues](https://img.shields.io/github/issues/yourusername/your-repo-name)
+   ![License](https://img.shields.io/github/license/meesum-Ali/school-management-system)
+   ![Contributors](https://img.shields.io/github/contributors/meesum-Ali/school-management-system)
+   ![Issues](https://img.shields.io/github/issues/meesum-Ali/school-management-system)
 
 # Codebase
 
