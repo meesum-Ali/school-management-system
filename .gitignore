@@ -1,0 +1,8 @@
+# Ignore environment variables
+frontend/.env
+backend/.env
+# Example files
+frontend/.env.example
+backend/.env.example
+# Node modules
+node_modules/ 
