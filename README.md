@@ -134,7 +134,7 @@ If you encounter any issues or have questions, feel free to reach out:
 For any inquiries or further information, you can contact:
 
 **Syed Meesum Ali**  
-Email: [syedmeesumali@example.com](mailto:meesumdex@gmail.com)  
+Email: [meesumdex@gmail.com](mailto:meesumdex@gmail.com)  
 GitHub: [@syedmeesumali](https://github.com/meesum-ali)  
 LinkedIn: [Syed Meesum Ali](https://linkedin.com/in/smeesumali)
 
