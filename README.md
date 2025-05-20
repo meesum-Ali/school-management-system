@@ -79,6 +79,14 @@ Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestj
 
     - Update the `.env` files with your configuration.
 
+#### Frontend Environment Variables
+
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5000/api` | Base URL for the API |
+| `NEXT_PUBLIC_APP_VERSION` | `1.0.0` | Application version displayed in the UI |
+| `NEXT_PUBLIC_ENABLE_FEATURE_X` | `false` | Toggle to enable Feature X |
+
 ### Running the Application
 
 - **Using Docker Compose:**

@@ -189,6 +189,7 @@ next-env.d.ts
 
 # Ignore all environment files (optional)
 .env*
+!frontend/.env.example
 
 # Allow example env files
 !backend/.env.example
