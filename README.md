@@ -2,9 +2,9 @@
    ![Contributors](https://img.shields.io/github/contributors/meesum-Ali/school-management-system)
    ![Issues](https://img.shields.io/github/issues/meesum-Ali/school-management-system)
 
-# Codebase
+# School Management System
 
-Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestjs.com/) backend application. This project serves as a School Management System, offering efficient and scalable solutions for educational institutions.
+School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestjs.com/) backend application. This project serves as a School Management System, offering efficient and scalable solutions for educational institutions.
 
 ## Table of Contents
 
@@ -48,8 +48,8 @@ Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestj
 1. **Clone the Repository:**
 
     ```bash
-    git clone https://github.com/yourusername/Codebase.git
-    cd Codebase
+    git clone https://github.com/yourusername/school-management-system.git
+    cd school-management-system
     ```
 
 2. **Install Dependencies:**
@@ -110,6 +110,11 @@ Codebase is a [Next.js](https://nextjs.org/) frontend and [NestJS](https://nestj
 
 ## Project Structure
 
+The repository is divided into two main applications:
+
+- **`frontend/`** - Contains the Next.js client used for the web interface. All UI components, pages, and static assets live here.
+- **`backend/`** - Houses the NestJS API that powers the server-side logic and database interactions.
+
 ## Contributing
 
 Contributions are welcome! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to proceed.
@@ -126,7 +131,7 @@ Please adhere to the [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming
 
 If you encounter any issues or have questions, feel free to reach out:
 
-- **GitHub Issues:** [Open an Issue](https://github.com/meesum-Ali/Codebase/issues)
+- **GitHub Issues:** [Open an Issue](https://github.com/meesum-Ali/school-management-system/issues)
 - **Email:** [meesumdex@gmail.com](mailto:meesumdex@gmail.com)
 
 ## Contact
