@@ -5,6 +5,10 @@ import { useForm, SubmitHandler, Resolver } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import Notification from '../Layout/Notification'
+import { Input } from '../ui/Input'
+import { Button } from '../ui/Button'
+import { Card } from '../ui/Card'
+import { Select } from '../ui/Select'
 
 interface UserFormProps {
   userId?: number
@@ -78,72 +82,70 @@ const UserForm: React.FC<UserFormProps> = ({ userId }) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className='bg-white p-6 rounded shadow-md w-full max-w-lg'
-    >
-      <h2 className='text-2xl mb-4'>{userId ? 'Edit User' : 'Add New User'}</h2>
-      {error && <Notification message={error} type='error' />}
-      {success && <Notification message={success} type='success' />}
-      <div className='mb-4'>
-        <label className='block mb-1'>Username</label>
-        <input
-          type='text'
-          {...register('username')}
-          className={`w-full border px-3 py-2 rounded ${errors.username ? 'border-red-500' : ''}`}
-        />
-        {errors.username && (
-          <p className='text-red-500 text-sm'>{errors.username.message}</p>
-        )}
-      </div>
-      <div className='mb-4'>
-        <label className='block mb-1'>Email</label>
-        <input
-          type='email'
-          {...register('email')}
-          className={`w-full border px-3 py-2 rounded ${errors.email ? 'border-red-500' : ''}`}
-        />
-        {errors.email && (
-          <p className='text-red-500 text-sm'>{errors.email.message}</p>
-        )}
-      </div>
-      {!userId && (
-        <div className='mb-4'>
-          <label className='block mb-1'>Password</label>
-          <input
-            type='password'
-            {...register('password')}
-            className={`w-full border px-3 py-2 rounded ${errors.password ? 'border-red-500' : ''}`}
+    <Card className='w-full max-w-lg'>
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+        <h2 className='text-2xl'>{userId ? 'Edit User' : 'Add New User'}</h2>
+        {error && <Notification message={error} type='error' />}
+        {success && <Notification message={success} type='success' />}
+
+        <div>
+          <label className='block mb-1'>Username</label>
+          <Input
+            type='text'
+            {...register('username')}
+            className={errors.username ? 'border-red-500' : ''}
           />
-          {errors.password && (
-            <p className='text-red-500 text-sm'>{errors.password.message}</p>
+          {errors.username && (
+            <p className='text-red-500 text-sm'>{errors.username.message}</p>
           )}
         </div>
-      )}
-      <div className='mb-4'>
-        <label className='block mb-1'>Role</label>
-        <select
-          {...register('role')}
-          className={`w-full border px-3 py-2 rounded ${errors.role ? 'border-red-500' : ''}`}
-        >
-          <option value=''>Select Role</option>
-          <option value='Admin'>Admin</option>
-          <option value='Teacher'>Teacher</option>
-          <option value='Accountant'>Accountant</option>
-          <option value='Student'>Student</option>
-          <option value='Parent'>Parent</option>
-        </select>
-        {errors.role && (
-          <p className='text-red-500 text-sm'>{errors.role.message}</p>
+
+        <div>
+          <label className='block mb-1'>Email</label>
+          <Input
+            type='email'
+            {...register('email')}
+            className={errors.email ? 'border-red-500' : ''}
+          />
+          {errors.email && (
+            <p className='text-red-500 text-sm'>{errors.email.message}</p>
+          )}
+        </div>
+
+        {!userId && (
+          <div>
+            <label className='block mb-1'>Password</label>
+            <Input
+              type='password'
+              {...register('password')}
+              className={errors.password ? 'border-red-500' : ''}
+            />
+            {errors.password && (
+              <p className='text-red-500 text-sm'>{errors.password.message}</p>
+            )}
+          </div>
         )}
-      </div>
-      <button
-        type='submit'
-        className='w-full bg-green-500 text-white py-2 rounded'
-      >
-        {userId ? 'Update User' : 'Create User'}
-      </button>
-    </form>
+
+        <div>
+          <label className='block mb-1'>Role</label>
+          <Select {...register('role')} className={errors.role ? 'border-red-500' : ''}>
+            <option value=''>Select Role</option>
+            <option value='Admin'>Admin</option>
+            <option value='Teacher'>Teacher</option>
+            <option value='Accountant'>Accountant</option>
+            <option value='Student'>Student</option>
+            <option value='Parent'>Parent</option>
+          </Select>
+          {errors.role && (
+            <p className='text-red-500 text-sm'>{errors.role.message}</p>
+          )}
+        </div>
+
+        <Button type='submit'>
+          {userId ? 'Update User' : 'Create User'}
+        </Button>
+      </form>
+    </Card>
   )
 }
 
