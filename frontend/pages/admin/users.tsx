@@ -58,7 +58,7 @@ const UsersPage = () => {
             <UserList users={users} onDelete={handleDeleteUser} />
           )}
         </div>
-      </Layout>
+      </AdminLayout>
     </ProtectedRoute>
   );
 };

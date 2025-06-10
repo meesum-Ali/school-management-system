@@ -89,7 +89,7 @@ const EditStudentPage = () => {
             )}
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     </ProtectedRoute>
   );
 };

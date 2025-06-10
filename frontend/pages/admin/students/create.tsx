@@ -40,7 +40,7 @@ const CreateStudentPage = () => {
             <StudentForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     </ProtectedRoute>
   );
 };

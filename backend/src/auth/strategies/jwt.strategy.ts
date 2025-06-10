@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -39,6 +39,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // For stateless JWT authentication, returning the payload is often sufficient.
     // The payload (or a customized user object) will be attached to Request.user.
-    return { sub: payload.sub, username: payload.username, roles: payload.roles };
+    return {
+      sub: payload.sub,
+      username: payload.username,
+      roles: payload.roles,
+    };
   }
 }
