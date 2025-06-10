@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User, UserRole } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -51,12 +56,13 @@ export class UsersService {
     user.password = password; // Hashing will be done by @BeforeInsert in User entity
     user.firstName = restOfDto.firstName;
     user.lastName = restOfDto.lastName;
-    if (roles) { // Only set roles if provided in DTO
+    if (roles) {
+      // Only set roles if provided in DTO
       user.roles = roles;
     }
     // If roles is not provided in DTO, TypeORM will use the entity's default ([UserRole.STUDENT])
-    user.isActive = restOfDto.isActive === undefined ? true : restOfDto.isActive;
-
+    user.isActive =
+      restOfDto.isActive === undefined ? true : restOfDto.isActive;
 
     try {
       const savedUser = await this.usersRepository.save(user);
@@ -65,12 +71,23 @@ export class UsersService {
       // Catch unique constraint violation if @BeforeInsert hashing and save happen non-atomically
       // or if there's a race condition not caught by the initial check.
       // TypeORM specific error code for unique violation might vary by DB (e.g., '23505' for PostgreSQL)
-      if (error instanceof QueryFailedError && (error as any).code === '23505') {
-         // Check message to see if it's username or email
-        if (error.message.includes('users_username_key') || error.message.includes('UQ_username')) { // Adjust based on actual constraint name
-            throw new ConflictException('Username already exists.');
-        } else if (error.message.includes('users_email_key') || error.message.includes('UQ_email')) { // Adjust
-            throw new ConflictException('Email already exists.');
+      if (
+        error instanceof QueryFailedError &&
+        (error as any).code === '23505'
+      ) {
+        // Check message to see if it's username or email
+        if (
+          error.message.includes('users_username_key') ||
+          error.message.includes('UQ_username')
+        ) {
+          // Adjust based on actual constraint name
+          throw new ConflictException('Username already exists.');
+        } else if (
+          error.message.includes('users_email_key') ||
+          error.message.includes('UQ_email')
+        ) {
+          // Adjust
+          throw new ConflictException('Email already exists.');
         }
       }
       throw new InternalServerErrorException('Error creating user.');
@@ -79,7 +96,7 @@ export class UsersService {
 
   async findAll(): Promise<UserDto[]> {
     const users = await this.usersRepository.find();
-    return users.map(user => this.mapUserToUserDto(user));
+    return users.map((user) => this.mapUserToUserDto(user));
   }
 
   async findOne(id: string): Promise<UserDto> {
@@ -94,7 +111,6 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-
   async findOneByUsername(username: string): Promise<User | undefined> {
     // Used by AuthService, should return the full entity including password
     return this.usersRepository.findOne({ where: { username } });
@@ -105,15 +121,23 @@ export class UsersService {
 
     // Ensure that if username or email is being updated, they are unique
     if (restOfDto.username) {
-      const existingUser = await this.usersRepository.findOne({ where: { username: restOfDto.username } });
+      const existingUser = await this.usersRepository.findOne({
+        where: { username: restOfDto.username },
+      });
       if (existingUser && existingUser.id !== id) {
-        throw new ConflictException(`Username '${restOfDto.username}' already exists.`);
+        throw new ConflictException(
+          `Username '${restOfDto.username}' already exists.`,
+        );
       }
     }
     if (restOfDto.email) {
-      const existingUser = await this.usersRepository.findOne({ where: { email: restOfDto.email } });
+      const existingUser = await this.usersRepository.findOne({
+        where: { email: restOfDto.email },
+      });
       if (existingUser && existingUser.id !== id) {
-        throw new ConflictException(`Email '${restOfDto.email}' already exists.`);
+        throw new ConflictException(
+          `Email '${restOfDto.email}' already exists.`,
+        );
       }
     }
 
@@ -133,21 +157,31 @@ export class UsersService {
     }
 
     try {
-        const updatedUser = await this.usersRepository.save(userToUpdate);
-        return this.mapUserToUserDto(updatedUser);
+      const updatedUser = await this.usersRepository.save(userToUpdate);
+      return this.mapUserToUserDto(updatedUser);
     } catch (error) {
-        if (error instanceof QueryFailedError && (error as any).code === '23505') {
-            if (error.message.includes('users_username_key') || error.message.includes('UQ_username')) {
-                throw new ConflictException('Username already exists.');
-            } else if (error.message.includes('users_email_key') || error.message.includes('UQ_email')) {
-                throw new ConflictException('Email already exists.');
-            }
+      if (
+        error instanceof QueryFailedError &&
+        (error as any).code === '23505'
+      ) {
+        if (
+          error.message.includes('users_username_key') ||
+          error.message.includes('UQ_username')
+        ) {
+          throw new ConflictException('Username already exists.');
+        } else if (
+          error.message.includes('users_email_key') ||
+          error.message.includes('UQ_email')
+        ) {
+          throw new ConflictException('Email already exists.');
         }
-        throw new InternalServerErrorException('Error updating user.');
+      }
+      throw new InternalServerErrorException('Error updating user.');
     }
   }
 
-  async remove(id: string): Promise<void> { // Consider soft delete
+  async remove(id: string): Promise<void> {
+    // Consider soft delete
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
@@ -159,12 +193,17 @@ export class UsersService {
     const result = await this.usersRepository.delete(id);
     if (result.affected === 0) {
       // This case should ideally be caught by the findOneBy check, but as a safeguard:
-      throw new NotFoundException(`User with ID "${id}" not found or already deleted.`);
+      throw new NotFoundException(
+        `User with ID "${id}" not found or already deleted.`,
+      );
     }
   }
 
   // Helper for AuthService to compare password
-  async comparePassword(plainPassword: string, hashedPassword?: string): Promise<boolean> {
+  async comparePassword(
+    plainPassword: string,
+    hashedPassword?: string,
+  ): Promise<boolean> {
     if (!hashedPassword) return false;
     return bcrypt.compare(plainPassword, hashedPassword);
   }

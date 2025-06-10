@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService, ValidatedUser } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -15,9 +22,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'Login successful, returns JWT access token.', schema: { example: { access_token: 'jwt.token.string' } }})
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Invalid credentials.' })
-  async login(@Request() req: { user: ValidatedUser }): Promise<{ access_token: string }> {
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful, returns JWT access token.',
+    schema: { example: { access_token: 'jwt.token.string' } },
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Invalid credentials.',
+  })
+  async login(
+    @Request() req: { user: ValidatedUser },
+  ): Promise<{ access_token: string }> {
     return this.authService.login(req.user);
   }
 

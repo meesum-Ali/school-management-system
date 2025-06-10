@@ -1,9 +1,5 @@
 import Link from 'next/link'
-import { useContext } from 'react'
-import { AuthContext } from '../../contexts/AuthContext'
-
 const Sidebar: React.FC = () => {
-  const { user } = useContext(AuthContext)
   return (
     <aside className='w-64 bg-white shadow-md p-4'>
       <h2 className='text-lg font-semibold mb-4'>Admin Panel</h2>

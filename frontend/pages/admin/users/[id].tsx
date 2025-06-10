@@ -91,7 +91,7 @@ const EditUserPage = () => {
             )}
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     </ProtectedRoute>
   );
 };
