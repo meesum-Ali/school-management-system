@@ -2,11 +2,13 @@ import { Injectable, NotFoundException, ConflictException, InternalServerErrorEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
 import { ClassEntity } from './entities/class.entity';
-import { SubjectEntity } from '../subjects/entities/subject.entity'; // Import SubjectEntity
+import { SubjectEntity } from '../subjects/entities/subject.entity';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';
-import { SubjectDto } from '../subjects/dto/subject.dto'; // Import SubjectDto for mapping
+import { SubjectDto } from '../subjects/dto/subject.dto';
+import { StudentDto } from '../students/dto/student.dto';
+import { Student } from '../students/student.entity';
 
 @Injectable()
 export class ClassesService {
@@ -18,6 +20,20 @@ export class ClassesService {
   ) {}
 
   private mapClassToClassDto(classEntity: ClassEntity): ClassDto {
+    // Helper to map Student entity to StudentDto, avoiding full service dependency
+    const mapStudentToDto = (st: Student): StudentDto => ({
+      id: st.id,
+      firstName: st.firstName,
+      lastName: st.lastName,
+      email: st.email,
+      studentId: st.studentId,
+      dateOfBirth: st.dateOfBirth,
+      createdAt: st.createdAt,
+      updatedAt: st.updatedAt,
+      classId: st.classId,
+      // currentClassName: st.currentClass ? st.currentClass.name : null, // Avoid deep nesting here if currentClass isn't loaded on student sub-objects
+    });
+
     const classDto = new ClassDto({
       id: classEntity.id,
       name: classEntity.name,
@@ -36,6 +52,9 @@ export class ClassesService {
         updatedAt: subject.updatedAt,
         // Avoid mapping subject.classes here to prevent circular dependencies in this specific DTO mapping
       }));
+    }
+    if (classEntity.students) { // If students are loaded
+      classDto.students = classEntity.students.map(mapStudentToDto);
     }
     return classDto;
   }
@@ -84,7 +103,7 @@ export class ClassesService {
   async findOne(id: string): Promise<ClassDto> {
     const classEntity = await this.classesRepository.findOne({
         where: { id },
-        relations: ['subjects']
+        relations: ['subjects', 'students', 'students.currentClass'] // Added students and their class names
     });
     if (!classEntity) {
       throw new NotFoundException(`Class with ID "${id}" not found`);
@@ -194,5 +213,32 @@ export class ClassesService {
       throw new NotFoundException(`Class with ID "${classId}" not found`);
     }
     return classEntity.subjects.map(subject => this.mapSubjectToSubjectDto(subject));
+  }
+
+  async listStudentsInClass(classId: string): Promise<StudentDto[]> {
+    const classEntity = await this.classesRepository.findOne({
+      where: { id: classId },
+      relations: ['students', 'students.currentClass'], // Load students and their class names
+    });
+
+    if (!classEntity) {
+      throw new NotFoundException(`Class with ID "${classId}" not found`);
+    }
+    if (!classEntity.students) {
+      return []; // Should not happen if relation is set up, but good practice
+    }
+    // Map Student entities to StudentDto
+    return classEntity.students.map(student => ({ // Basic mapping
+      id: student.id,
+      firstName: student.firstName,
+      lastName: student.lastName,
+      email: student.email,
+      studentId: student.studentId,
+      dateOfBirth: student.dateOfBirth,
+      createdAt: student.createdAt,
+      updatedAt: student.updatedAt,
+      classId: student.classId,
+      currentClassName: student.currentClass ? student.currentClass.name : null,
+    }));
   }
 }

@@ -1,5 +1,5 @@
-import { IsString, IsEmail, IsDateString, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEmail, IsDateString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateStudentDto {
   @ApiProperty({ example: 'Jane', description: 'First name of the student' })
@@ -26,4 +26,9 @@ export class CreateStudentDto {
   @IsString()
   @IsNotEmpty()
   studentId: string;
+
+  @ApiPropertyOptional({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the class to enroll the student in (optional)' })
+  @IsUUID()
+  @IsOptional()
+  classId?: string | null;
 }

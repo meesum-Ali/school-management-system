@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StudentDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'Unique identifier of the student (UUID)' })
@@ -24,6 +24,12 @@ export class StudentDto {
 
   @ApiProperty({ description: 'Date and time when the student record was last updated' })
   updatedAt: Date;
+
+  @ApiPropertyOptional({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the enrolled class, if any' })
+  classId?: string | null;
+
+  @ApiPropertyOptional({ example: 'Grade 10A', description: 'Name of the enrolled class, if any' })
+  currentClassName?: string | null;
 
   constructor(partial: Partial<StudentDto>) {
     Object.assign(this, partial);

@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
+import { ClassEntity } from '../../classes/entities/class.entity';
 
 @Entity('students') // Explicitly naming the table
 @Unique(['email'])
@@ -29,6 +30,13 @@ export class Student {
   @Column({ type: 'varchar', length: 50 }) // Assuming studentId might have a certain length
   @IsNotEmpty({ message: 'Student ID should not be empty' })
   studentId: string;
+
+  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.students, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'classId' }) // This explicitly defines the FK column name
+  currentClass: ClassEntity | null;
+
+  @Column({ type: 'uuid', name: 'classId', nullable: true }) // Foreign key column
+  classId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
