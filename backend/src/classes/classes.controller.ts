@@ -7,7 +7,8 @@ import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';
-import { SubjectDto } from '../subjects/dto/subject.dto'; // Import SubjectDto
+import { SubjectDto } from '../subjects/dto/subject.dto';
+import { StudentDto } from '../../students/dto/student.dto'; // Import StudentDto
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -126,5 +127,19 @@ export class ClassesController {
     @Param('classId', ParseUUIDPipe) classId: string,
   ): Promise<SubjectDto[]> {
     return this.classesService.listSubjectsForClass(classId);
+  }
+
+  @Get(':classId/students')
+  @ApiOperation({ summary: 'List all students enrolled in a specific class (Admin only)' })
+  @ApiParam({ name: 'classId', type: 'string', format: 'uuid', description: 'Class ID' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'List of students in the class.', type: [StudentDto] })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Class not found.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden.' })
+  // @Roles(UserRole.ADMIN) // Inherited from class decorator
+  async listStudentsInClass(
+    @Param('classId', ParseUUIDPipe) classId: string,
+  ): Promise<StudentDto[]> {
+    return this.classesService.listStudentsInClass(classId);
   }
 }
