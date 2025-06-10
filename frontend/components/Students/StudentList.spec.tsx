@@ -20,8 +20,26 @@ jest.mock('next/link', () => {
 
 describe('StudentList', () => {
   const mockStudents: Student[] = [
-    { id: 1, firstName: 'Alice', lastName: 'Smith', email: 'alice@example.com', studentId: 'S101', dateOfBirth: '2001-05-10' },
-    { id: 2, firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', studentId: 'S102', dateOfBirth: '2000-08-20' },
+    {
+      id: 'uuid-alice-123',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@example.com',
+      studentId: 'S101',
+      dateOfBirth: '2001-05-10',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'uuid-bob-456',
+      firstName: 'Bob',
+      lastName: 'Johnson',
+      email: 'bob@example.com',
+      studentId: 'S102',
+      dateOfBirth: '2000-08-20',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   ];
   const mockOnDelete = jest.fn();
 
@@ -38,20 +56,24 @@ describe('StudentList', () => {
     expect(screen.getByText('Email')).toBeInTheDocument();
     expect(screen.getByText('Student ID')).toBeInTheDocument();
     expect(screen.getByText('Date of Birth')).toBeInTheDocument();
+    expect(screen.getByText('Created At')).toBeInTheDocument(); // Added column
     expect(screen.getByText('Actions')).toBeInTheDocument();
 
-    // Check for student data
+    // Check for student data for Alice
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Smith')).toBeInTheDocument();
     expect(screen.getByText('alice@example.com')).toBeInTheDocument();
     expect(screen.getByText('S101')).toBeInTheDocument();
-    expect(screen.getByText(new Date('2001-05-10').toLocaleDateString())).toBeInTheDocument();
+    expect(screen.getByText(new Date(mockStudents[0].dateOfBirth).toLocaleDateString())).toBeInTheDocument();
+    expect(screen.getByText(new Date(mockStudents[0].createdAt).toLocaleDateString())).toBeInTheDocument();
 
+    // Check for student data for Bob
     expect(screen.getByText('Bob')).toBeInTheDocument();
     expect(screen.getByText('Johnson')).toBeInTheDocument();
     expect(screen.getByText('bob@example.com')).toBeInTheDocument();
     expect(screen.getByText('S102')).toBeInTheDocument();
-    expect(screen.getByText(new Date('2000-08-20').toLocaleDateString())).toBeInTheDocument();
+    expect(screen.getByText(new Date(mockStudents[1].dateOfBirth).toLocaleDateString())).toBeInTheDocument();
+    expect(screen.getByText(new Date(mockStudents[1].createdAt).toLocaleDateString())).toBeInTheDocument();
 
     // Check for "Edit" and "Delete" buttons for each student
     const editButtons = screen.getAllByRole('button', { name: /edit/i });

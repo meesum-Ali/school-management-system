@@ -6,7 +6,7 @@ import { Student } from '../../types/student';
 
 interface StudentListProps {
   students: Student[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void; // ID is now string (UUID)
 }
 
 const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
@@ -30,6 +30,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -40,7 +41,12 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.lastName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.studentId}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString() : 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(student.createdAt).toLocaleDateString()}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                     <Link href={`/admin/students/${student.id}`} passHref>
                       <Button variant="outline" size="sm" className="mr-2">Edit</Button>

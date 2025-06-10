@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
 import { fetchStudentById, updateStudent as apiUpdateStudent } from '../../../utils/api';
 import { Student, UpdateStudentDto } from '../../../types/student';
-import Layout from '../../../components/Layout/Layout';
+import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
-import Notification from '../../../components/Layout/Notification'; // Assuming this component exists
+import Notification from '../../../components/Layout/Notification';
 
 const EditStudentPage = () => {
   const router = useRouter();
@@ -55,28 +55,29 @@ const EditStudentPage = () => {
 
   if (isLoading) {
     return (
-      <ProtectedRoute>
-        <Layout>
+      <ProtectedRoute> {/* Add roles if needed */}
+        <AdminLayout> {/* Changed to AdminLayout */}
           <div className="container mx-auto p-4 text-center">Loading student data...</div>
-        </Layout>
+        </AdminLayout>
       </ProtectedRoute>
     );
   }
 
-  if (!student && !isLoading && !error) {
+  // if (!student && !isLoading && !error) { // This condition might be too broad if error is set for "invalid id"
+  if (!student && !error) { // Show "not found" only if no specific error message is already displayed
      return (
-      <ProtectedRoute>
-        <Layout>
+      <ProtectedRoute> {/* Add roles if needed */}
+        <AdminLayout> {/* Changed to AdminLayout */}
           <div className="container mx-auto p-4 text-center">Student not found.</div>
-        </Layout>
+        </AdminLayout>
       </ProtectedRoute>
     );
   }
 
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <ProtectedRoute> {/* Add roles if needed */}
+      <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">
             {error && <Notification message={error} type="error" onClose={() => setError(null)} />}

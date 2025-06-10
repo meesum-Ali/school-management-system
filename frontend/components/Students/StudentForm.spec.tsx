@@ -20,12 +20,14 @@ jest.mock('react-hook-form', () => ({
 describe('StudentForm', () => {
   const mockOnSubmit = jest.fn();
   const mockStudent: Student = {
-    id: 1,
+    id: 'student-uuid-123', // Changed to string UUID
     firstName: 'John',
     lastName: 'Doe',
     dateOfBirth: '2000-01-01',
     email: 'john.doe@example.com',
     studentId: 'S123',
+    createdAt: new Date().toISOString(), // Added
+    updatedAt: new Date().toISOString(), // Added
   };
 
   beforeEach(() => {

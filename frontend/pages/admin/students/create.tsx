@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
 import { createStudent as apiCreateStudent } from '../../../utils/api';
 import { CreateStudentDto } from '../../../types/student';
-import Layout from '../../../components/Layout/Layout';
+import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 
@@ -31,8 +31,8 @@ const CreateStudentPage = () => {
   };
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <ProtectedRoute> {/* Add roles if needed */}
+      <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">
             {error && <Notification message={error} type="error" onClose={() => setError(null)} />}

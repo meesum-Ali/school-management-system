@@ -8,6 +8,8 @@ import configuration from './configuration';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StudentsModule } from './students/students.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
      // Import other modules as needed
 
      @Module({
@@ -42,6 +44,8 @@ import { StudentsModule } from './students/students.module';
            synchronize: true, // ⚠️ Disable in production
          }),
          StudentsModule,
+         UsersModule,
+         AuthModule,
          // Import other modules
        ],
        controllers: [AppController],

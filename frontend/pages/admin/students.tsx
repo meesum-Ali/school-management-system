@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import StudentList from '../../components/Students/StudentList';
 import { fetchStudents, deleteStudent as apiDeleteStudent } from '../../utils/api';
 import { Student } from '../../types/student';
-import Layout from '../../components/Layout/Layout';
+import AdminLayout from '../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../components/Auth/ProtectedRoute';
-import Notification from '../../components/Layout/Notification'; // Assuming this component exists
+import Notification from '../../components/Layout/Notification';
 
 const StudentsPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
@@ -31,11 +31,11 @@ const StudentsPage = () => {
     loadStudents();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => { // ID is now string
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         setError(null);
-        await apiDeleteStudent(id.toString());
+        await apiDeleteStudent(id); // No need for toString() anymore
         // Refresh the list after deletion
         loadStudents();
       } catch (err) {
@@ -46,10 +46,10 @@ const StudentsPage = () => {
   };
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <ProtectedRoute> {/* Add roles if needed */}
+      <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4">
-          {error && <Notification message={error} type="error" />}
+          {error && <Notification message={error} type="error" onClose={() => setError(null)} />}
           {isLoading ? (
             <p>Loading students...</p>
           ) : (

@@ -1,24 +1,38 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 
-@Entity()
+@Entity('students') // Explicitly naming the table
 @Unique(['email'])
 @Unique(['studentId'])
 export class Student {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
+  @IsNotEmpty({ message: 'First name should not be empty' })
   firstName: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
+  @IsNotEmpty({ message: 'Last name should not be empty' })
   lastName: string;
 
   @Column({ type: 'date' })
+  @IsDateString({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)'}) // For DTO validation, entity type is Date
+  @IsNotEmpty({ message: 'Date of birth should not be empty' })
   dateOfBirth: Date;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email should not be empty' })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50 }) // Assuming studentId might have a certain length
+  @IsNotEmpty({ message: 'Student ID should not be empty' })
   studentId: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

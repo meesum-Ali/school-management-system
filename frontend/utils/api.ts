@@ -45,3 +45,32 @@ export const updateStudent = async (id: string, studentData: UpdateStudentDto): 
 export const deleteStudent = async (id: string): Promise<void> => {
   await api.delete(`${STUDENTS_API_PATH}/${id}`);
 };
+
+// User API functions
+import { User, CreateUserDto, UpdateUserDto } from '../types/user';
+
+const USERS_API_PATH = '/users';
+
+export const fetchUsers = async (): Promise<User[]> => {
+  const response = await api.get<User[]>(USERS_API_PATH);
+  return response.data;
+};
+
+export const fetchUserById = async (id: string): Promise<User> => {
+  const response = await api.get<User>(`${USERS_API_PATH}/${id}`);
+  return response.data;
+};
+
+export const createUser = async (userData: CreateUserDto): Promise<User> => {
+  const response = await api.post<User>(USERS_API_PATH, userData);
+  return response.data;
+};
+
+export const updateUser = async (id: string, userData: UpdateUserDto): Promise<User> => {
+  const response = await api.patch<User>(`${USERS_API_PATH}/${id}`, userData);
+  return response.data;
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await api.delete(`${USERS_API_PATH}/${id}`);
+};
