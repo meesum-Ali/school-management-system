@@ -1,0 +1,66 @@
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '../ui/Button';
+import { Card } from '../ui/Card';
+import { Student } from '../../types/student';
+
+interface StudentListProps {
+  students: Student[];
+  onDelete: (id: number) => void;
+}
+
+const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
+  return (
+    <Card>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Student Management</h1>
+        <Link href="/admin/students/create">
+          <Button>Create Student</Button>
+        </Link>
+      </div>
+      {students.length === 0 ? (
+        <p>No students found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {students.map((student) => (
+                <tr key={student.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{student.firstName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.lastName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.studentId}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                    <Link href={`/admin/students/${student.id}`} passHref>
+                      <Button variant="outline" size="sm" className="mr-2">Edit</Button>
+                    </Link>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onDelete(student.id)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default StudentList;
