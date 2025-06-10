@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './configuration';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StudentsModule } from './students/students.module';
      // Import other modules as needed
 
      @Module({
@@ -40,6 +41,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
            entities: [__dirname + '/**/*.entity{.ts,.js}'],
            synchronize: true, // ⚠️ Disable in production
          }),
+         StudentsModule,
          // Import other modules
        ],
        controllers: [AppController],

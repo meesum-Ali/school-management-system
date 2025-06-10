@@ -26,6 +26,7 @@ School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJ
 - Dockerized for easy deployment
 - TypeScript for type safety
 - Environment variable management for flexibility
+- Student Management (CRUD operations for students)
 
 ## Technologies Used
 
