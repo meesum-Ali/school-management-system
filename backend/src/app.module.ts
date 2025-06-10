@@ -10,8 +10,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ClassesModule } from './classes/classes.module';
+import { SubjectsModule } from './subjects/subjects.module'; // Import SubjectsModule
 import { User } from './users/entities/user.entity';
 import { Student } from './students/student.entity';
+import { ClassEntity } from './classes/entities/class.entity';
+import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
      // Import other modules as needed
 
      @Module({
@@ -44,7 +48,7 @@ import { Student } from './students/student.entity';
              username: configService.get<string>('database.username'),
              password: configService.get<string>('database.password'),
              database: configService.get<string>('database.name'),
-             entities: [User, Student], // Explicitly list entities
+             entities: [User, Student, ClassEntity, SubjectEntity], // Add SubjectEntity
              synchronize: configService.get<string>('NODE_ENV') !== 'production',
              // You might want to add other TypeORM options like logging, etc.
            }),
@@ -53,6 +57,8 @@ import { Student } from './students/student.entity';
          StudentsModule,
          UsersModule,
          AuthModule,
+         ClassesModule,
+         SubjectsModule, // Add SubjectsModule to imports
          // Import other modules
        ],
        controllers: [AppController],

@@ -24,6 +24,9 @@ School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJ
 
 - **User Management:** Secure user registration and login with role-based access control (RBAC) capabilities. Full CRUD operations for managing users.
 - **Student Management:** Comprehensive CRUD operations for student records.
+- **Class Management:** Allows administrators to create, view, update, and delete school classes, defining their names and levels.
+- **Subject Management:** Enables administrators to define and manage academic subjects, including names, codes, and descriptions.
+- **Class-Subject Assignment:** Provides functionality for administrators to assign subjects to specific classes and managing these relationships.
 - **Authentication System:** Robust JWT-based authentication for secure API access.
 - **Scalable Architecture:** Built with Next.js (frontend) and NestJS (backend) for scalability and maintainability.
 - **API-First Backend:** Backend designed with an API-first approach for clear contracts and client integration.

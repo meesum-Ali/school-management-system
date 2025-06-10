@@ -29,9 +29,15 @@ const Sidebar: React.FC = () => {
               Teacher Management
             </Link>
           </li>
+          {/* Link for Classes was already present, ensuring it's correct */}
           <li className='mb-2'>
             <Link href='/admin/classes' className='text-blue-500'>
               Class Management
+            </Link>
+          </li>
+          <li className='mb-2'>
+            <Link href='/admin/subjects' className='text-blue-500'>
+              Subject Management
             </Link>
           </li>
           {/* Add more links as needed */}
