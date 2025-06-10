@@ -17,4 +17,6 @@ export interface AppConfig {
   jwt: JwtConfig;
   logLevel: string;
   apiPrefix: string;
+  appVersion: string;
+  apiDocsPath: string;
 } 

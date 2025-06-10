@@ -2,10 +2,9 @@
 export enum UserRole {
   ADMIN = 'admin',
   TEACHER = 'teacher',
-  STUDENT_ROLE = 'student',
   ACCOUNTANT = 'accountant',
+  STUDENT = 'student',
   PARENT = 'parent',
-  USER = 'user',
 }
 
 // Corresponds to backend/src/users/dto/user.dto.ts

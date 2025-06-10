@@ -1,17 +1,34 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert } from 'typeorm';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator'; // class-validator is for DTOs, not directly used by entity save from service
 import * as bcrypt from 'bcrypt';
 
+/*
+  Preliminary Role Permissions (for User & Student Management):
+  - ADMIN:
+    - Users: Create, Read (All), Update, Delete
+    - Students: Create, Read (All), Update, Delete
+  - TEACHER:
+    - Users: Read (Self - future), Update (Self - future)
+    - Students: Read (Assigned Students - future), Update (Grades/Attendance for Assigned - future)
+  - ACCOUNTANT:
+    - Users: No direct CRUD.
+    - Students: Read (Potentially for fee purposes - future).
+  - STUDENT (as a User role, if they can log in):
+    - Users: Read (Self - future), Update (Self - future)
+    - Students: Read (Self - future)
+  - PARENT:
+    - Users: Read (Self - future), Update (Self - future)
+    - Students: Read (Their Children - future)
+*/
 export enum UserRole {
-  ADMIN = 'admin',
+  ADMIN = 'admin', // Using lowercase as per original subtask instruction for this enum update
   TEACHER = 'teacher',
-  STUDENT_ROLE = 'student', // To avoid conflict with Student entity/domain if any
   ACCOUNTANT = 'accountant',
+  STUDENT = 'student',
   PARENT = 'parent',
-  USER = 'user', // General user
 }
 
-@Entity('users') // Explicitly naming the table 'users'
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -40,8 +57,9 @@ export class User {
   isActive: boolean;
 
   @Column({
-    type: 'simple-array', // Stores array as comma-separated string or uses native array types if supported
-    default: [UserRole.USER],
+    type: 'simple-array',
+    enum: UserRole,
+    default: [UserRole.STUDENT], // Defaulting new users to STUDENT role
   })
   roles: UserRole[];
 

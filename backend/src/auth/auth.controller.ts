@@ -1,27 +1,36 @@
 import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService, ValidatedUser } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard'; // Will create this next
-import { UserDto } from '../users/dto/user.dto'; // To potentially map the response if needed
+import { LocalAuthGuard } from './guards/local-auth.guard';
+// import { UserDto } from '../users/dto/user.dto'; // Not directly returned by login
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // The LocalAuthGuard will internally use the AuthStrategy (which uses AuthService.validateUser)
-  // If validation is successful, it attaches the user object (ValidatedUser) to Request.user
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User login' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Login successful, returns JWT access token.', schema: { example: { access_token: 'jwt.token.string' } }})
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Invalid credentials.' })
   async login(@Request() req: { user: ValidatedUser }): Promise<{ access_token: string }> {
-    // req.user is populated by LocalAuthGuard after successful validation by LocalStrategy
     return this.authService.login(req.user);
   }
 
-  // Example: Get current user profile (if JWT auth is set up)
-  // @UseGuards(JwtAuthGuard) // Assuming JwtAuthGuard is set up
+  // Example for a profile endpoint if it were added:
+  // @UseGuards(JwtAuthGuard)
   // @Get('profile')
-  // getProfile(@Request() req) {
-  //   return req.user; // req.user would be populated by JwtStrategy
+  // @ApiBearerAuth() // Indicates this endpoint requires a Bearer token
+  // @ApiOperation({ summary: 'Get current user profile' })
+  // @ApiResponse({ status: 200, description: 'User profile retrieved successfully.', type: UserDto }) // Assuming UserDto is used for profile
+  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
+  // getProfile(@Request() req: { user: JwtPayload }) { // JwtPayload from jwt.strategy.ts
+  //   // Typically you would fetch full user details using req.user.sub (user ID)
+  //   // For this example, just returning the JWT payload
+  //   return req.user;
   // }
 }

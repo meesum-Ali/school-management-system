@@ -51,7 +51,10 @@ export class UsersService {
     user.password = password; // Hashing will be done by @BeforeInsert in User entity
     user.firstName = restOfDto.firstName;
     user.lastName = restOfDto.lastName;
-    user.roles = roles || [UserRole.USER]; // Default role if not provided
+    if (roles) { // Only set roles if provided in DTO
+      user.roles = roles;
+    }
+    // If roles is not provided in DTO, TypeORM will use the entity's default ([UserRole.STUDENT])
     user.isActive = restOfDto.isActive === undefined ? true : restOfDto.isActive;
 
 
