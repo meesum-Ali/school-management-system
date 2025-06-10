@@ -154,3 +154,4 @@ export const listClassesForSubject = async (subjectId: string): Promise<ClassTyp
   const response = await api.get<ClassType[]>(`${SUBJECTS_API_PATH}/${subjectId}/classes`);
   return response.data;
 };
+
