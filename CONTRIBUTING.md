@@ -1,6 +1,18 @@
-# Contributing to Project Name
+# Contributing to School Management System
 
-Thank you for considering contributing to Project Name! Please follow the guidelines below to help us maintain a high-quality codebase.
+Thank you for considering contributing to the School Management System! We appreciate your effort to help improve the project. To ensure a consistent and high-quality codebase, please adhere to the guidelines outlined below.
+
+## Development Principles and Guidelines
+
+**All contributions are expected to align with the core development principles, architectural vision, and coding standards detailed in our [Development Guidelines](DevelopmentGuidelines.md).**
+
+These guidelines cover crucial aspects such as:
+- Our architectural approach (Clean Architecture, Domain-Driven Design)
+- Frontend and Backend development philosophies
+- Coding conventions and best practices
+- Future architectural vision (e.g., microservices, micro-frontends)
+
+Please familiarize yourself with this document before starting any significant contribution.
 
 ## How to Contribute
 
@@ -41,13 +53,14 @@ Thank you for considering contributing to Project Name! Please follow the guidel
 
    Navigate to the original repository and create a pull request from your branch.
 
-## Guidelines
+## General Contribution Guidelines
 
-- **Code Style:** Follow the existing code style. Consider using linters and formatters.
-- **Testing:** Ensure all tests pass. Add new tests for your changes if necessary.
-- **Documentation:** Update documentation to reflect your changes.
-- **Naming:** Use clear and descriptive names for branches, commits, and pull requests.
-- **Communication:** Engage respectfully and constructively in discussions.
+- **Code Style:** While `DevelopmentGuidelines.md` will cover specifics, generally follow the existing code style. Linters and formatters are configured for the project; please use them.
+- **Testing:** Ensure all existing tests pass with your changes. Add new unit, integration, or e2e tests as appropriate for any new features or bug fixes. Refer to `DevelopmentGuidelines.md` for more context on testing expectations.
+- **Documentation:** Update any relevant documentation (e.g., READMEs, code comments) to reflect your changes.
+- **Commit Messages:** Write clear, concise, and descriptive commit messages. Consider following conventional commit formats if the project adopts them.
+- **Branch Naming:** Use descriptive branch names (e.g., `feature/student-enrollment`, `fix/login-bug`).
+- **Communication:** Engage respectfully and constructively in discussions, issues, and pull requests.
 
 ## Reporting Issues
 
@@ -55,4 +68,4 @@ If you encounter any bugs or have suggestions for improvements, please create an
 
 ## Code of Conduct
 
-Please adhere to the [Code of Conduct](CODE_OF_CONDUCT.md).
+All contributors are expected to adhere to the project's [Code of Conduct](CODE_OF_CONDUCT.md). Please ensure you are familiar with its terms.
