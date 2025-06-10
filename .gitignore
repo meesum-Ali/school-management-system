@@ -51,7 +51,6 @@ backend/.env.production.local
 
 # Frontend build outputs
 frontend/.next/
-frontend/out/
 
 # Backend build outputs
 backend/dist/
@@ -131,7 +130,6 @@ Dockerfile.prod
 *.tmp
 *.temp
 .temp/
-.temp/
 
 # Backup files
 *.bak
@@ -181,7 +179,6 @@ next-env.d.ts
 
 # Production build directories
 /build/
-/dist/
 
 # ============================
 # Others
