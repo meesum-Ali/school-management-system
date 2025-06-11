@@ -8,6 +8,8 @@ export interface Student {
   studentId: string;
   createdAt: string; // Dates are typically strings over network
   updatedAt: string;
+  classId?: string | null;
+  currentClassName?: string | null;
 }
 
 // Corresponds to backend/src/students/dto/create-student.dto.ts
@@ -17,6 +19,7 @@ export interface CreateStudentDto {
   dateOfBirth: string; // Expect string from date input
   email: string;
   studentId: string;
+  classId?: string | null;
 }
 
 // Corresponds to backend/src/students/dto/update-student.dto.ts
@@ -26,4 +29,5 @@ export interface UpdateStudentDto {
   dateOfBirth?: string; // Expect string from date input
   email?: string;
   studentId?: string;
+  classId?: string | null;
 }

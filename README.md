@@ -1,4 +1,4 @@
-   ![License](https://img.shields.io/github/license/meesum-Ali/school-management-system)
+![License](https://img.shields.io/github/license/meesum-Ali/school-management-system)
    ![Contributors](https://img.shields.io/github/contributors/meesum-Ali/school-management-system)
    ![Issues](https://img.shields.io/github/issues/meesum-Ali/school-management-system)
 
@@ -27,6 +27,7 @@ School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJ
 - **Class Management:** Allows administrators to create, view, update, and delete school classes, defining their names and levels.
 - **Subject Management:** Enables administrators to define and manage academic subjects, including names, codes, and descriptions.
 - **Class-Subject Assignment:** Provides functionality for administrators to assign subjects to specific classes and managing these relationships.
+- **Student Enrollment in Classes:** Enables administrators to assign students to specific classes and manage these enrollments.
 - **Authentication System:** Robust JWT-based authentication for secure API access.
 - **Scalable Architecture:** Built with Next.js (frontend) and NestJS (backend) for scalability and maintainability.
 - **API-First Backend:** Backend designed with an API-first approach for clear contracts and client integration.

@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react'; // Added useState
 import { useForm, SubmitHandler, Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { Select } from '../ui/Select'; // Added Select import
 import { Student, CreateStudentDto, UpdateStudentDto } from '../../types/student';
+import { Class } from '../../types/class'; // Added Class import
 
 interface StudentFormProps {
-  student?: Student;
+  student?: Student; // This is StudentDetails from backend, should include classId and currentClassName
   onSubmit: (data: CreateStudentDto | UpdateStudentDto) => void;
   isSubmitting: boolean;
+  availableClasses: Class[]; // Added availableClasses prop
 }
 
 const schema = yup.object().shape({
@@ -19,34 +22,59 @@ const schema = yup.object().shape({
   dateOfBirth: yup.date().required('Date of birth is required').typeError('Invalid date format'),
   email: yup.string().email('Invalid email').required('Email is required'),
   studentId: yup.string().required('Student ID is required'),
+  classId: yup.string().uuid('Must be a valid UUID if provided').nullable().optional(), // Added classId validation
 });
 
-const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitting }) => {
+const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitting, availableClasses }) => {
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    reset, // Added reset
   } = useForm<CreateStudentDto | UpdateStudentDto>({
     resolver: yupResolver(schema) as Resolver<CreateStudentDto | UpdateStudentDto>,
-    defaultValues: student ? {
-      ...student,
-      dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
-    } : {},
+    defaultValues: student
+      ? {
+          ...student,
+          dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
+          classId: student.classId || '', // Set default for classId
+        }
+      : { // Default values for new student form
+          firstName: '',
+          lastName: '',
+          dateOfBirth: '',
+          email: '',
+          studentId: '',
+          classId: '', // Default classId to empty string for "No Class" option
+        },
   });
 
   useEffect(() => {
     if (student) {
-      setValue('firstName', student.firstName);
-      setValue('lastName', student.lastName);
-      setValue('dateOfBirth', student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '');
-      setValue('email', student.email);
-      setValue('studentId', student.studentId);
+      reset({
+        ...student,
+        dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
+        classId: student.classId || '', // Ensure classId is reset correctly
+      });
+    } else {
+      reset({ // Reset for create form if student becomes undefined
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+        email: '',
+        studentId: '',
+        classId: '',
+      });
     }
-  }, [student, setValue]);
+  }, [student, reset]); // Using reset from useForm
 
   const handleFormSubmit: SubmitHandler<CreateStudentDto | UpdateStudentDto> = (data) => {
-    onSubmit(data);
+    const dataToSubmit = { ...data };
+    if (dataToSubmit.classId === '') { // Convert empty string (from "No Class" option) to null
+      dataToSubmit.classId = null;
+    }
+    onSubmit(dataToSubmit);
   };
 
   return (
@@ -116,6 +144,25 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitti
           />
           {errors.studentId && (
             <p className="text-red-500 text-sm mt-1">{errors.studentId.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="classId" className="block mb-1 font-medium">Assign to Class</label>
+          <Select
+            id="classId"
+            {...register('classId')}
+            className={errors.classId ? 'border-red-500' : ''}
+          >
+            <option value="">No Class / Unassign</option>
+            {availableClasses.map((cls) => (
+              <option key={cls.id} value={cls.id}>
+                {cls.name}
+              </option>
+            ))}
+          </Select>
+          {errors.classId && (
+            <p className="text-red-500 text-sm mt-1">{errors.classId.message}</p>
           )}
         </div>
 

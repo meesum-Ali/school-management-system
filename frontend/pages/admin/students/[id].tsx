@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
-import { fetchStudentById, updateStudent as apiUpdateStudent } from '../../../utils/api';
+import { fetchStudentById, updateStudent as apiUpdateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
 import { Student, UpdateStudentDto } from '../../../types/student';
-import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
+import { Class } from '../../../types/class'; // Added Class type
+import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 
@@ -11,27 +12,45 @@ const EditStudentPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const [student, setStudent] = useState<Student | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // For student data
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [availableClasses, setAvailableClasses] = useState<Class[]>([]);
+  const [classesLoading, setClassesLoading] = useState(true); // For classes data
+  const [classesError, setClassesError] = useState<string | null>(null);
+
 
   useEffect(() => {
-    if (id) {
-      const loadStudent = async () => {
+    const loadInitialData = async () => {
+      if (id) {
         try {
-          setIsLoading(true);
+          setIsLoading(true); // For student
+          setClassesLoading(true); // For classes
           setError(null);
-          const studentData = await fetchStudentById(id as string);
+          setClassesError(null);
+
+          const studentDataPromise = fetchStudentById(id as string);
+          const classesDataPromise = fetchClasses();
+
+          const [studentData, classesData] = await Promise.all([
+            studentDataPromise,
+            classesDataPromise,
+          ]);
+
           setStudent(studentData);
+          setAvailableClasses(classesData);
+
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to fetch student data.');
+          const errorMessage = err instanceof Error ? err.message : 'Failed to load initial data.';
+          setError(errorMessage); // Set general error for the page
           console.error(err);
         } finally {
           setIsLoading(false);
+          setClassesLoading(false);
         }
-      };
-      loadStudent();
-    }
+      }
+    };
+    loadInitialData();
   }, [id]);
 
   const handleSubmit = async (data: UpdateStudentDto) => {
@@ -53,39 +72,43 @@ const EditStudentPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || classesLoading) { // Check both loading states
     return (
-      <ProtectedRoute> {/* Add roles if needed */}
-        <AdminLayout> {/* Changed to AdminLayout */}
-          <div className="container mx-auto p-4 text-center">Loading student data...</div>
+      <ProtectedRoute>
+        <AdminLayout>
+          <div className="container mx-auto p-4 text-center">Loading data...</div>
         </AdminLayout>
       </ProtectedRoute>
     );
   }
 
-  // if (!student && !isLoading && !error) { // This condition might be too broad if error is set for "invalid id"
-  if (!student && !error) { // Show "not found" only if no specific error message is already displayed
+  if (!student && !error) {
      return (
-      <ProtectedRoute> {/* Add roles if needed */}
-        <AdminLayout> {/* Changed to AdminLayout */}
+      <ProtectedRoute>
+        <AdminLayout>
           <div className="container mx-auto p-4 text-center">Student not found.</div>
         </AdminLayout>
       </ProtectedRoute>
     );
   }
 
-
   return (
-    <ProtectedRoute> {/* Add roles if needed */}
-      <AdminLayout> {/* Changed to AdminLayout */}
+    <ProtectedRoute>
+      <AdminLayout>
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">
             {error && <Notification message={error} type="error" onClose={() => setError(null)} />}
+            {classesError && <Notification message={classesError} type="error" onClose={() => setClassesError(null)} />}
             <h1 className="text-2xl font-semibold mb-6 text-center">Edit Student</h1>
             {student ? (
-              <StudentForm student={student} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+              <StudentForm
+                student={student}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                availableClasses={availableClasses}
+              />
             ) : (
-              !isLoading && <p className="text-center">Student data could not be loaded.</p>
+              !isLoading && !classesLoading && <p className="text-center">Student data could not be loaded.</p>
             )}
           </div>
         </div>
