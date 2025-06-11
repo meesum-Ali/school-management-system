@@ -30,6 +30,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Class</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -43,6 +44,9 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.studentId}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString() : 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {student.currentClassName || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(student.createdAt).toLocaleDateString()}

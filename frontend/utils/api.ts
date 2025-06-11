@@ -46,6 +46,12 @@ export const deleteStudent = async (id: string): Promise<void> => {
   await api.delete(`${STUDENTS_API_PATH}/${id}`);
 };
 
+// This function might be used by both student form and class details page for unenrollment
+export const assignStudentToClassViaStudentApi = async (studentId: string, classId: string | null): Promise<Student> => {
+  const response = await api.patch<Student>(`/students/${studentId}/assign-class`, { classId });
+  return response.data;
+};
+
 // User API functions
 import { User, CreateUserDto, UpdateUserDto } from '../types/user';
 
@@ -117,6 +123,11 @@ export const removeSubjectFromClass = async (classId: string, subjectId: string)
 
 export const listSubjectsForClass = async (classId: string): Promise<SubjectTypeForClassListing[]> => {
   const response = await api.get<SubjectTypeForClassListing[]>(`${CLASSES_API_PATH}/${classId}/subjects`);
+  return response.data;
+};
+
+export const listStudentsInClass = async (classId: string): Promise<Student[]> => {
+  const response = await api.get<Student[]>(`${CLASSES_API_PATH}/${classId}/students`);
   return response.data;
 };
 

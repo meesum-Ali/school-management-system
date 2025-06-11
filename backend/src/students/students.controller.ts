@@ -18,6 +18,7 @@ import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentDto } from './dto/student.dto';
+import { AssignClassDto } from './dto/assign-class.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -93,5 +94,22 @@ export class StudentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.studentsService.remove(id);
+  }
+
+  @Patch(':studentId/assign-class')
+  @ApiOperation({ summary: 'Assign or Unassign a student to/from a class (Admin only)' })
+  @ApiParam({ name: 'studentId', type: 'string', format: 'uuid', description: 'Student ID' })
+  @ApiBody({ type: AssignClassDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Student class assignment updated successfully.', type: StudentDto })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Student or Class not found.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden.' })
+  // @Roles(UserRole.ADMIN) // Inherited from class decorator
+  async assignClass(
+    @Param('studentId', ParseUUIDPipe) studentId: string,
+    @Body() assignClassDto: AssignClassDto,
+  ): Promise<StudentDto> {
+    return this.studentsService.assignStudentToClass(studentId, assignClassDto.classId);
   }
 }

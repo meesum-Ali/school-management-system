@@ -4,12 +4,15 @@ import ClassForm from '../../../components/Classes/ClassForm';
 import {
     fetchClassById,
     updateClass as apiUpdateClass,
-    fetchSubjects, // For fetching all available subjects
+    fetchSubjects,
     assignSubjectToClass as apiAssignSubject,
     removeSubjectFromClass as apiRemoveSubject,
+    listStudentsInClass, // Added
+    assignStudentToClassViaStudentApi, // Added for unenroll
 } from '../../../utils/api';
 import { Class, UpdateClassDto } from '../../../types/class';
-import { Subject } from '../../../types/subject'; // For available subjects list
+import { Subject } from '../../../types/subject';
+import { Student } from '../../../types/student'; // Added
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
@@ -27,50 +30,62 @@ const EditClassPage = () => {
   const [selectedSubjectToAssign, setSelectedSubjectToAssign] = useState<string>('');
 
   const [isLoading, setIsLoading] = useState(true); // For initial class load
-  const [isSubmittingForm, setIsSubmittingForm] = useState(false); // For class form update
-  const [isUpdatingSubjects, setIsUpdatingSubjects] = useState(false); // For assign/remove subject actions
-  const [error, setError] = useState<string | null>(null);
-  const [subjectManagementError, setSubjectManagementError] = useState<string|null>(null);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [isUpdatingSubjects, setIsUpdatingSubjects] = useState(false);
+  const [error, setError] = useState<string | null>(null); // General page/form errors
+  const [subjectManagementError, setSubjectManagementError] = useState<string | null>(null);
+
+  // State for enrolled students
+  const [enrolledStudents, setEnrolledStudents] = useState<Student[]>([]);
+  const [isLoadingStudents, setIsLoadingStudents] = useState(false);
+  const [studentOpError, setStudentOpError] = useState<string | null>(null); // Errors for student operations
 
   const { user } = useContext(AuthContext);
 
-  const loadClassDetails = useCallback(async () => {
+  const loadClassDetailsAndStudents = useCallback(async () => {
     if (classId && typeof classId === 'string' && user?.roles.includes(UserRole.ADMIN)) {
       try {
         setIsLoading(true);
+        setIsLoadingStudents(true);
         setError(null);
-        const classData = await fetchClassById(classId);
+        setStudentOpError(null);
+
+        const classDataPromise = fetchClassById(classId);
+        const studentsDataPromise = listStudentsInClass(classId);
+        const allSubjectsPromise = fetchSubjects(); // Keep fetching all subjects
+
+        const [classData, studentsData, allSubjectsData] = await Promise.all([
+          classDataPromise,
+          studentsDataPromise,
+          allSubjectsPromise,
+        ]);
+
         setClassInstance(classData);
+        setEnrolledStudents(studentsData);
+        setAllSubjects(allSubjectsData);
+
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch class data.';
-        setError(errorMessage);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load class or student data.';
+        setError(errorMessage); // General error for the page
+        setStudentOpError(errorMessage); // Also set for student section
       } finally {
         setIsLoading(false);
+        setIsLoadingStudents(false);
       }
     } else if (classId && !user?.roles.includes(UserRole.ADMIN)) {
-      setError("You don't have permission to view this class.");
+      setError("You don't have permission to view this class details.");
       setIsLoading(false);
+      setIsLoadingStudents(false);
     } else {
       setIsLoading(false);
+      setIsLoadingStudents(false);
     }
   }, [classId, user]);
 
-  const loadAllSubjects = useCallback(async () => {
-    if (user?.roles.includes(UserRole.ADMIN)) {
-        try {
-            const subjectsData = await fetchSubjects();
-            setAllSubjects(subjectsData);
-        } catch (err) {
-            console.error("Failed to fetch subjects", err);
-            setError('Could not load available subjects.'); // Or a different error state
-        }
-    }
-  }, [user]);
 
   useEffect(() => {
-    loadClassDetails();
-    loadAllSubjects();
-  }, [loadClassDetails, loadAllSubjects]);
+    loadClassDetailsAndStudents();
+  }, [loadClassDetailsAndStudents]);
 
   const handleClassFormSubmit = async (data: UpdateClassDto) => {
     if (!classId || typeof classId !== 'string') return;
@@ -124,12 +139,33 @@ const EditClassPage = () => {
     }
   };
 
+  const handleUnenrollStudent = async (studentIdToUnenroll: string) => {
+    if (!classId || typeof classId !== 'string') return; // Should not happen if button is visible
+
+    // Optimistic update or set specific loading state for the student row if desired
+    // For now, global loading for student operations
+    setIsLoadingStudents(true);
+    setStudentOpError(null);
+    try {
+      await assignStudentToClassViaStudentApi(studentIdToUnenroll, null); // Unassign
+      // Refresh the list of enrolled students
+      const updatedStudents = await listStudentsInClass(classId as string);
+      setEnrolledStudents(updatedStudents);
+      // Could show a success notification here
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to unenroll student.';
+      setStudentOpError(errorMessage);
+    } finally {
+      setIsLoadingStudents(false);
+    }
+  };
+
   const availableSubjectsForAssignment = allSubjects.filter(
     s => !classInstance?.subjects?.some(assigned => assigned.id === s.id)
   );
 
   // Client-side check, though backend will enforce
-  if (!user?.roles.includes(UserRole.ADMIN) && !isLoading) { // Avoid showing if still loading user roles
+  if (!user?.roles.includes(UserRole.ADMIN) && !isLoading && !isLoadingStudents) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -139,8 +175,7 @@ const EditClassPage = () => {
     );
   }
 
-
-  if (isLoading) {
+  if (isLoading) { // Combined initial loading for class itself
     return (
       <AdminLayout>
         <div className="container mx-auto p-4 text-center">Loading class data...</div>
@@ -163,7 +198,85 @@ const EditClassPage = () => {
           {error && <Notification message={error} type="error" onClose={() => setError(null)} />}
           <h1 className="text-2xl font-semibold mb-6 text-center">Edit Class</h1>
           {classInstance ? (
-            <ClassForm initialData={classInstance} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+            <>
+              <ClassForm initialData={classInstance} onSubmit={handleClassFormSubmit} isSubmitting={isSubmittingForm} />
+
+              {/* Subject Management Section - Existing Logic */}
+              <Card className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Manage Subjects</h2>
+                {subjectManagementError && <Notification message={subjectManagementError} type="error" onClose={() => setSubjectManagementError(null)} />}
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium mb-2">Assigned Subjects:</h3>
+                  {classInstance.subjects && classInstance.subjects.length > 0 ? (
+                    <ul className="list-disc pl-5">
+                      {classInstance.subjects.map(subject => (
+                        <li key={subject.id} className="flex justify-between items-center py-1">
+                          <span>{subject.name} ({subject.code})</span>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleRemoveSubject(subject.id)}
+                            disabled={isUpdatingSubjects}
+                          >
+                            Remove
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : <p>No subjects assigned yet.</p>}
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Assign New Subject:</h3>
+                  <div className="flex space-x-2">
+                    <Select
+                      value={selectedSubjectToAssign}
+                      onChange={(e) => setSelectedSubjectToAssign(e.target.value)}
+                      className="flex-grow"
+                      disabled={isUpdatingSubjects || availableSubjectsForAssignment.length === 0}
+                    >
+                      <option value="">Select a subject</option>
+                      {availableSubjectsForAssignment.map(subject => (
+                        <option key={subject.id} value={subject.id}>{subject.name} ({subject.code})</option>
+                      ))}
+                    </Select>
+                    <Button onClick={handleAssignSubject} disabled={isUpdatingSubjects || !selectedSubjectToAssign}>
+                      {isUpdatingSubjects ? 'Assigning...' : 'Assign Subject'}
+                    </Button>
+                  </div>
+                   {availableSubjectsForAssignment.length === 0 && !selectedSubjectToAssign && <p className="text-sm text-gray-500 mt-1">All available subjects are already assigned.</p>}
+                </div>
+              </Card>
+
+              {/* Enrolled Students Section - New Logic */}
+              <Card className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Enrolled Students</h2>
+                {isLoadingStudents && <p>Loading students...</p>}
+                {studentOpError && <Notification message={studentOpError} type="error" onClose={() => setStudentOpError(null)} />}
+                {!isLoadingStudents && enrolledStudents.length === 0 && <p>No students enrolled in this class.</p>}
+                {!isLoadingStudents && enrolledStudents.length > 0 && (
+                  <ul className="space-y-2">
+                    {enrolledStudents.map(student => (
+                      <li key={student.id} className="flex justify-between items-center p-2 border rounded hover:bg-gray-50">
+                        <div>
+                          <p className="font-medium">{student.firstName} {student.lastName}</p>
+                          <p className="text-sm text-gray-600">Email: {student.email}</p>
+                          <p className="text-sm text-gray-500">Student ID: {student.studentId}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUnenrollStudent(student.id)}
+                          // Consider adding a disabled state per student if an operation is in progress for that specific student
+                        >
+                          Unenroll
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {/* Optional: Button/Modal to "Enroll Existing Student" could go here */}
+              </Card>
+            </>
           ) : (
             !isLoading && <p className="text-center text-red-500">Class data could not be loaded.</p>
           )}
