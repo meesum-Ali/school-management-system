@@ -6,12 +6,10 @@ import { CreateUserDto } from '../src/users/dto/create-user.dto';
 import { UpdateUserDto } from '../src/users/dto/update-user.dto';
 import { UserRole } from '../src/users/entities/user.entity';
 import { UsersService } from '../src/users/users.service'; // For creating test users directly
-import { AuthService } from '../src/auth/auth.service'; // For logging in test users
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
   let usersService: UsersService;
-  let authService: AuthService;
   let adminToken: string;
   let studentToken: string;
   let createdUserByAdminId: string; // Store ID of user created by admin for later tests
@@ -50,11 +48,16 @@ describe('UsersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
 
     usersService = moduleFixture.get<UsersService>(UsersService);
-    authService = moduleFixture.get<AuthService>(AuthService);
 
     // Create an admin user and a student user for testing
     adminToken = await createAndLoginUser([UserRole.ADMIN]);
@@ -106,11 +109,11 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (ADMIN) return 400 for invalid data', async () => {
-        await request(app.getHttpServer())
-            .post('/users')
-            .set('Authorization', `Bearer ${adminToken}`)
-            .send({ email: 'onlyemail.com' }) // Missing username, password, invalid email
-            .expect(HttpStatus.BAD_REQUEST);
+      await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ email: 'onlyemail.com' }) // Missing username, password, invalid email
+        .expect(HttpStatus.BAD_REQUEST);
     });
   });
 
@@ -132,15 +135,18 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (No Auth) fail to get all users (401 Unauthorized)', async () => {
-        await request(app.getHttpServer())
-          .get('/users')
-          .expect(HttpStatus.UNAUTHORIZED);
-      });
+      await request(app.getHttpServer())
+        .get('/users')
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
   });
 
   describe('GET /users/:id (Find One User)', () => {
-     it('should (ADMIN) return a specific user by ID', async () => {
-      if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for GET /users/:id test');
+    it('should (ADMIN) return a specific user by ID', async () => {
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for GET /users/:id test',
+        );
       const response = await request(app.getHttpServer())
         .get(`/users/${createdUserByAdminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -149,7 +155,10 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (STUDENT) fail to get a user by ID (403 Forbidden)', async () => {
-      if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for GET /users/:id (student) test');
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for GET /users/:id (student) test',
+        );
       await request(app.getHttpServer())
         .get(`/users/${createdUserByAdminId}`)
         .set('Authorization', `Bearer ${studentToken}`)
@@ -157,26 +166,32 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (No Auth) fail to get a user by ID (401 Unauthorized)', async () => {
-        if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for GET /users/:id (no auth) test');
-        await request(app.getHttpServer())
-          .get(`/users/${createdUserByAdminId}`)
-          .expect(HttpStatus.UNAUTHORIZED);
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for GET /users/:id (no auth) test',
+        );
+      await request(app.getHttpServer())
+        .get(`/users/${createdUserByAdminId}`)
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should (ADMIN) return 404 for a non-existent user ID', async () => {
-        const nonExistentUuid = '123e4567-e89b-12d3-a456-426614174000';
-        await request(app.getHttpServer())
-          .get(`/users/${nonExistentUuid}`)
-          .set('Authorization', `Bearer ${adminToken}`)
-          .expect(HttpStatus.NOT_FOUND);
-      });
+      const nonExistentUuid = '123e4567-e89b-12d3-a456-426614174000';
+      await request(app.getHttpServer())
+        .get(`/users/${nonExistentUuid}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
   describe('PATCH /users/:id (Update User)', () => {
     const updateUserDto: UpdateUserDto = { firstName: 'UpdatedByAdmin' };
 
     it('should (ADMIN) update an existing user', async () => {
-      if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for PATCH /users/:id test');
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for PATCH /users/:id test',
+        );
       const response = await request(app.getHttpServer())
         .patch(`/users/${createdUserByAdminId}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -186,7 +201,10 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (STUDENT) fail to update a user (403 Forbidden)', async () => {
-      if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for PATCH /users/:id (student) test');
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for PATCH /users/:id (student) test',
+        );
       await request(app.getHttpServer())
         .patch(`/users/${createdUserByAdminId}`)
         .set('Authorization', `Bearer ${studentToken}`)
@@ -195,34 +213,42 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (No Auth) fail to update a user (401 Unauthorized)', async () => {
-        if (!createdUserByAdminId) throw new Error('createdUserByAdminId is not set for PATCH /users/:id (no auth) test');
-        await request(app.getHttpServer())
-          .patch(`/users/${createdUserByAdminId}`)
-          .send(updateUserDto)
-          .expect(HttpStatus.UNAUTHORIZED);
+      if (!createdUserByAdminId)
+        throw new Error(
+          'createdUserByAdminId is not set for PATCH /users/:id (no auth) test',
+        );
+      await request(app.getHttpServer())
+        .patch(`/users/${createdUserByAdminId}`)
+        .send(updateUserDto)
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
   describe('DELETE /users/:id (Delete User)', () => {
     let userIdToDelete: string;
 
-    beforeEach(async () => { // Create a fresh user for each delete test variant
-        const uniqueSuffix = generateUniqueSuffix();
-        const tempUser = await usersService.create({
-            username: `to_delete_${uniqueSuffix}`,
-            email: `to_delete_${uniqueSuffix}@example.com`,
-            password: userPassword,
-            roles: [UserRole.STUDENT]
-        });
-        userIdToDelete = tempUser.id;
+    beforeEach(async () => {
+      // Create a fresh user for each delete test variant
+      const uniqueSuffix = generateUniqueSuffix();
+      const tempUser = await usersService.create({
+        username: `to_delete_${uniqueSuffix}`,
+        email: `to_delete_${uniqueSuffix}@example.com`,
+        password: userPassword,
+        roles: [UserRole.STUDENT],
+      });
+      userIdToDelete = tempUser.id;
     });
 
-    afterEach(async () => { // Clean up the user if not deleted by the test itself
-        if (userIdToDelete) {
-            try { await usersService.remove(userIdToDelete); } catch (e) { /* ignore if already deleted */ }
+    afterEach(async () => {
+      // Clean up the user if not deleted by the test itself
+      if (userIdToDelete) {
+        try {
+          await usersService.remove(userIdToDelete);
+        } catch {
+          /* ignore if already deleted */
         }
+      }
     });
-
 
     it('should (ADMIN) delete an existing user', async () => {
       await request(app.getHttpServer())
@@ -246,9 +272,9 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should (No Auth) fail to delete a user (401 Unauthorized)', async () => {
-        await request(app.getHttpServer())
-          .delete(`/users/${userIdToDelete}`)
-          .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer())
+        .delete(`/users/${userIdToDelete}`)
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

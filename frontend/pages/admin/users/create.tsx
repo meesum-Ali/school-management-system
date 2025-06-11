@@ -38,7 +38,7 @@ const CreateUserPage = () => {
             <UserForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     </ProtectedRoute>
   );
 };

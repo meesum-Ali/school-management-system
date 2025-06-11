@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
-import { NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { Student } from './student.entity';
 import { ClassEntity } from '../../classes/entities/class.entity'; // Import ClassEntity
@@ -94,7 +94,6 @@ describe('StudentsService', () => {
       studentId: 'S67890',
     };
     const createdEntity = { ...new Student(), ...createDto, id: 'new-uuid', createdAt: new Date(), updatedAt: new Date(), classId: null, currentClass: null };
-
 
     it('should create and return a student DTO if studentId and email are unique (no classId)', async () => {
       studentRepository.findOne.mockResolvedValue(null);
