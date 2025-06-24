@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import SubjectForm from '../../../components/Subjects/SubjectForm';
 import { createSubject as apiCreateSubject } from '../../../utils/api';
-import { CreateSubjectDto } from '../../../types/subject';
+import { CreateSubjectDto, UpdateSubjectDto } from '../../../types/subject';
 import { UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
@@ -15,11 +15,12 @@ const CreateSubjectPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useContext(AuthContext);
 
-  const handleSubmit = async (data: CreateSubjectDto) => {
+  const handleSubmit = async (data: CreateSubjectDto | UpdateSubjectDto) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await apiCreateSubject(data);
+      // Type assertion to CreateSubjectDto since we're in the create page
+      await apiCreateSubject(data as CreateSubjectDto);
       router.push('/admin/subjects');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create subject.';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import UserForm from '../../../components/Users/UserForm';
 import { createUser as apiCreateUser } from '../../../utils/api';
-import { CreateUserDto, UserRole } from '../../../types/user';
+import { CreateUserDto, UpdateUserDto, UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
@@ -12,11 +12,12 @@ const CreateUserPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: CreateUserDto) => {
+  const handleSubmit = async (data: CreateUserDto | UpdateUserDto) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await apiCreateUser(data);
+      // Type assertion to CreateUserDto since we're in the create page
+      await apiCreateUser(data as CreateUserDto);
       // Optionally show success message before navigating
       router.push('/admin/users');
     } catch (err) {

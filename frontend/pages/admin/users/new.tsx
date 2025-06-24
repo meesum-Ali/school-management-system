@@ -1,16 +1,46 @@
-import React from 'react'
-import ProtectedRoute from '../../../components/Auth/ProtectedRoute'
-import AdminLayout from '../../../components/Layout/AdminLayout'
-import UserForm from '../../../components/Users/UserForm'
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
+import AdminLayout from '../../../components/Layout/AdminLayout';
+import UserForm from '../../../components/Users/UserForm';
+import { createUser as apiCreateUser } from '../../../utils/api';
+import { CreateUserDto, UpdateUserDto } from '../../../types/user';
+import Notification from '../../../components/Layout/Notification';
 
 const AddUserPage: React.FC = () => {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (data: CreateUserDto | UpdateUserDto) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      // Type assertion to CreateUserDto since we're in the create page
+      await apiCreateUser(data as CreateUserDto);
+      // Optionally show success message before navigating
+      router.push('/admin/users');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create user.';
+      setError(errorMessage);
+      console.error(err);
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <ProtectedRoute requiredRoles={['Admin']}>
       <AdminLayout>
-        <UserForm />
+        <div className="container mx-auto p-4 flex justify-center">
+          <div className="w-full max-w-2xl">
+            {error && <Notification message={error} type="error" onClose={() => setError(null)} />}
+            <h1 className="text-2xl font-semibold mb-6 text-center">Create New User</h1>
+            <UserForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          </div>
+        </div>
       </AdminLayout>
     </ProtectedRoute>
-  )
-}
+  );
+};
 
-export default AddUserPage
+export default AddUserPage;

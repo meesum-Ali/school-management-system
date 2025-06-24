@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'; // Added useEffect
 import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
 import { createStudent as apiCreateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
-import { CreateStudentDto } from '../../../types/student';
+import { CreateStudentDto, UpdateStudentDto } from '../../../types/student';
 import { UserRole } from '../../../types/user';
 import { Class } from '../../../types/class'; // Added Class type
 import AdminLayout from '../../../components/Layout/AdminLayout';
@@ -33,12 +33,13 @@ const CreateStudentPage = () => {
     loadClasses();
   }, []);
 
-  const handleSubmit = async (data: CreateStudentDto) => {
+  const handleSubmit = async (data: CreateStudentDto | UpdateStudentDto) => {
     setIsSubmitting(true);
     setError(null);
     try {
       // The dateOfBirth is already in YYYY-MM-DD format from the form
-      await apiCreateStudent(data);
+      // Type assertion to CreateStudentDto since we're in the create page
+      await apiCreateStudent(data as CreateStudentDto);
       router.push('/admin/students');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create student.');

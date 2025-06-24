@@ -1,14 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+// This file is not used in a Next.js application.
+// The entry point for Next.js is the pages/_app.tsx file.
+// This file can be safely removed or kept as a redirect.
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export default function Home() {
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+  return null;
+}
