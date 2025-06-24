@@ -8,7 +8,7 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';
 import { SubjectDto } from '../subjects/dto/subject.dto';
-import { StudentDto } from '../../students/dto/student.dto'; // Import StudentDto
+import { StudentDto } from '../students/dto/student.dto'; // Import StudentDto
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';

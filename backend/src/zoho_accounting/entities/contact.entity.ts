@@ -32,7 +32,7 @@ interface DefaultTemplates {
   creditnote_email_template_name?: string;
 }
 
-interface CustomField {
+export interface CustomField {
   customfield_id: string;
   index: number;
   value: string | number | boolean | Date; // Value can be of different types

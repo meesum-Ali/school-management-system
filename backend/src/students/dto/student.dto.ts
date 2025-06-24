@@ -1,37 +1,119 @@
+import { IsNotEmpty, IsEmail, IsDateString, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StudentDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'Unique identifier of the student (UUID)' })
+  @IsUUID()
   id: string;
 
-  @ApiProperty({ example: 'Jane', description: 'First name of the student' })
+  @ApiProperty({ example: 'John', description: 'First name of the student' })
+  @IsNotEmpty({ message: 'First name should not be empty' })
   firstName: string;
 
   @ApiProperty({ example: 'Doe', description: 'Last name of the student' })
+  @IsNotEmpty({ message: 'Last name should not be empty' })
   lastName: string;
 
-  @ApiProperty({ example: '2005-08-15T00:00:00.000Z', description: 'Date of birth of the student' })
+  @ApiProperty({ example: '2005-04-15', description: 'Date of birth of the student (YYYY-MM-DD)' })
+  @IsDateString({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' })
+  @IsNotEmpty({ message: 'Date of birth should not be empty' })
   dateOfBirth: Date;
 
-  @ApiProperty({ example: 'jane.doe@example.com', description: 'Email address of the student' })
+  @ApiProperty({ example: 'john.doe@example.com', description: 'Email address of the student' })
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email should not be empty' })
   email: string;
 
-  @ApiProperty({ example: 'S1001', description: 'Unique student identifier' })
+  @ApiProperty({ example: 'STU20230001', description: 'Unique student ID' })
+  @IsNotEmpty({ message: 'Student ID should not be empty' })
   studentId: string;
 
-  @ApiProperty({ description: 'Date and time when the student record was created' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'Date and time when the student record was last updated' })
-  updatedAt: Date;
-
-  @ApiPropertyOptional({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the enrolled class, if any' })
+  @ApiPropertyOptional({ 
+    example: '123e4567-e89b-12d3-a456-426614174000', 
+    description: 'ID of the class the student belongs to (UUID)',
+    nullable: true 
+  })
+  @IsUUID()
+  @IsOptional()
   classId?: string | null;
 
-  @ApiPropertyOptional({ example: 'Grade 10A', description: 'Name of the enrolled class, if any' })
-  currentClassName?: string | null;
+  @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Date when the student was created' })
+  createdAt: Date;
 
-  constructor(partial: Partial<StudentDto>) {
-    Object.assign(this, partial);
-  }
+  @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Date when the student was last updated' })
+  updatedAt: Date;
+
+  @ApiPropertyOptional({ 
+    example: 'Grade 10-A', 
+    description: 'Name of the current class the student belongs to',
+    nullable: true 
+  })
+  @IsOptional()
+  currentClassName?: string | null;
+}
+
+export class CreateStudentDto {
+  @ApiProperty({ example: 'John', description: 'First name of the student' })
+  @IsNotEmpty({ message: 'First name should not be empty' })
+  firstName: string;
+
+  @ApiProperty({ example: 'Doe', description: 'Last name of the student' })
+  @IsNotEmpty({ message: 'Last name should not be empty' })
+  lastName: string;
+
+  @ApiProperty({ example: '2005-04-15', description: 'Date of birth of the student (YYYY-MM-DD)' })
+  @IsDateString({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' })
+  @IsNotEmpty({ message: 'Date of birth should not be empty' })
+  dateOfBirth: Date;
+
+  @ApiProperty({ example: 'john.doe@example.com', description: 'Email address of the student' })
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email should not be empty' })
+  email: string;
+
+  @ApiProperty({ example: 'STU20230001', description: 'Unique student ID' })
+  @IsNotEmpty({ message: 'Student ID should not be empty' })
+  studentId: string;
+
+  @ApiPropertyOptional({ 
+    example: '123e4567-e89b-12d3-a456-426614174000', 
+    description: 'ID of the class the student belongs to (UUID)',
+    nullable: true 
+  })
+  @IsUUID()
+  @IsOptional()
+  classId?: string | null;
+}
+
+export class UpdateStudentDto {
+  @ApiPropertyOptional({ example: 'John', description: 'Updated first name of the student' })
+  @IsOptional()
+  firstName?: string;
+
+  @ApiPropertyOptional({ example: 'Doe', description: 'Updated last name of the student' })
+  @IsOptional()
+  lastName?: string;
+
+  @ApiPropertyOptional({ example: '2005-04-15', description: 'Updated date of birth (YYYY-MM-DD)' })
+  @IsDateString({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' })
+  @IsOptional()
+  dateOfBirth?: Date;
+
+  @ApiPropertyOptional({ example: 'john.doe@example.com', description: 'Updated email address' })
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsOptional()
+  email?: string;
+
+  @ApiPropertyOptional({ example: 'STU20230001', description: 'Updated student ID' })
+  @IsOptional()
+  studentId?: string;
+
+  @ApiPropertyOptional({ 
+    example: '123e4567-e89b-12d3-a456-426614174000', 
+    description: 'Updated class ID (UUID)',
+    nullable: true 
+  })
+  @IsUUID()
+  @IsOptional()
+  classId?: string | null;
 }

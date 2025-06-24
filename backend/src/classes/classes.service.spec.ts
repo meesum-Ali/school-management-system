@@ -5,7 +5,7 @@ import { NotFoundException, ConflictException, InternalServerErrorException } fr
 import { ClassesService } from './classes.service';
 import { ClassEntity } from './entities/class.entity';
 import { SubjectEntity } from '../subjects/entities/subject.entity';
-import { Student } from '../students/student.entity'; // Import Student
+import { Student } from '../students/entities/student.entity'; // Import Student
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';

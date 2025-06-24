@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { SubjectEntity } from '../../subjects/entities/subject.entity';
-import { Student } from '../../students/student.entity';
+import { Student } from '../../students/entities/student.entity';
 // import { User } from '../../users/entities/user.entity';
 
 @Entity('classes')

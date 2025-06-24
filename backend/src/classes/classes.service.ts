@@ -8,7 +8,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';
 import { SubjectDto } from '../subjects/dto/subject.dto';
 import { StudentDto } from '../students/dto/student.dto';
-import { Student } from '../students/student.entity';
+import { Student } from '../students/entities/student.entity';
 
 @Injectable()
 export class ClassesService {

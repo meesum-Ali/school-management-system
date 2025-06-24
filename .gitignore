@@ -187,6 +187,49 @@ next-env.d.ts
 # Ignore all environment files (optional)
 .env*
 !frontend/.env.example
-
-# Allow example env files
 !backend/.env.example
+
+# Local development files
+*.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local Netlify folder
+.netlify
+
+# Local Vercel folder
+.vercel
+
+# Local development server
+.serverless/
+
+# Local development environment
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Local IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Editor directories and files
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.history/
+*.sublime-*

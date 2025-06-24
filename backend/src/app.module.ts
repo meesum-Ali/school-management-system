@@ -3,7 +3,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configuration';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module'; // Import SubjectsModule
 import { User } from './users/entities/user.entity';
-import { Student } from './students/student.entity';
+import { Student } from './students/entities/student.entity';
 import { ClassEntity } from './classes/entities/class.entity';
 import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
 import { ZohoAccountingModule } from './zoho_accounting/zoho_accounting.module';

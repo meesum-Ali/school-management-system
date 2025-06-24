@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
-import { Student } from './student.entity';
-import { ClassEntity } from '../../classes/entities/class.entity';
+import { Student } from './entities/student.entity';
+import { ClassEntity } from '../classes/entities/class.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentDto } from './dto/student.dto';
@@ -17,7 +17,7 @@ export class StudentsService {
   ) {}
 
   private mapStudentToStudentDto(student: Student): StudentDto {
-    return new StudentDto({
+    return {
       id: student.id,
       firstName: student.firstName,
       lastName: student.lastName,
@@ -26,10 +26,9 @@ export class StudentsService {
       studentId: student.studentId,
       createdAt: student.createdAt,
       updatedAt: student.updatedAt,
-      classId: student.classId, // Add this
-      // Populate currentClassName if currentClass relation is loaded
-      currentClassName: student.currentClass ? student.currentClass.name : null, // Add this
-    });
+      classId: student.classId,
+      currentClassName: student.currentClass ? student.currentClass.name : null,
+    };
   }
 
   async create(createStudentDto: CreateStudentDto): Promise<StudentDto> {
