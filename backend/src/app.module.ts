@@ -18,6 +18,7 @@ import { Student } from './students/entities/student.entity';
 import { ClassEntity } from './classes/entities/class.entity';
 import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
 import { School } from './schools/entities/school.entity'; // Import School entity
+import { HealthModule } from './health/health.module'; // Import HealthModule
      // Import other modules as needed
 
      @Module({
@@ -62,8 +63,9 @@ import { School } from './schools/entities/school.entity'; // Import School enti
          AuthModule,
          ClassesModule,
          SubjectsModule, // Add SubjectsModule to imports
-         // ZohoAccountingModule, // Temporarily disabled ZohoAccountingModule
-         // Import other modules
+         SchoolsModule, // Add SchoolsModule to imports
+         HealthModule, // Add HealthModule for health checks
+         // Add other modules as needed
        ],
        controllers: [AppController],
        providers: [AppService],

@@ -13,6 +13,7 @@ import {
   HttpStatus,
   UseGuards,
   Req, // Import Req to access the request object
+  ConflictException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';

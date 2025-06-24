@@ -43,11 +43,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // For stateless JWT authentication, returning the payload is often sufficient.
     // The payload (or a customized user object) will be attached to Request.user.
     // Ensure all necessary fields from the JWT are returned here.
+    // The returned object must match the JwtPayload interface
     return {
-      userId: payload.sub, // Commonly named userId in req.user
+      sub: payload.sub, // Keep as 'sub' to match the interface
       username: payload.username,
       roles: payload.roles,
-      schoolId: payload.schoolId, // Add schoolId to be available in req.user
+      schoolId: payload.schoolId,
     };
   }
 }

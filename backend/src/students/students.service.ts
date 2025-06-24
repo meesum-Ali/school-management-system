@@ -200,6 +200,6 @@ export class StudentsService {
     const updatedStudent = await this.studentsRepository.save(student);
     // To include class name, we need to fetch the relation or ensure it's loaded
     // Re-fetch using findOne to ensure relations like currentClass are loaded for the DTO mapping
-    return this.findOne(updatedStudent.id);
+    return this.findOne(updatedStudent.id, schoolId);
   }
 }
