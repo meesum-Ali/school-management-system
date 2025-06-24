@@ -3,11 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClassEntity } from './entities/class.entity';
 import { ClassesService } from './classes.service';
 import { ClassesController } from './classes.controller';
+import { SubjectsModule } from '../subjects/subjects.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClassEntity])],
+  imports: [
+    TypeOrmModule.forFeature([ClassEntity]),
+    SubjectsModule // Import SubjectsModule to make SubjectEntityRepository available
+  ],
   controllers: [ClassesController],
   providers: [ClassesService],
-  exports: [ClassesService], // Optional: export if other modules will use ClassesService directly
+  exports: [
+    ClassesService, // Optional: export if other modules will use ClassesService directly
+    TypeOrmModule.forFeature([ClassEntity]) // Export the repository to make it available for other modules
+  ]
 })
 export class ClassesModule {}

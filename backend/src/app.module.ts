@@ -16,7 +16,6 @@ import { User } from './users/entities/user.entity';
 import { Student } from './students/entities/student.entity';
 import { ClassEntity } from './classes/entities/class.entity';
 import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
-import { ZohoAccountingModule } from './zoho_accounting/zoho_accounting.module';
      // Import other modules as needed
 
      @Module({
@@ -60,7 +59,7 @@ import { ZohoAccountingModule } from './zoho_accounting/zoho_accounting.module';
          AuthModule,
          ClassesModule,
          SubjectsModule, // Add SubjectsModule to imports
-         ZohoAccountingModule, // Add ZohoAccountingModule to imports
+         // ZohoAccountingModule, // Temporarily disabled ZohoAccountingModule
          // Import other modules
        ],
        controllers: [AppController],

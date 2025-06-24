@@ -10,9 +10,8 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
   imports: [
     UsersModule, // Import UsersModule to use UsersService
-    ConfigModule, // Ensure ConfigModule is available for JwtService setup
+    ConfigModule, // ConfigModule provides ConfigService
     JwtModule.registerAsync({
-      imports: [ConfigService], // Import ConfigService here if using it for JWT options
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION') || '3600s' },
