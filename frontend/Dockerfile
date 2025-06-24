@@ -43,5 +43,5 @@ RUN pnpm install --prod
 # Expose port 3000
 EXPOSE 3000
 
-# Define the startup command
-CMD ["pnpm", "start"]
+# Start the application
+CMD ["sh", "-c", "pnpm start -H 0.0.0.0 -p 3000"]
