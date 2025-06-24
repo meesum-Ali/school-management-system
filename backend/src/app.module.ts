@@ -12,10 +12,12 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module'; // Import SubjectsModule
+import { SchoolsModule } from './schools/schools.module'; // Import SchoolsModule
 import { User } from './users/entities/user.entity';
 import { Student } from './students/entities/student.entity';
 import { ClassEntity } from './classes/entities/class.entity';
 import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
+import { School } from './schools/entities/school.entity'; // Import School entity
      // Import other modules as needed
 
      @Module({
@@ -48,12 +50,13 @@ import { SubjectEntity } from './subjects/entities/subject.entity'; // Import Su
              username: configService.get<string>('database.username'),
              password: configService.get<string>('database.password'),
              database: configService.get<string>('database.name'),
-             entities: [User, Student, ClassEntity, SubjectEntity], // Add SubjectEntity
+             entities: [User, Student, ClassEntity, SubjectEntity, School], // Add School entity
              synchronize: configService.get<string>('NODE_ENV') !== 'production',
              // You might want to add other TypeORM options like logging, etc.
            }),
            inject: [ConfigService], // Inject ConfigService into the factory
          }),
+         SchoolsModule, // Add SchoolsModule
          StudentsModule,
          UsersModule,
          AuthModule,

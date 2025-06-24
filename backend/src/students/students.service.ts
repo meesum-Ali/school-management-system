@@ -28,39 +28,45 @@ export class StudentsService {
       updatedAt: student.updatedAt,
       classId: student.classId,
       currentClassName: student.currentClass ? student.currentClass.name : null,
+      schoolId: student.schoolId, // Added schoolId
     };
   }
 
-  async create(createStudentDto: CreateStudentDto): Promise<StudentDto> {
-    const { studentId, email, classId } = createStudentDto;
+  async create(createStudentDto: CreateStudentDto, schoolId: string): Promise<StudentDto> {
+    const { studentId: studentIdFromDto, email, classId } = createStudentDto;
 
+    // Check for existing studentId or email within the given school
     const existingStudent = await this.studentsRepository.findOne({
-      where: [{ studentId }, { email }],
+      where: [
+        { studentId: studentIdFromDto, schoolId },
+        { email, schoolId },
+      ],
     });
 
     if (existingStudent) {
-      if (existingStudent.studentId === studentId) {
-        throw new ConflictException(`Student ID "${studentId}" already exists`);
+      if (existingStudent.studentId === studentIdFromDto) {
+        throw new ConflictException(`Student ID "${studentIdFromDto}" already exists in this school.`);
       }
       if (existingStudent.email === email) {
-        throw new ConflictException(`Email "${email}" already exists`);
+        throw new ConflictException(`Email "${email}" already exists in this school.`);
       }
     }
 
     try {
-      // TypeORM's `create` method only creates an entity instance from the DTO,
-      // it doesn't save it. We need to explicitly call `save`.
-      const studentEntity = this.studentsRepository.create(createStudentDto);
+      const studentToCreate = this.studentsRepository.create({
+        ...createStudentDto,
+        schoolId, // Set the schoolId from context
+      });
 
       if (classId) {
-        const classExists = await this.classesRepository.findOneBy({ id: classId });
+        const classExists = await this.classesRepository.findOneBy({ id: classId, schoolId }); // Ensure class is in the same school
         if (!classExists) {
-          throw new NotFoundException(`Class with ID "${classId}" not found.`);
+          throw new NotFoundException(`Class with ID "${classId}" not found in this school.`);
         }
-        studentEntity.classId = classId; // Assign directly if not handled by create
+        studentToCreate.classId = classId;
       }
 
-      const savedStudent = await this.studentsRepository.save(studentEntity);
+      const savedStudent = await this.studentsRepository.save(studentToCreate);
       // If classId was assigned, we might want to fetch the student with relation for mapStudentToStudentDto
       if (savedStudent.classId) {
         const studentWithRelation = await this.studentsRepository.findOne({
@@ -82,63 +88,77 @@ export class StudentsService {
     }
   }
 
-  async findAll(): Promise<StudentDto[]> {
-    const students = await this.studentsRepository.find();
+  async findAll(schoolId: string): Promise<StudentDto[]> {
+    // Students must belong to a school, so schoolId is mandatory for filtering.
+    // SUPER_ADMIN might need a different method or controller endpoint to see all students across all schools.
+    const students = await this.studentsRepository.find({
+      where: { schoolId },
+      relations: ['currentClass'], // Ensure class info is loaded for DTO mapping
+    });
     return students.map(student => this.mapStudentToStudentDto(student));
   }
 
-  async findOne(id: string): Promise<StudentDto> { // ID is now string (UUID)
+  async findOne(id: string, schoolId: string): Promise<StudentDto> { // ID is now string (UUID)
     const student = await this.studentsRepository.findOne({
-      where: { id },
-      relations: ['currentClass'], // Add this to load the class relation
+      where: { id, schoolId }, // Ensure student belongs to the specified school
+      relations: ['currentClass'],
     });
     if (!student) {
-      throw new NotFoundException(`Student with ID "${id}" not found`);
+      throw new NotFoundException(`Student with ID "${id}" not found in this school.`);
     }
     return this.mapStudentToStudentDto(student);
   }
 
-  async update(id: string, updateStudentDto: UpdateStudentDto): Promise<StudentDto> { // ID is now string
-    // const { studentId, email, ...restOfDto } = updateStudentDto; // classId needs to be handled
-    const { studentId, email, classId: newClassId } = updateStudentDto;
+  async update(id: string, updateStudentDto: UpdateStudentDto, schoolId: string): Promise<StudentDto> {
+    const { studentId: newStudentId, email: newEmail, classId: newClassId, ...restOfDto } = updateStudentDto;
 
-
-    if (newClassId !== undefined) { // Check if classId is explicitly part of the update
-      if (newClassId === null) { // Un-assigning from class
-        // Handled by preload if classId: null is in updateStudentDto
-      } else { // Assigning to a new class
-        const classExists = await this.classesRepository.findOneBy({ id: newClassId });
-        if (!classExists) {
-          throw new NotFoundException(`Class with ID "${newClassId}" not found.`);
-        }
-      }
-    }
-
-    if (studentId) {
-      const existing = await this.studentsRepository.findOne({ where: { studentId } });
-      if (existing && existing.id !== id) {
-        throw new ConflictException(`Student ID "${studentId}" already exists for another student.`);
-      }
-    }
-    if (email) {
-      const existing = await this.studentsRepository.findOne({ where: { email } });
-      if (existing && existing.id !== id) {
-        throw new ConflictException(`Email "${email}" already exists for another student.`);
-      }
-    }
-
-    // Preload fetches the entity and merges the DTO. This ensures we're working with an existing entity.
-    const studentToUpdate = await this.studentsRepository.preload({
-      id: id,
-      ...updateStudentDto, // Spread the whole DTO
-    });
-
+    // First, ensure the student exists and belongs to the specified school
+    const studentToUpdate = await this.studentsRepository.findOneBy({ id, schoolId });
     if (!studentToUpdate) {
-      throw new NotFoundException(`Student with ID "${id}" not found`);
+      throw new NotFoundException(`Student with ID "${id}" not found in this school.`);
     }
+
+    // Handle class assignment: ensure new class (if any) belongs to the same school
+    if (newClassId !== undefined) {
+      if (newClassId === null) {
+        studentToUpdate.classId = null;
+        studentToUpdate.currentClass = null;
+      } else {
+        const classExists = await this.classesRepository.findOneBy({ id: newClassId, schoolId });
+        if (!classExists) {
+          throw new NotFoundException(`Class with ID "${newClassId}" not found in this school.`);
+        }
+        studentToUpdate.classId = newClassId;
+        // studentToUpdate.currentClass = classExists; // Not strictly needed if only saving classId
+      }
+    }
+
+    // Check for conflicts with studentId and email within the same school
+    if (newStudentId && newStudentId !== studentToUpdate.studentId) {
+      const existing = await this.studentsRepository.findOne({ where: { studentId: newStudentId, schoolId } });
+      if (existing && existing.id !== id) { // existing.id !== id ensures we are not conflicting with the student itself
+        throw new ConflictException(`Student ID "${newStudentId}" already exists in this school.`);
+      }
+      studentToUpdate.studentId = newStudentId;
+    }
+    if (newEmail && newEmail !== studentToUpdate.email) {
+      const existing = await this.studentsRepository.findOne({ where: { email: newEmail, schoolId } });
+      if (existing && existing.id !== id) {
+        throw new ConflictException(`Email "${newEmail}" already exists in this school.`);
+      }
+      studentToUpdate.email = newEmail;
+    }
+
+    // Apply other changes from DTO
+    Object.assign(studentToUpdate, restOfDto);
 
     try {
         const updatedStudent = await this.studentsRepository.save(studentToUpdate);
+        // Re-fetch with relations for accurate DTO mapping, especially if class was changed
+        const studentWithRelations = await this.studentsRepository.findOneOrFail({
+            where: { id: updatedStudent.id },
+            relations: ['currentClass']
+        });
         return this.mapStudentToStudentDto(updatedStudent);
     } catch (error) {
         if (error instanceof QueryFailedError && (error as any).code === '23505') {
@@ -152,32 +172,31 @@ export class StudentsService {
     }
   }
 
-  async remove(id: string): Promise<void> { // ID is now string
-    const student = await this.studentsRepository.findOneBy({ id }); // Check if student exists first
+  async remove(id: string, schoolId: string): Promise<void> {
+    const student = await this.studentsRepository.findOneBy({ id, schoolId });
     if (!student) {
-      throw new NotFoundException(`Student with ID "${id}" not found`);
+      throw new NotFoundException(`Student with ID "${id}" not found in this school.`);
     }
-    const result = await this.studentsRepository.delete(id);
+    const result = await this.studentsRepository.delete({ id, schoolId }); // Ensure delete is also scoped
     if (result.affected === 0) {
-      // This might be redundant if findOneBy already threw, but good as a safeguard
-      throw new NotFoundException(`Student with ID "${id}" could not be deleted or was already deleted.`);
+      throw new NotFoundException(`Student with ID "${id}" in this school could not be deleted or was already deleted.`);
     }
   }
 
-  async assignStudentToClass(studentId: string, classId: string | null): Promise<StudentDto> {
-    const student = await this.studentsRepository.findOneBy({ id: studentId });
+  async assignStudentToClass(studentId: string, classId: string | null, schoolId: string): Promise<StudentDto> {
+    const student = await this.studentsRepository.findOneBy({ id: studentId, schoolId });
     if (!student) {
-      throw new NotFoundException(`Student with ID "${studentId}" not found`);
+      throw new NotFoundException(`Student with ID "${studentId}" not found in this school.`);
     }
 
     if (classId) {
-      const classExists = await this.classesRepository.findOneBy({ id: classId });
+      const classExists = await this.classesRepository.findOneBy({ id: classId, schoolId }); // Ensure class is in the same school
       if (!classExists) {
-        throw new NotFoundException(`Class with ID "${classId}" not found`);
+        throw new NotFoundException(`Class with ID "${classId}" not found in this school.`);
       }
     }
 
-    student.classId = classId;
+    student.classId = classId; // This will also set student.currentClass if relations are eager or reloaded
     const updatedStudent = await this.studentsRepository.save(student);
     // To include class name, we need to fetch the relation or ensure it's loaded
     // Re-fetch using findOne to ensure relations like currentClass are loaded for the DTO mapping

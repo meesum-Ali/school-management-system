@@ -78,16 +78,14 @@ const ClassesPage = () => {
   );
 };
 
-// Wrap with ProtectedRoute to ensure user is authenticated and has ADMIN role (conceptual)
-// Actual RBAC for page access should be handled by ProtectedRoute if enhanced, or rely on UI hiding + backend
+// Wrap with ProtectedRoute to ensure user is authenticated and has ADMIN or SUPER_ADMIN role
 const ProtectedClassesPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPER_ADMIN]}>
         <ClassesPage />
     </ProtectedRoute>
 );
 
-
-export default ProtectedClassesPage; // Export the wrapped page
+export default ProtectedClassesPage;
 // Or export ClassesPage and wrap in _app.tsx or a route config if ProtectedRoute isn't prop-based for roles
 // For now, this local wrapping demonstrates the intent.
 // The actual ProtectedRoute might need to be refactored to accept 'requiredRoles' prop.

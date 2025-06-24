@@ -29,6 +29,9 @@ export class ClassDto {
   @ApiProperty({ description: 'Date and time when the class record was last updated' })
   updatedAt: Date;
 
+  @ApiProperty({ example: 'uuid-of-a-school', description: 'School ID the class belongs to.' })
+  schoolId: string;
+
   constructor(partial: Partial<ClassDto>) {
     Object.assign(this, partial);
   }

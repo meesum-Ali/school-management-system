@@ -2,15 +2,17 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module'; // To access UsersService
+import { UsersModule } from '../users/users.module';
+import { SchoolsModule } from '../schools/schools.module'; // Import SchoolsModule
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './strategies/jwt.strategy'; // Will create this for JWT validation
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
-    UsersModule, // Import UsersModule to use UsersService
-    ConfigModule, // ConfigModule provides ConfigService
+    UsersModule,
+    SchoolsModule, // Add SchoolsModule to imports
+    ConfigModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),

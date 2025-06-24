@@ -12,4 +12,9 @@ export class LoginDto {
   @IsNotEmpty({ message: 'Password should not be empty' })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
+
+  @ApiPropertyOptional({ example: 'school-domain-or-code', description: 'Optional school identifier (e.g., domain or code) for tenant context.' })
+  @IsString()
+  @IsOptional()
+  schoolIdentifier?: string;
 }

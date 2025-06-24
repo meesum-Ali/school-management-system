@@ -7,20 +7,23 @@ import { AuthService, ValidatedUser } from '../auth.service';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     super({
-      usernameField: 'username', // or 'email' if you prefer
-      // passwordField: 'password' // this is default
+      usernameField: 'username',
+      passwordField: 'password', // Explicitly stating, though it's default
+      passReqToCallback: true, // Pass the request object to the validate method
     });
   }
 
   async validate(
+    req: any, // Express request object
     username: string,
     password_from_request: string,
   ): Promise<ValidatedUser> {
-    // passport-local by default takes username and password from request body.
-    // Here, 'password_from_request' is the name of the second argument to match passport's expectation.
+    const schoolIdentifier = req.body.schoolIdentifier; // Extract schoolIdentifier from request body
+
     const user = await this.authService.validateUser(
       username,
       password_from_request,
+      schoolIdentifier, // Pass it to the service
     );
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

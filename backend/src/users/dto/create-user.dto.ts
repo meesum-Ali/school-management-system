@@ -39,4 +39,9 @@ export class CreateUserDto {
   @IsOptional()
   @ApiPropertyOptional({ example: true, description: 'Whether the user account is active' })
   isActive?: boolean; // Typically not set on creation by user, but admin might. Default is true in entity.
+
+  @ApiPropertyOptional({ example: 'uuid-of-a-school', description: 'School ID to associate the user with. Only for SUPER_ADMIN.' })
+  @IsString()
+  @IsOptional()
+  schoolId?: string;
 }

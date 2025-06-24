@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ClassEntity } from '../../classes/entities/class.entity';
+import { School } from '../../schools/entities/school.entity';
 
 @Entity('subjects')
-@Unique(['name'])
-@Unique(['code'])
+@Index(['name', 'schoolId'], { unique: true }) // Subject name should be unique within a school
+@Index(['code', 'schoolId'], { unique: true, where: `"code" IS NOT NULL AND "schoolId" IS NOT NULL` }) // Subject code should be unique within a school if provided
 export class SubjectEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -11,17 +12,25 @@ export class SubjectEntity {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true, unique: true }) // Making code unique in DB as well
+  // Code is unique within a school, if provided.
+  @Column({ type: 'varchar', length: 50, nullable: true })
   code?: string | null;
 
   @Column({ type: 'text', nullable: true })
   description?: string | null;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({ name: 'school_id', type: 'uuid' })
+  schoolId: string;
+
+  @ManyToOne(() => School, { onDelete: 'CASCADE' }) // If school is deleted, its subjects are deleted.
+  @JoinColumn({ name: 'school_id' })
+  school: School;
 
   @ManyToMany(() => ClassEntity, cls => cls.subjects, { cascade: false })
   classes: ClassEntity[];
