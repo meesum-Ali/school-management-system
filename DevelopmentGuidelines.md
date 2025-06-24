@@ -13,9 +13,9 @@ Our architecture is guided by the principles of Clean Architecture and Domain-Dr
 **Goal:** To achieve a separation of concerns that allows the system to be testable, UI-independent, database-independent, and independent of external frameworks. This ensures that the core business logic (Use Cases) and domain entities are not coupled to volatile external concerns.
 
 **Key Characteristics & Layers (Conceptual):**
-- **Entities:** Represent the core business objects and rules, independent of any application-specific logic.
-- **Use Cases (Interactors):** Orchestrate the flow of data to and from Entities, implementing application-specific business rules. They are independent of UI, databases, or frameworks.
-- **Interface Adapters:** Convert data from the format most convenient for Use Cases and Entities to the format most convenient for external agencies like the Database, Web, or UI. This layer includes Presenters, Controllers, and Gateways (Repositories).
+    - **Entities:** Represent the core business objects and rules, independent of any application-specific logic. These now include `School` as a central tenant entity.
+    - **Use Cases (Interactors):** Orchestrate the flow of data to and from Entities, implementing application-specific business rules. They are independent of UI, databases, or frameworks. For multi-tenancy, use cases must operate within the context of a specific `schoolId` or be explicitly designed for global (cross-tenant) operations (e.g., for a `SUPER_ADMIN`).
+    - **Interface Adapters:** Convert data from the format most convenient for Use Cases and Entities to the format most convenient for external agencies like the Database, Web, or UI. This layer includes Presenters, Controllers, and Gateways (Repositories). Controllers are responsible for extracting `schoolId` from the authenticated user's context (e.g., JWT) and passing it to application services.
 - **Frameworks & Drivers:** The outermost layer, generally composed of frameworks and tools such as the Web Framework (e.g., NestJS, Next.js), Database (e.g., PostgreSQL), UI Frameworks, etc. These are details that should not penetrate inwards.
 
 The fundamental rule is the **Dependency Rule**: source code dependencies can only point inwards. Nothing in an inner circle can know anything at all about something in an outer circle.
@@ -32,6 +32,23 @@ The fundamental rule is the **Dependency Rule**: source code dependencies can on
 - **Repositories:** Provide an abstraction for accessing and persisting Aggregates, decoupling the domain layer from data storage mechanisms.
 - **Domain Services:** Operations or logic that don't naturally fit within an Entity or Value Object. They encapsulate domain logic that involves multiple domain objects.
 - **Bounded Contexts:** A central pattern in DDD, defining the explicit boundary within which a domain model exists and is consistent. Different models may apply in different bounded contexts. (This concept becomes particularly critical when considering a future evolution towards microservices, as it helps define service boundaries).
+
+### 2.3. Multi-Tenancy Architecture (SaaS)
+
+To support multiple schools as distinct tenants within the system (SaaS model), the following architectural considerations are key:
+
+- **Tenant Identification:** Each school is a tenant, identified by a unique `schoolId` (primary key of the `School` entity).
+- **Data Isolation Strategy:** A shared database, shared schema approach is used. Data is isolated by a `schoolId` discriminator column present in all tenant-specific tables (e.g., `Users`, `Students`, `Classes`, `Subjects`). Application logic in services must ensure all database queries are filtered by the current tenant's `schoolId`.
+    - Global data (e.g., system settings, `SUPER_ADMIN` users not tied to a specific school) will have a `NULL` `schoolId`.
+- **Tenant Context Propagation:** The active `schoolId` for a logged-in user is included in their JWT payload. This context is used by the backend to scope data access.
+- **User Roles and Tenancy:**
+    - `SUPER_ADMIN`: Global role for managing schools and system-wide configurations. Operates outside the scope of a single school or can target specific schools for administrative actions.
+    - `ADMIN`: School-specific administrator. Their operations are confined to the data of their assigned school.
+    - Other roles (Teacher, Student, etc.) are inherently scoped to their respective school via their association with a `User` record that has a `schoolId`.
+- **Tenant Resolution:**
+    - During login, users associated with a specific school may need to provide a `schoolIdentifier` (e.g., a unique domain or code associated with their `School` entity) if their username/email is not globally unique.
+    - Global users (like `SUPER_ADMIN`) log in without a `schoolIdentifier`.
+- **Onboarding New Tenants:** A process (likely administrative, initiated by a `SUPER_ADMIN`) is required to create new `School` entities and provision their initial school `ADMIN` user.
 
 ## 3. Frontend Philosophy
 

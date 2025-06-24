@@ -46,6 +46,12 @@ export class UserDto {
   @ApiProperty({ description: 'Date and time when the user was last updated' })
   updatedAt: Date;
 
+  @ApiPropertyOptional({
+    example: 'uuid-of-a-school',
+    description: 'School ID the user is associated with, if any.',
+  })
+  schoolId?: string | null;
+
   constructor(partial: Partial<UserDto>) {
     Object.assign(this, partial);
   }

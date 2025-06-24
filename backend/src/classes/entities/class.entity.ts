@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToMany, JoinTable, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { SubjectEntity } from '../../subjects/entities/subject.entity';
 import { Student } from '../../students/entities/student.entity';
+import { School } from '../../schools/entities/school.entity';
 // import { User } from '../../users/entities/user.entity';
 
 @Entity('classes')
-@Unique(['name'])
+@Index(['name', 'schoolId'], { unique: true }) // Class name should be unique within a school
 export class ClassEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,9 +30,16 @@ export class ClassEntity {
   @OneToMany(() => Student, (student) => student.currentClass, { cascade: false }) // cascade might be true for other operations, but for now false
   students: Student[];
 
-  @CreateDateColumn()
+  @Column({ name: 'school_id', type: 'uuid' })
+  schoolId: string;
+
+  @ManyToOne(() => School, { onDelete: 'CASCADE' }) // If school is deleted, its classes are deleted.
+  @JoinColumn({ name: 'school_id' })
+  school: School;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

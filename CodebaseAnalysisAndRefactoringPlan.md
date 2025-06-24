@@ -81,9 +81,53 @@ Based on current naming conventions:
     -   `Login`/`Authentication`: The process of a user providing credentials to gain access.
     -   *(Future: `Permission`: A specific granular right granted to a role or user.)*
 
-## 4. Next Steps / Future Enhancements
+## 4. Multi-Tenancy Refactoring Update
 
-The initial assessment regarding a missing `UsersModule` was incorrect; a comprehensive `UsersModule` is already in place. The next steps will involve identifying and implementing new features or enhancements based on the Product Requirements Document (PRD) and overall project goals. This section will be updated once the next valuable slice of work is determined.
----
+The system has undergone a significant refactoring to support a multi-tenant architecture, enabling it to function as a SaaS platform for multiple schools. Key changes include:
 
-This analysis provides a starting point. The actual refactoring will involve iterative implementation and further detailed decisions within each step.The analysis and initial refactoring plan have been drafted. I will now create the markdown file with this content.
+-   **Introduction of `School` Entity:** A core `School` entity (`schools/entities/school.entity.ts`) has been introduced. This entity acts as the primary identifier for each tenant.
+-   **Tenant ID (`schoolId`) Association:**
+    -   Entities such as `User`, `Student`, `ClassEntity`, and `SubjectEntity` now include a `schoolId` foreign key, linking them to a specific `School`.
+    -   This `schoolId` is used to enforce data isolation between tenants.
+-   **Service Layer Modifications:**
+    -   All relevant services (`UsersService`, `StudentsService`, `ClassesService`, `SubjectsService`) have been updated to be school-aware. CRUD operations and data retrieval methods now filter by or operate within the context of a `schoolId`.
+    -   Unique constraints (e.g., usernames, student IDs, class names) are now generally enforced at the school level (unique within a school) rather than globally, through updated TypeORM entity indexes.
+-   **Authentication and Authorization:**
+    -   The `AuthService` now incorporates `schoolId` into JWT payloads.
+    -   The login process can accept a `schoolIdentifier` (e.g., domain or code) to determine tenant context.
+    -   A `SUPER_ADMIN` role has been introduced for system-wide operations, including managing `School` entities. School-specific `ADMIN` roles manage resources within their assigned school.
+-   **Controller Layer Updates:**
+    -   Controllers now extract `schoolId` from the authenticated user's context (derived from the JWT) and pass it to service methods, ensuring operations are correctly scoped.
+-   **Frontend Adjustments:**
+    -   The login page now includes an optional field for `schoolIdentifier`.
+    -   `AuthContext` now stores and utilizes `schoolId` from the JWT.
+    -   UI elements like the sidebar and page access controls (`ProtectedRoute`) are updated to be role-aware (distinguishing between `ADMIN` and `SUPER_ADMIN`) and context-aware where applicable.
+    -   New UI components and pages for "Schools Management" (for `SUPER_ADMIN`) have been added.
+
+**Alignment with `DevelopmentGuidelines.md` (Post Multi-Tenancy):**
+
+-   **Clean Architecture & DDD:** The introduction of `schoolId` as a key tenant discriminator and the scoping of services reinforce the separation of concerns and domain modeling. The `School` entity is a new aggregate root.
+-   **Backend Philosophy (API-First):** APIs now implicitly operate within a tenant context derived from the authenticated user's JWT.
+-   **Ubiquitous Language Updates:**
+    -   `School`: Represents a tenant in the SaaS system.
+    -   `schoolId`: The UUID that links data to a specific school.
+    -   `schoolIdentifier`: A user-facing string (like a domain or code) used during login to select a school context.
+    -   `SUPER_ADMIN`: A global administrator role with rights to manage schools and potentially oversee the entire system.
+    -   `ADMIN`: Now refers to a school-specific administrator, whose rights are confined to their `schoolId`.
+
+**Next Steps (Post Initial Multi-Tenancy Implementation):**
+
+1.  **Database Migrations:** Generate, review, and apply database migrations for all entity changes (addition of `schoolId`, new `School` table, updated unique constraints).
+2.  **Thorough Testing:**
+    -   Unit and integration tests for backend services ensuring data isolation and correct `schoolId` scoping.
+    -   End-to-end tests for user flows, including:
+        -   `SUPER_ADMIN` creating and managing schools.
+        -   `ADMIN` managing resources within their own school.
+        -   Login process with and without `schoolIdentifier`.
+        -   Ensuring one school admin cannot access another school's data.
+3.  **Refinement of User/School Provisioning:** Solidify the process for creating the first `SUPER_ADMIN` and the workflow for a `SUPER_ADMIN` to onboard a new school and its initial `ADMIN` user.
+4.  **Frontend Polish:**
+    -   Enhance UI to clearly display the current school context for `ADMIN` users.
+    -   Review and test all admin UIs to ensure they correctly reflect data scoped to the logged-in user's school.
+
+This refactoring lays the foundation for the School Management System to operate as a scalable SaaS application.

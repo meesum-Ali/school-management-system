@@ -11,30 +11,31 @@ interface DecodedJwtPayload {
   sub: string; // User ID
   username: string;
   roles: UserRole[];
+  schoolId?: string | null; // Added schoolId
   iat?: number;
   exp?: number;
 }
 
-// Define what AuthContext will hold - user can be a simplified version or full User
-// For now, let's use a simplified version derived from JWT for the context's user state.
+// Define what AuthContext will hold
 interface AuthUser {
   id: string;
   username: string;
   roles: UserRole[];
+  schoolId?: string | null; // Added schoolId
 }
 
 interface AuthContextProps {
   isAuthenticated: boolean;
   user: AuthUser | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, schoolIdentifier?: string) => Promise<void>; // Added schoolIdentifier
   logout: () => void;
-  isLoading: boolean; // To handle initial auth check
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
   user: null,
-  login: async () => {},
+  login: async () => {}, // Default empty function
   logout: () => {},
   isLoading: true,
 });
@@ -59,9 +60,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         api.defaults.headers.Authorization = ''; // Clear auth header
         return;
       }
-      setUser({ id: decoded.sub, username: decoded.username, roles: decoded.roles });
+        setUser({
+          id: decoded.sub,
+          username: decoded.username,
+          roles: decoded.roles,
+          schoolId: decoded.schoolId
+        });
       setIsAuthenticated(true);
-      api.defaults.headers.Authorization = `Bearer ${token}`; // Set auth header for future requests
+      api.defaults.headers.Authorization = `Bearer ${token}`;
     } catch (error) {
       console.error("Failed to decode token or token expired:", error);
       localStorage.removeItem('token');
@@ -84,18 +90,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(false); // Done loading initial auth state
   }, [loadUserFromToken]);
 
-  const login = async (username: string, password: string) => {
-    // setIsLoading(true); // Optional: set loading true during login process
+  const login = async (username: string, password: string, schoolIdentifier?: string) => {
     try {
-      const response = await api.post<{ access_token: string }>('/auth/login', { username, password });
+      const loginPayload: any = { username, password };
+      if (schoolIdentifier) {
+        loginPayload.schoolIdentifier = schoolIdentifier;
+      }
+      const response = await api.post<{ access_token: string }>('/auth/login', loginPayload);
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       loadUserFromToken(access_token);
-      // setIsLoading(false);
     } catch (error) {
-      // setIsLoading(false);
       console.error("Login failed:", error);
-      throw error; // Re-throw to allow login page to handle it
+      throw error;
     }
   };
 

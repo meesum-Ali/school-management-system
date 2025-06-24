@@ -166,3 +166,31 @@ export const listClassesForSubject = async (subjectId: string): Promise<ClassTyp
   return response.data;
 };
 
+// --- Schools API ---
+import { School, CreateSchoolDto, UpdateSchoolDto } from '../types/school';
+
+const SCHOOLS_API_PATH = '/schools';
+
+export const fetchSchools = async (): Promise<School[]> => {
+  const response = await api.get<School[]>(SCHOOLS_API_PATH);
+  return response.data;
+};
+
+export const fetchSchoolById = async (id: string): Promise<School> => {
+  const response = await api.get<School>(`${SCHOOLS_API_PATH}/${id}`);
+  return response.data;
+};
+
+export const createSchool = async (schoolData: CreateSchoolDto): Promise<School> => {
+  const response = await api.post<School>(SCHOOLS_API_PATH, schoolData);
+  return response.data;
+};
+
+export const updateSchool = async (id: string, schoolData: UpdateSchoolDto): Promise<School> => {
+  const response = await api.patch<School>(`${SCHOOLS_API_PATH}/${id}`, schoolData);
+  return response.data;
+};
+
+export const deleteSchool = async (id: string): Promise<void> => {
+  await api.delete(`${SCHOOLS_API_PATH}/${id}`);
+};

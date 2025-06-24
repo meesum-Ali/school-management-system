@@ -5,7 +5,7 @@
 import React, { useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { AuthContext } from '../contexts/AuthContext'
-import { UserIcon, LockClosedIcon } from '@heroicons/react/24/solid'
+import { UserIcon, LockClosedIcon, BuildingOffice2Icon } from '@heroicons/react/24/solid' // Added BuildingOffice2Icon
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Card } from '../components/ui/Card'
@@ -17,13 +17,15 @@ const LoginPage: React.FC = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [schoolIdentifier, setSchoolIdentifier] = useState('') // New state for school identifier
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await login(username, password)
+      // Pass schoolIdentifier to login function. It's optional.
+      await login(username, password, schoolIdentifier || undefined)
       router.push('/admin/dashboard')
     } catch (err) {
       console.error(err)
@@ -55,6 +57,22 @@ const LoginPage: React.FC = () => {
               placeholder='Username'
               required
               aria-label='Username'
+            />
+          </div>
+
+          {/* School Identifier Input (Optional) */}
+          <div>
+            <label htmlFor='schoolIdentifier' className='sr-only'>
+              School Identifier (Optional)
+            </label>
+            <Input
+              icon={<BuildingOffice2Icon className='h-5 w-5' />}
+              type='text'
+              id='schoolIdentifier'
+              value={schoolIdentifier}
+              onChange={(e) => setSchoolIdentifier(e.target.value)}
+              placeholder='School Code/Domain (Optional)'
+              aria-label='School Identifier'
             />
           </div>
 

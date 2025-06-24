@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 import { ClassEntity } from '../../classes/entities/class.entity';
+import { School } from '../../schools/entities/school.entity';
 
 @Entity('students') // Explicitly naming the table
-@Unique(['email'])
-@Unique(['studentId'])
+@Index(['email', 'schoolId'], { unique: true }) // Email should be unique within a school
+@Index(['studentId', 'schoolId'], { unique: true }) // studentId should be unique within a school
 export class Student {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -38,9 +39,16 @@ export class Student {
   @Column({ type: 'uuid', name: 'classId', nullable: true }) // Foreign key column
   classId: string | null;
 
-  @CreateDateColumn()
+  @Column({ name: 'school_id', type: 'uuid' }) // Not nullable, a student must belong to a school
+  schoolId: string;
+
+  @ManyToOne(() => School, { onDelete: 'CASCADE' }) // If school is deleted, its students are deleted.
+  @JoinColumn({ name: 'school_id' })
+  school: School;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }

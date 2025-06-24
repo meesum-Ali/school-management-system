@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator'; // class-validator is for DTOs, not directly used by entity save from service
 import * as bcrypt from 'bcrypt';
+import { School } from '../../schools/entities/school.entity';
 
 /*
   Preliminary Role Permissions (for User & Student Management):
@@ -21,7 +22,8 @@ import * as bcrypt from 'bcrypt';
     - Students: Read (Their Children - future)
 */
 export enum UserRole {
-  ADMIN = 'admin', // Using lowercase as per original subtask instruction for this enum update
+  SUPER_ADMIN = 'super_admin', // New role for managing schools and top-level settings
+  ADMIN = 'admin', // School-level admin
   TEACHER = 'teacher',
   ACCOUNTANT = 'accountant',
   STUDENT = 'student',
@@ -29,15 +31,23 @@ export enum UserRole {
 }
 
 @Entity('users')
+@Index(['email', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }) // Unique email per school
+@Index(['username', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }) // Unique username per school
+@Index(['email'], { unique: true, where: `"schoolId" IS NULL` }) // Globally unique email for users not tied to a school (e.g. super_admin)
+@Index(['username'], { unique: true, where: `"schoolId" IS NULL` }) // Globally unique username for users not tied to a school
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  // For users associated with a school, username is unique within that school.
+  // For global users (schoolId is NULL), username is globally unique.
+  @Column({ type: 'varchar', length: 255 })
   @IsNotEmpty({ message: 'Username should not be empty' })
   username: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  // For users associated with a school, email is unique within that school.
+  // For global users (schoolId is NULL), email is globally unique.
+  @Column({ type: 'varchar', length: 255 })
   @IsNotEmpty({ message: 'Email should not be empty' })
   @IsEmail({}, { message: 'Please provide a valid email address' })
   email: string;
@@ -63,10 +73,17 @@ export class User {
   })
   roles: UserRole[];
 
-  @CreateDateColumn()
+  @Column({ name: 'school_id', type: 'uuid', nullable: true })
+  schoolId?: string | null; // Nullable for global users like SUPER_ADMIN
+
+  @ManyToOne(() => School, school => school.users, { nullable: true, onDelete: 'CASCADE' }) // onDelete: 'CASCADE' means if a school is deleted, its users are deleted. Or use 'SET NULL' if users can exist without a school.
+  @JoinColumn({ name: 'school_id' })
+  school?: School | null;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @BeforeInsert()

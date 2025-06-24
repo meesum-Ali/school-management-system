@@ -8,7 +8,8 @@ import { ConfigService } from '@nestjs/config';
 export interface JwtPayload {
   sub: string; // Subject (user ID)
   username: string;
-  roles: string[]; // Assuming roles are part of the payload
+  roles: string[];
+  schoolId?: string | null; // Add schoolId (optional, as SUPER_ADMIN might not have one)
 }
 
 @Injectable()
@@ -39,10 +40,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // For stateless JWT authentication, returning the payload is often sufficient.
     // The payload (or a customized user object) will be attached to Request.user.
+    // For stateless JWT authentication, returning the payload is often sufficient.
+    // The payload (or a customized user object) will be attached to Request.user.
+    // Ensure all necessary fields from the JWT are returned here.
     return {
-      sub: payload.sub,
+      userId: payload.sub, // Commonly named userId in req.user
       username: payload.username,
       roles: payload.roles,
+      schoolId: payload.schoolId, // Add schoolId to be available in req.user
     };
   }
 }

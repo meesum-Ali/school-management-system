@@ -28,7 +28,8 @@ School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJ
 - **Subject Management:** Enables administrators to define and manage academic subjects, including names, codes, and descriptions.
 - **Class-Subject Assignment:** Provides functionality for administrators to assign subjects to specific classes and managing these relationships.
 - **Student Enrollment in Classes:** Enables administrators to assign students to specific classes and manage these enrollments.
-- **Authentication System:** Robust JWT-based authentication for secure API access.
+- **Multi-Tenancy (SaaS Ready):** Designed to support multiple schools, each with isolated data. Includes a `School` entity and `SUPER_ADMIN` role for system-wide administration and school onboarding. School-specific administrators (`ADMIN` role) manage their own school's data and users.
+- **Authentication System:** Robust JWT-based authentication for secure API access, supporting multi-tenant context.
 - **Scalable Architecture:** Built with Next.js (frontend) and NestJS (backend) for scalability and maintainability.
 - **API-First Backend:** Backend designed with an API-first approach for clear contracts and client integration.
 - **User-Focused Frontend:** Frontend developed with a user-first mindset, emphasizing usability and component-based design.
@@ -141,6 +142,13 @@ For a comprehensive understanding of our development practices, architectural pr
     The frontend will typically be available at `http://localhost:3000`.
 
     Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Multi-Tenancy Notes
+
+- The system now supports multiple schools.
+- **Super Admin:** A `SUPER_ADMIN` role exists for managing schools. Create this user directly in the database or via a seed script initially.
+- **School Admin Login:** When logging in as a school `ADMIN` or any other school-specific user, you might need to provide a `schoolIdentifier` (e.g., the school's domain or a unique code, if that school was created with one) on the login page to specify which school you are logging into. If no identifier is provided, the system will attempt to log in a global user (like `SUPER_ADMIN`).
+- **Data Isolation:** Data for students, classes, users (except global admins), etc., is isolated per school.
 
 ## Project Structure
 

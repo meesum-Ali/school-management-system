@@ -1,5 +1,6 @@
 // Corresponds to backend UserRole enum
 export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
   TEACHER = 'teacher',
   ACCOUNTANT = 'accountant',
@@ -7,7 +8,8 @@ export enum UserRole {
   PARENT = 'parent',
 }
 
-// Corresponds to backend/src/users/dto/user.dto.ts
+// Corresponds to backend/src/users/dto/user.dto.ts (UserDto)
+// and AuthContext's AuthUser
 export interface User {
   id: string;
   username: string;
@@ -18,6 +20,7 @@ export interface User {
   roles: UserRole[];
   createdAt: string; // Dates are typically strings over network
   updatedAt: string;
+  schoolId?: string | null; // Added schoolId
 }
 
 // Corresponds to backend/src/users/dto/create-user.dto.ts

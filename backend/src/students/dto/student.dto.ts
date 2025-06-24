@@ -50,6 +50,10 @@ export class StudentDto {
   })
   @IsOptional()
   currentClassName?: string | null;
+
+  @ApiProperty({ example: 'uuid-of-a-school', description: 'School ID the student belongs to.' })
+  @IsUUID()
+  schoolId: string;
 }
 
 export class CreateStudentDto {

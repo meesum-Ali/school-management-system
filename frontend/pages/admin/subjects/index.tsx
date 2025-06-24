@@ -74,7 +74,7 @@ const SubjectsPage = () => {
 };
 
 const ProtectedSubjectsPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPER_ADMIN]}>
         <SubjectsPage />
     </ProtectedRoute>
 );
