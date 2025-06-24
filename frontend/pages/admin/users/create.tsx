@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import UserForm from '../../../components/Users/UserForm';
 import { createUser as apiCreateUser } from '../../../utils/api';
-import { CreateUserDto } from '../../../types/user';
+import { CreateUserDto, UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
@@ -29,7 +29,7 @@ const CreateUserPage = () => {
   };
 
   return (
-    <ProtectedRoute> {/* Add roles={['Admin']} if needed */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl"> {/* Matched UserForm width */}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import UserList from '../../components/Users/UserList';
 import { fetchUsers, deleteUser as apiDeleteUser } from '../../utils/api';
-import { User } from '../../types/user';
+import { User, UserRole } from '../../types/user';
 import AdminLayout from '../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../components/Auth/ProtectedRoute';
 import Notification from '../../components/Layout/Notification';
@@ -48,7 +48,7 @@ const UsersPage = () => {
   };
 
   return (
-    <ProtectedRoute> {/* Add roles={['Admin']} if needed */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4">
           {error && <Notification message={error} type="error" onClose={() => setError(null)} />}

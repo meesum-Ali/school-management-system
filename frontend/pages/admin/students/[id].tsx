@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
 import { fetchStudentById, updateStudent as apiUpdateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
 import { Student, UpdateStudentDto } from '../../../types/student';
+import { UserRole } from '../../../types/user';
 import { Class } from '../../../types/class'; // Added Class type
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
@@ -58,12 +59,9 @@ const EditStudentPage = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Ensure dateOfBirth is in YYYY-MM-DD format if it's a Date object
-      const payload: UpdateStudentDto = {
-        ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString().split('T')[0] : data.dateOfBirth,
-      };
-      await apiUpdateStudent(id as string, payload);
+      // The dateOfBirth should already be in YYYY-MM-DD format from the form
+      // No need to convert it since it's already a string
+      await apiUpdateStudent(id as string, data);
       router.push('/admin/students');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update student.');
@@ -72,9 +70,9 @@ const EditStudentPage = () => {
     }
   };
 
-  if (isLoading || classesLoading) { // Check both loading states
+  if (isLoading || classesLoading) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">Loading data...</div>
         </AdminLayout>
@@ -84,7 +82,7 @@ const EditStudentPage = () => {
 
   if (!student && !error) {
      return (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">Student not found.</div>
         </AdminLayout>
@@ -93,7 +91,7 @@ const EditStudentPage = () => {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
       <AdminLayout>
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">

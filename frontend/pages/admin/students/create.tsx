@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import StudentForm from '../../../components/Students/StudentForm';
 import { createStudent as apiCreateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
 import { CreateStudentDto } from '../../../types/student';
+import { UserRole } from '../../../types/user';
 import { Class } from '../../../types/class'; // Added Class type
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
@@ -36,12 +37,8 @@ const CreateStudentPage = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Ensure dateOfBirth is in YYYY-MM-DD format if it's a Date object
-      const payload: CreateStudentDto = {
-        ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString().split('T')[0] : data.dateOfBirth,
-      };
-      await apiCreateStudent(payload);
+      // The dateOfBirth is already in YYYY-MM-DD format from the form
+      await apiCreateStudent(data);
       router.push('/admin/students');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create student.');
@@ -51,7 +48,7 @@ const CreateStudentPage = () => {
   };
 
   return (
-    <ProtectedRoute> {/* Add roles if needed */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
       <AdminLayout>
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">

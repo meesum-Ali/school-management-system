@@ -16,13 +16,29 @@ interface StudentFormProps {
   availableClasses: Class[]; // Added availableClasses prop
 }
 
-const schema = yup.object().shape({
+// Define form values type that matches the form structure
+interface StudentFormValues {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string; // string for form input (YYYY-MM-DD)
+  email: string;
+  studentId: string;
+  classId: string | null;
+}
+
+const schema = yup.object().shape<Record<keyof StudentFormValues, any>>({
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
-  dateOfBirth: yup.date().required('Date of birth is required').typeError('Invalid date format'),
+  dateOfBirth: yup
+    .string()
+    .required('Date of birth is required')
+    .test('is-valid-date', 'Invalid date format', (value) => {
+      if (!value) return false;
+      return !isNaN(Date.parse(value));
+    }),
   email: yup.string().email('Invalid email').required('Email is required'),
   studentId: yup.string().required('Student ID is required'),
-  classId: yup.string().uuid('Must be a valid UUID if provided').nullable().optional(), // Added classId validation
+  classId: yup.string().uuid('Must be a valid UUID if provided').nullable(),
 });
 
 const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitting, availableClasses }) => {
@@ -31,55 +47,53 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitti
     handleSubmit,
     setValue,
     formState: { errors },
-    reset, // Added reset
-  } = useForm<CreateStudentDto | UpdateStudentDto>({
-    resolver: yupResolver(schema) as Resolver<CreateStudentDto | UpdateStudentDto>,
-    defaultValues: student
-      ? {
-          ...student,
-          dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
-          classId: student.classId || '', // Set default for classId
-        }
-      : { // Default values for new student form
-          firstName: '',
-          lastName: '',
-          dateOfBirth: '',
-          email: '',
-          studentId: '',
-          classId: '', // Default classId to empty string for "No Class" option
-        },
+    reset,
+  } = useForm<StudentFormValues>({
+    resolver: yupResolver(schema) as Resolver<StudentFormValues>,
+    defaultValues: {
+      firstName: student?.firstName || '',
+      lastName: student?.lastName || '',
+      dateOfBirth: student?.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
+      email: student?.email || '',
+      studentId: student?.studentId || '',
+      classId: student?.classId || null,
+    },
   });
+
+  const onSubmitForm: SubmitHandler<StudentFormValues> = (data) => {
+    // Convert form data to DTO format
+    const formData = {
+      ...data,
+      // Convert empty string to null for classId
+      classId: data.classId || null,
+    };
+    
+    // Call the original onSubmit with properly typed data
+    onSubmit(formData as (CreateStudentDto | UpdateStudentDto));
+  };
 
   useEffect(() => {
     if (student) {
       reset({
         ...student,
         dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '',
-        classId: student.classId || '', // Ensure classId is reset correctly
+        classId: student.classId || null,
       });
     } else {
-      reset({ // Reset for create form if student becomes undefined
+      reset({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         email: '',
         studentId: '',
-        classId: '',
+        classId: null,
       });
     }
-  }, [student, reset]); // Using reset from useForm
-
-  const handleFormSubmit: SubmitHandler<CreateStudentDto | UpdateStudentDto> = (data) => {
-    const dataToSubmit = { ...data };
-    if (dataToSubmit.classId === '') { // Convert empty string (from "No Class" option) to null
-      dataToSubmit.classId = null;
-    }
-    onSubmit(dataToSubmit);
-  };
+  }, [student, reset]);
 
   return (
     <Card className="w-full max-w-lg">
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
         <h2 className="text-2xl mb-4">{student ? 'Edit Student' : 'Create New Student'}</h2>
 
         <div>

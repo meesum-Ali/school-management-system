@@ -3,11 +3,11 @@ import { useRouter } from 'next/router'
 import { AuthContext } from '../../contexts/AuthContext'
 
 interface ProtectedRouteProps {
-  roles?: string[]
+  requiredRoles?: string[]
   children: React.ReactNode
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles, children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles, children }) => {
   const { isAuthenticated, user } = useContext(AuthContext)
   const router = useRouter()
 
@@ -15,14 +15,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles, children }) => {
     if (!isAuthenticated) {
       router.push('/login')
     } else if (
-      roles &&
-      roles.length > 0 &&
-      user?.role &&
-      !roles.includes(user.role)
+      requiredRoles &&
+      requiredRoles.length > 0 &&
+      user?.roles &&
+      !user.roles.some(role => requiredRoles.includes(role))
     ) {
       router.push('/unauthorized')
     }
-  }, [isAuthenticated, roles, user, router])
+  }, [isAuthenticated, requiredRoles, user, router])
 
   if (!isAuthenticated) {
     return <div>Loading...</div>

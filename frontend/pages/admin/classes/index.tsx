@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import ClassList from '../../../components/Classes/ClassList';
 import { fetchClasses, deleteClass as apiDeleteClass } from '../../../utils/api';
 import { Class } from '../../../types/class';
+import { UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 import { AuthContext } from '../../../contexts/AuthContext';
-import { UserRole } from '../../../types/user';
 
 const ClassesPage = () => {
   const [classes, setClasses] = useState<Class[]>([]);
@@ -81,7 +81,7 @@ const ClassesPage = () => {
 // Wrap with ProtectedRoute to ensure user is authenticated and has ADMIN role (conceptual)
 // Actual RBAC for page access should be handled by ProtectedRoute if enhanced, or rely on UI hiding + backend
 const ProtectedClassesPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}> {/* Assuming ProtectedRoute can take roles */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
         <ClassesPage />
     </ProtectedRoute>
 );

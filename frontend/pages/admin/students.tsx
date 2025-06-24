@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import StudentList from '../../components/Students/StudentList';
 import { fetchStudents, deleteStudent as apiDeleteStudent } from '../../utils/api';
 import { Student } from '../../types/student';
+import { UserRole } from '../../types/user';
 import AdminLayout from '../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../components/Auth/ProtectedRoute';
 import Notification from '../../components/Layout/Notification';
@@ -46,7 +47,7 @@ const StudentsPage = () => {
   };
 
   return (
-    <ProtectedRoute> {/* Add roles if needed */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4">
           {error && <Notification message={error} type="error" onClose={() => setError(null)} />}

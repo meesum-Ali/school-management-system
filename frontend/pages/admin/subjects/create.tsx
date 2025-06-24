@@ -3,11 +3,11 @@ import { useRouter } from 'next/router';
 import SubjectForm from '../../../components/Subjects/SubjectForm';
 import { createSubject as apiCreateSubject } from '../../../utils/api';
 import { CreateSubjectDto } from '../../../types/subject';
+import { UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 import { AuthContext } from '../../../contexts/AuthContext';
-import { UserRole } from '../../../types/user';
 
 const CreateSubjectPage = () => {
   const router = useRouter();

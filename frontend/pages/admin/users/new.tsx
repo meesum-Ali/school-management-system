@@ -5,7 +5,7 @@ import UserForm from '../../../components/Users/UserForm'
 
 const AddUserPage: React.FC = () => {
   return (
-    <ProtectedRoute roles={['Admin']}>
+    <ProtectedRoute requiredRoles={['Admin']}>
       <AdminLayout>
         <UserForm />
       </AdminLayout>

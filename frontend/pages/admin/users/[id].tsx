@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import UserForm from '../../../components/Users/UserForm';
 import { fetchUserById, updateUser as apiUpdateUser } from '../../../utils/api';
-import { User, UpdateUserDto } from '../../../types/user';
+import { User, UpdateUserDto, UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout'; // Changed to AdminLayout
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
@@ -58,19 +58,18 @@ const EditUserPage = () => {
 
   if (isLoading) {
     return (
-      <ProtectedRoute> {/* Add roles if needed */}
-        <AdminLayout> {/* Changed to AdminLayout */}
+      <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+        <AdminLayout>
           <div className="container mx-auto p-4 text-center">Loading user data...</div>
         </AdminLayout>
       </ProtectedRoute>
     );
   }
 
-  // if (!user && !isLoading && !error) { // This condition might be too broad if error is set for "invalid id"
-  if (!user && !error) { // Show "not found" only if no specific error message is already displayed
+  if (!user && !error) {
      return (
-      <ProtectedRoute> {/* Add roles if needed */}
-        <AdminLayout> {/* Changed to AdminLayout */}
+      <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+        <AdminLayout>
           <div className="container mx-auto p-4 text-center">User not found.</div>
         </AdminLayout>
       </ProtectedRoute>
@@ -78,7 +77,7 @@ const EditUserPage = () => {
   }
 
   return (
-    <ProtectedRoute> {/* Add roles if needed */}
+    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl"> {/* Matched UserForm width */}

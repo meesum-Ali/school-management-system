@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import SubjectList from '../../../components/Subjects/SubjectList';
 import { fetchSubjects, deleteSubject as apiDeleteSubject } from '../../../utils/api';
 import { Subject } from '../../../types/subject';
+import { UserRole } from '../../../types/user';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 import { AuthContext } from '../../../contexts/AuthContext';
-import { UserRole } from '../../../types/user';
 
 const SubjectsPage = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);

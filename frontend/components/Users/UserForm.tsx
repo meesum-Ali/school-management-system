@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler, Resolver, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -6,7 +6,7 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { User, CreateUserDto, UpdateUserDto, UserRole } from '../../types/user';
-import PasswordToggle from '../ui/PasswordToggle'; // Assuming this exists or will be simple input
+import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 
 interface UserFormProps {
   user?: User; // For editing
@@ -34,6 +34,7 @@ const schema = yup.object().shape({
 
 const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isSubmitting }) => {
   const isEditing = !!user;
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -48,7 +49,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isSubmitting }) => 
     defaultValues: isEditing ? {
       ...user,
       password: '', // Password should not be pre-filled
-      roles: user?.roles || [UserRole.USER],
+      roles: user?.roles || [UserRole.STUDENT],
     } : {
       username: '',
       email: '',
@@ -56,7 +57,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isSubmitting }) => 
       firstName: '',
       lastName: '',
       isActive: true,
-      roles: [UserRole.USER],
+      roles: [UserRole.STUDENT],
     },
   });
 
@@ -119,11 +120,32 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isSubmitting }) => 
           </div>
         </div>
 
-        <div>
+        <div className="relative">
           <label htmlFor="password" className="block mb-1 font-medium">
             {isEditing ? 'New Password (Optional)' : 'Password'}
           </label>
-          <PasswordToggle name="password" id="password" register={register} className={errors.password ? 'border-red-500' : ''} />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              {...register('password')}
+              className={`pr-10 ${errors.password ? 'border-red-500' : ''}`}
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          </div>
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
         </div>
 

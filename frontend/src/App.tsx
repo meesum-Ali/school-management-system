@@ -17,7 +17,7 @@ function App() {
           <Route
             path="/admin/users"
             element={
-              <ProtectedRoute roles={['Admin']}>
+              <ProtectedRoute requiredRoles={['Admin']}>
                 <AdminLayout>
                   <UserList />
                 </AdminLayout>
@@ -27,7 +27,7 @@ function App() {
           <Route
             path="/admin/users/new"
             element={
-              <ProtectedRoute roles={['Admin']}>
+              <ProtectedRoute requiredRoles={['Admin']}>
                 <AdminLayout>
                   <UserForm />
                 </AdminLayout>
@@ -37,7 +37,7 @@ function App() {
           <Route
             path="/admin/users/:id"
             element={
-              <ProtectedRoute roles={['Admin']}>
+              <ProtectedRoute requiredRoles={['Admin']}>
                 <AdminLayout>
                   <EditUser />
                 </AdminLayout>

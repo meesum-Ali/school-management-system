@@ -42,8 +42,10 @@ const ClassList: React.FC<ClassListProps> = ({ classes, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cls.homeroomTeacherId || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cls.subjects?.length || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                    <Link href={`/admin/classes/${cls.id}`} passHref>
-                      <Button variant="outline" size="sm" className="mr-2">Edit / View Subjects</Button>
+                    <Link href={`/admin/classes/${cls.id}`}>
+                      <Button variant="outline" size="sm" className="mr-2">
+                        Edit / View Subjects
+                      </Button>
                     </Link>
                     <Button
                       variant="destructive"
