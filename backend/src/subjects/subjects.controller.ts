@@ -17,7 +17,7 @@ import { UserRole } from '../users/entities/user.entity';
 @ApiBearerAuth()
 @Controller('subjects')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.ADMIN) // Initially restrict all subject CRUD to ADMIN
+@Roles(UserRole.SCHOOL_ADMIN) // Restrict subject CRUD to SCHOOL_ADMIN
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 export class SubjectsController {
   constructor(private readonly subjectsService: SubjectsService) {}

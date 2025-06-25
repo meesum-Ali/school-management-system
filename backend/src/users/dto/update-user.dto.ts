@@ -33,7 +33,7 @@ export class UpdateUserDto {
   @IsEnum(UserRole, { each: true, message: "Each role must be a valid UserRole enum value (e.g., 'admin', 'teacher')" })
   @ArrayMinSize(1)
   @IsOptional()
-  @ApiPropertyOptional({ enum: UserRole, isArray: true, example: [UserRole.ADMIN], description: 'Array of user roles' })
+  @ApiPropertyOptional({ enum: UserRole, isArray: true, example: [UserRole.SCHOOL_ADMIN], description: 'Array of user roles' })
   roles?: UserRole[];
 
   @IsBoolean()

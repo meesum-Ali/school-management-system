@@ -96,15 +96,20 @@ describe('AuthService', () => {
         id: 'uuid1',
         username: 'testuser',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         isActive: true,
-        roles: [UserRole.ADMIN, UserRole.STUDENT],
+        roles: [UserRole.SCHOOL_ADMIN, UserRole.STUDENT],
         createdAt: new Date(),
         updatedAt: new Date(),
+        school: null,
+        studentProfile: null,
+        teacherProfile: null,
       };
       // Mock findOneEntity to return the full user object with roles for payload creation
       const fullUserEntity = new User();
       Object.assign(fullUserEntity, validatedUser); // copy properties
-      fullUserEntity.roles = [UserRole.ADMIN, UserRole.STUDENT]; // Ensure roles are explicitly set
+      fullUserEntity.roles = [UserRole.SCHOOL_ADMIN, UserRole.STUDENT]; // Ensure roles are explicitly set
 
       mockUsersService.findOneEntity.mockResolvedValue(fullUserEntity);
 
@@ -117,7 +122,7 @@ describe('AuthService', () => {
       expect(jwtService.sign).toHaveBeenCalledWith({
         username: validatedUser.username,
         sub: validatedUser.id,
-        roles: [UserRole.ADMIN, UserRole.STUDENT],
+        roles: [UserRole.SCHOOL_ADMIN, UserRole.STUDENT],
       });
       expect(result).toEqual({ access_token: mockToken });
     });

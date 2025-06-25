@@ -1,5 +1,10 @@
 import { User } from '../../users/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, OneToOne } from 'typeorm';
+import { Student } from '../../students/entities/student.entity';
+import { ClassEntity } from '../../classes/entities/class.entity';
+import { SubjectEntity } from '../../subjects/entities/subject.entity';
+import { Teacher } from '../../teachers/entities/teacher.entity';
+import { ClassSchedule } from '../../class-schedule/entities/class-schedule.entity';
 
 @Entity('schools')
 export class School {
@@ -18,12 +23,36 @@ export class School {
   @Column({ name: 'admin_user_id', nullable: true })
   adminUserId?: string; // UUID of the first admin user for this school
 
-  // A school can have many users
-  @OneToMany(() => User, user => user.school)
-  users: User[];
+  // School relationships
+  @OneToMany(() => User, user => user.school, {
+    lazy: true
+  })
+  users: Promise<User[]>;
 
-  // TODO: Add relationships to other school-specific entities like Student, Class, Subject
-  // e.g., @OneToMany(() => Student, student => student.school) students: Student[];
+  @OneToMany(() => Student, student => student.school, {
+    lazy: true
+  })
+  students: Promise<Student[]>;
+
+  @OneToMany(() => ClassEntity, classEntity => classEntity.school, {
+    lazy: true
+  })
+  classes: Promise<ClassEntity[]>;
+
+  @OneToMany(() => SubjectEntity, subject => subject.school, {
+    lazy: true
+  })
+  subjects: Promise<SubjectEntity[]>;
+
+  @OneToMany(() => Teacher, teacher => teacher.school, {
+    lazy: true
+  })
+  teachers: Promise<Teacher[]>;
+
+  @OneToMany(() => ClassSchedule, schedule => schedule.school, {
+    lazy: true
+  })
+  classSchedules: Promise<ClassSchedule[]>;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

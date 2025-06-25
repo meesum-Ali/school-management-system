@@ -11,14 +11,19 @@ import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassesModule } from './classes/classes.module';
-import { SubjectsModule } from './subjects/subjects.module'; // Import SubjectsModule
-import { SchoolsModule } from './schools/schools.module'; // Import SchoolsModule
+import { SubjectsModule } from './subjects/subjects.module';
+import { SchoolsModule } from './schools/schools.module';
+import { TeachersModule } from './teachers/teachers.module';
+import { ClassScheduleModule } from './class-schedule/class-schedule.module';
 import { User } from './users/entities/user.entity';
 import { Student } from './students/entities/student.entity';
 import { ClassEntity } from './classes/entities/class.entity';
-import { SubjectEntity } from './subjects/entities/subject.entity'; // Import SubjectEntity
-import { School } from './schools/entities/school.entity'; // Import School entity
-import { HealthModule } from './health/health.module'; // Import HealthModule
+import { SubjectEntity } from './subjects/entities/subject.entity';
+import { School } from './schools/entities/school.entity';
+import { Teacher } from './teachers/entities/teacher.entity';
+import { ClassSchedule } from './class-schedule/entities/class-schedule.entity';
+import { HealthModule } from './health/health.module';
+import { SuperAdminModule } from './core/super-admin/super-admin.module';
      // Import other modules as needed
 
      @Module({
@@ -51,21 +56,30 @@ import { HealthModule } from './health/health.module'; // Import HealthModule
              username: configService.get<string>('database.username'),
              password: configService.get<string>('database.password'),
              database: configService.get<string>('database.name'),
-             entities: [User, Student, ClassEntity, SubjectEntity, School], // Add School entity
+             entities: [
+  User,
+  Student,
+  ClassEntity,
+  SubjectEntity,
+  School,
+  Teacher,
+  ClassSchedule
+], // Add School entity
              synchronize: configService.get<string>('NODE_ENV') !== 'production',
              // You might want to add other TypeORM options like logging, etc.
            }),
            inject: [ConfigService], // Inject ConfigService into the factory
          }),
-         SchoolsModule, // Add SchoolsModule
          StudentsModule,
          UsersModule,
          AuthModule,
          ClassesModule,
-         SubjectsModule, // Add SubjectsModule to imports
-         SchoolsModule, // Add SchoolsModule to imports
-         HealthModule, // Add HealthModule for health checks
-         // Add other modules as needed
+         SubjectsModule,
+         SchoolsModule,
+         TeachersModule,
+         ClassScheduleModule,
+         HealthModule,
+         SuperAdminModule,
        ],
        controllers: [AppController],
        providers: [AppService],

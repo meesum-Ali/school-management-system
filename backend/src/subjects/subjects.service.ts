@@ -5,7 +5,7 @@ import { SubjectEntity } from './entities/subject.entity';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectDto } from './dto/subject.dto';
-import { ClassDto } from '../classes/dto/class.dto'; // Import ClassDto for mapping
+import { ClassBasicDto } from '../classes/dto/class-basic.dto';
 import { ClassEntity } from '../classes/entities/class.entity'; // Required for type safety if using relations
 
 @Injectable()
@@ -16,7 +16,7 @@ export class SubjectsService {
     // Note: No need to inject ClassRepository if only reading class data via relation
   ) {}
 
-  private mapSubjectToSubjectDto(subjectEntity: SubjectEntity): SubjectDto {
+  private async mapSubjectToSubjectDto(subjectEntity: SubjectEntity): Promise<SubjectDto> {
     const subjectDto = new SubjectDto({
       id: subjectEntity.id,
       name: subjectEntity.name,
@@ -24,33 +24,34 @@ export class SubjectsService {
       description: subjectEntity.description,
       createdAt: subjectEntity.createdAt,
       updatedAt: subjectEntity.updatedAt,
-      schoolId: subjectEntity.schoolId, // Map schoolId
+      schoolId: subjectEntity.schoolId
     });
+    
     if (subjectEntity.classes) {
-        subjectDto.classes = subjectEntity.classes.map(cls => new ClassDto({
-            id: cls.id,
-            name: cls.name,
-            level: cls.level,
-            homeroomTeacherId: cls.homeroomTeacherId,
-            createdAt: cls.createdAt,
-            updatedAt: cls.updatedAt,
-            schoolId: cls.schoolId, // Ensure schoolId is mapped for ClassDto
-            // Avoid mapping cls.subjects here
-        }));
+      const classes = await subjectEntity.classes;
+      subjectDto.classes = classes.map(cls => ({
+        id: cls.id,
+        name: cls.name,
+        level: cls.level,
+        homeroomTeacherId: cls.homeroomTeacherId,
+        createdAt: cls.createdAt,
+        updatedAt: cls.updatedAt,
+        schoolId: cls.schoolId,
+      }));
     }
     return subjectDto;
   }
 
-  private mapClassToClassDto(classEntity: ClassEntity): ClassDto {
-    return new ClassDto({
-        id: classEntity.id,
-        name: classEntity.name,
-        level: classEntity.level,
-        homeroomTeacherId: classEntity.homeroomTeacherId,
-        createdAt: classEntity.createdAt,
-        updatedAt: classEntity.updatedAt,
-        schoolId: classEntity.schoolId, // Ensure schoolId is mapped
-    });
+  private mapClassToBasicDto(classEntity: ClassEntity): ClassBasicDto {
+    return {
+      id: classEntity.id,
+      name: classEntity.name,
+      level: classEntity.level,
+      homeroomTeacherId: classEntity.homeroomTeacherId,
+      schoolId: classEntity.schoolId,
+      createdAt: classEntity.createdAt,
+      updatedAt: classEntity.updatedAt,
+    };
   }
 
   async create(createSubjectDto: CreateSubjectDto, schoolId: string): Promise<SubjectDto> {
@@ -94,7 +95,7 @@ export class SubjectsService {
       where: { schoolId },
       // relations: ['classes'] // Optional: load classes if needed for list view DTOs
     });
-    return subjects.map(subjectEntity => this.mapSubjectToSubjectDto(subjectEntity));
+    return Promise.all(subjects.map(subjectEntity => this.mapSubjectToSubjectDto(subjectEntity)));
   }
 
   async findOne(id: string, schoolId: string): Promise<SubjectDto> {
@@ -105,7 +106,7 @@ export class SubjectsService {
     if (!subjectEntity) {
       throw new NotFoundException(`Subject with ID "${id}" not found in this school.`);
     }
-    return this.mapSubjectToSubjectDto(subjectEntity);
+    return await this.mapSubjectToSubjectDto(subjectEntity);
   }
 
   async update(id: string, updateSubjectDto: UpdateSubjectDto, schoolId: string): Promise<SubjectDto> {
@@ -145,7 +146,7 @@ export class SubjectsService {
     try {
       const updatedSubject = await this.subjectsRepository.save(subjectToUpdate);
       // Re-fetch with relations for consistent DTO response
-      return this.findOne(updatedSubject.id, schoolId);
+      return await this.findOne(updatedSubject.id, schoolId);
     } catch (error) {
       if (error instanceof QueryFailedError && (error as any).code === '23505') {
         if (name && (error.message.includes('subjects_name_school_id_idx') || error.message.includes('UQ_subjects_name_schoolId'))) {
@@ -171,7 +172,8 @@ export class SubjectsService {
     }
   }
 
-  async listClassesForSubject(subjectId: string, schoolId: string): Promise<ClassDto[]> {
+  async listClassesForSubject(subjectId: string, schoolId: string): Promise<ClassBasicDto[]> {
+    // First validate the subject exists and belongs to the school
     const subjectEntity = await this.subjectsRepository.findOne({
         where: { id: subjectId, schoolId }, // Ensure subject belongs to the school
         relations: ['classes', 'classes.school'] // Load classes and their school info for DTO mapping
@@ -179,7 +181,8 @@ export class SubjectsService {
     if (!subjectEntity) {
       throw new NotFoundException(`Subject with ID "${subjectId}" not found in this school.`);
     }
-    // Ensure that the classes being mapped also have their schoolId properly set for mapClassToClassDto
-    return subjectEntity.classes.map(cls => this.mapClassToClassDto(cls));
+    // Ensure that the classes being mapped also have their schoolId properly set for mapClassToBasicDto
+    const classes = await subjectEntity.classes;
+    return classes.map(cls => this.mapClassToBasicDto(cls));
   }
 }

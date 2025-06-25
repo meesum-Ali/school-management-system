@@ -18,7 +18,7 @@ import { UserRole } from '../users/entities/user.entity';
 @ApiBearerAuth()
 @Controller('classes')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.ADMIN) // Initially restrict all class CRUD to ADMIN
+@Roles(UserRole.SCHOOL_ADMIN) // Restrict class CRUD to SCHOOL_ADMIN
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
@@ -114,9 +114,9 @@ export class ClassesController {
     @Param('classId', ParseUUIDPipe) classId: string,
     @Param('subjectId', ParseUUIDPipe) subjectId: string,
     @Req() req: any,
-  ): Promise<ClassDto> {
+  ): Promise<SubjectDto> {
     const schoolId = this.getSchoolIdFromRequest(req);
-    return this.classesService.assignSubjectToClass(classId, subjectId, schoolId);
+    return this.classesService.assignSubject(classId, subjectId, schoolId);
   }
 
   @Delete(':classId/subjects/:subjectId')

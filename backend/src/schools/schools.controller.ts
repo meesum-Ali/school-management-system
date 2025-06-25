@@ -26,14 +26,14 @@ export class SchoolsController {
   }
 
   @Get(':id')
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN) // Super Admin or School Admin (if part of this school - to be refined)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.SCHOOL_ADMIN) // Super Admin or School Admin (if part of this school - to be refined)
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<School | null> {
     // TODO: Add logic to ensure School Admin can only fetch their own school
     return this.schoolsService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN) // Super Admin or School Admin (if part of this school)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.SCHOOL_ADMIN) // Super Admin or School Admin (if part of this school)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateSchoolDto: UpdateSchoolDto

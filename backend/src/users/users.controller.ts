@@ -48,7 +48,7 @@ export class UsersController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN) // School Admin or Super Admin
+  @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN) // School Admin or Super Admin
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User created successfully.', type: UserDto })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' })
@@ -76,7 +76,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get all users (respecting school context)' })
   @ApiResponse({ status: HttpStatus.OK, description: 'List of users retrieved successfully.', type: [UserDto] })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
@@ -87,7 +87,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get a user by ID (respecting school context)' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User details retrieved successfully.', type: UserDto })
@@ -101,7 +101,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update a user by ID (respecting school context)' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
   @ApiBody({ type: UpdateUserDto })
@@ -123,7 +123,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user by ID (respecting school context)' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'User deleted successfully.' })

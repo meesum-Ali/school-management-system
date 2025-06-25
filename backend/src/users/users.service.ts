@@ -139,11 +139,17 @@ export class UsersService {
   }
 
   async findOneEntity(id: string, contextualSchoolId?: string | null): Promise<User | undefined> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const queryBuilder = this.usersRepository.createQueryBuilder('user')
+      .addSelect('user.password') // Explicitly select the password field
+      .where('user.id = :id', { id });
+
+    const user = await queryBuilder.getOne();
+    
     if (user && contextualSchoolId && user.schoolId !== contextualSchoolId) {
       // For internal service use, returning undefined might be better than throwing
       return undefined;
     }
+    
     return user;
   }
 
@@ -153,14 +159,30 @@ export class UsersService {
     // If schoolId is explicitly null, it's a global user.
     // If schoolId is undefined, it could be either, but this needs careful handling in AuthService.
     // For now, assume AuthService will provide the correct schoolId (or null for global users).
-    if (schoolId === undefined) {
-      // This case is ambiguous for multi-tenant usernames.
-      // It might find a global user OR a user from *any* school if username is not globally unique.
-      // This behavior needs to be carefully managed by the caller (AuthService).
-      // Consider requiring schoolId to be explicitly null for global users.
-      return this.usersRepository.findOne({ where: { username } });
+    
+    // Create a query builder to have more control over the query
+    const queryBuilder = this.usersRepository.createQueryBuilder('user')
+      .addSelect('user.password') // Explicitly select the password field
+      .where('user.username = :username', { username });
+
+    if (schoolId !== undefined) {
+      if (schoolId === null) {
+        queryBuilder.andWhere('user.schoolId IS NULL');
+      } else {
+        queryBuilder.andWhere('user.schoolId = :schoolId', { schoolId });
+      }
     }
-    return this.usersRepository.findOne({ where: { username, schoolId } });
+
+    const user = await queryBuilder.getOne();
+    
+    // If user is found and has a password, ensure it's mapped correctly
+    if (user && user.password) {
+      // The password is already mapped to the password property by TypeORM
+      // because of the @Column({ name: 'password_hash' }) decorator
+      return user;
+    }
+    
+    return user; // Will be undefined if not found
   }
 
   async update(id: string, updateUserDto: UpdateUserDto, contextualSchoolId?: string | null): Promise<UserDto> {

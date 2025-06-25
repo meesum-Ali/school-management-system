@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 import { ClassEntity } from '../../classes/entities/class.entity';
 import { School } from '../../schools/entities/school.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('students') // Explicitly naming the table
 @Index(['email', 'schoolId'], { unique: true }) // Email should be unique within a school
@@ -32,9 +33,13 @@ export class Student {
   @IsNotEmpty({ message: 'Student ID should not be empty' })
   studentId: string;
 
-  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.students, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.students, { 
+    nullable: true, 
+    onDelete: 'SET NULL',
+    lazy: true
+  })
   @JoinColumn({ name: 'classId' }) // This explicitly defines the FK column name
-  currentClass: ClassEntity | null;
+  currentClass: Promise<ClassEntity> | null;
 
   @Column({ type: 'uuid', name: 'classId', nullable: true }) // Foreign key column
   classId: string | null;
@@ -42,9 +47,22 @@ export class Student {
   @Column({ name: 'school_id', type: 'uuid' }) // Not nullable, a student must belong to a school
   schoolId: string;
 
-  @ManyToOne(() => School, { onDelete: 'CASCADE' }) // If school is deleted, its students are deleted.
+  @ManyToOne(() => School, { 
+    onDelete: 'CASCADE',
+    lazy: true
+  }) // If school is deleted, its students are deleted.
   @JoinColumn({ name: 'school_id' })
-  school: School;
+  school: Promise<School>;
+
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
+  userId?: string | null;
+
+  @OneToOne(() => User, (user) => user.studentProfile, { 
+    onDelete: 'CASCADE',
+    lazy: true
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: Promise<User>;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

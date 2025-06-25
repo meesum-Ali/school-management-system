@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert, ManyToOne, JoinColumn, Index } from 'typeorm';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator'; // class-validator is for DTOs, not directly used by entity save from service
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert, ManyToOne, JoinColumn, Index, OneToMany, OneToOne } from 'typeorm';
+import { IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator'; // class-validator is for DTOs, not directly used by entity save from service
 import * as bcrypt from 'bcrypt';
 import { School } from '../../schools/entities/school.entity';
+import { Student } from '../../students/entities/student.entity';
+import { Teacher } from '../../teachers/entities/teacher.entity';
 
 /*
   Preliminary Role Permissions (for User & Student Management):
@@ -22,12 +24,12 @@ import { School } from '../../schools/entities/school.entity';
     - Students: Read (Their Children - future)
 */
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin', // New role for managing schools and top-level settings
-  ADMIN = 'admin', // School-level admin
-  TEACHER = 'teacher',
-  ACCOUNTANT = 'accountant',
-  STUDENT = 'student',
-  PARENT = 'parent',
+  SUPER_ADMIN = 'SUPER_ADMIN', // Role for managing schools and top-level settings
+  SCHOOL_ADMIN = 'SCHOOL_ADMIN', // School administrator role
+  TEACHER = 'TEACHER',
+  STUDENT = 'STUDENT',
+  PARENT = 'PARENT',
+  // Note: 'admin' and 'accountant' roles are not defined in the database enum
 }
 
 @Entity('users')
@@ -52,33 +54,54 @@ export class User {
   @IsEmail({}, { message: 'Please provide a valid email address' })
   email: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ name: 'password_hash', type: 'varchar', length: 255 })
   @IsNotEmpty()
   @MinLength(8, { message: 'Password must be at least 8 characters long' }) // Validation for DTO, not directly on entity for saving
   password: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ name: 'first_name', type: 'varchar', length: 100, nullable: true })
   firstName?: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ name: 'last_name', type: 'varchar', length: 100, nullable: true })
   lastName?: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
   @Column({
-    type: 'simple-array',
-    enum: UserRole,
-    default: [UserRole.STUDENT], // Defaulting new users to STUDENT role
+    type: 'text',
+    array: true,
+    default: () => 'array[\'STUDENT\'::text]', // Defaulting new users to STUDENT role
+    transformer: {
+      to: (value: UserRole[]) => value,
+      from: (value: string[]) => value
+    }
   })
+  @IsEnum(UserRole, { each: true })
   roles: UserRole[];
 
   @Column({ name: 'school_id', type: 'uuid', nullable: true })
   schoolId?: string | null; // Nullable for global users like SUPER_ADMIN
 
-  @ManyToOne(() => School, school => school.users, { nullable: true, onDelete: 'CASCADE' }) // onDelete: 'CASCADE' means if a school is deleted, its users are deleted. Or use 'SET NULL' if users can exist without a school.
+  @ManyToOne(() => School, school => school.users, { 
+    nullable: true, 
+    onDelete: 'CASCADE',
+    lazy: true
+  }) // onDelete: 'CASCADE' means if a school is deleted, its users are deleted.
   @JoinColumn({ name: 'school_id' })
-  school?: School | null;
+  school: Promise<School> | null;
+
+  @OneToOne(() => Student, (student) => student.user, { 
+    cascade: false,
+    lazy: true
+  })
+  studentProfile: Promise<Student>;
+
+  @OneToOne(() => Teacher, (teacher) => teacher.user, { 
+    cascade: false,
+    lazy: true
+  })
+  teacherProfile: Promise<Teacher>;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -96,6 +119,29 @@ export class User {
 
   // Method to compare password (useful in AuthService or UsersService if checking password)
   async comparePassword(attempt: string): Promise<boolean> {
-    return bcrypt.compare(attempt, this.password);
+    console.log('Comparing password attempt...');
+    console.log('Attempt:', attempt);
+    console.log('Stored hash:', this.password);
+    console.log('Hash length:', this.password?.length);
+    
+    if (!this.password) {
+      console.error('No password hash available for comparison');
+      return false;
+    }
+    
+    try {
+      // Ensure the stored hash is a valid bcrypt hash
+      if (!this.password.startsWith('$2b$') && !this.password.startsWith('$2a$') && !this.password.startsWith('$2y$')) {
+        console.error('Invalid bcrypt hash format');
+        return false;
+      }
+      
+      const result = await bcrypt.compare(attempt, this.password);
+      console.log('Password comparison result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error comparing passwords:', error);
+      return false;
+    }
   }
 }

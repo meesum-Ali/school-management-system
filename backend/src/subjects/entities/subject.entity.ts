@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToMany, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ClassEntity } from '../../classes/entities/class.entity';
 import { School } from '../../schools/entities/school.entity';
+import { ClassSchedule } from '../../class-schedule/entities/class-schedule.entity';
 
 @Entity('subjects')
 @Index(['name', 'schoolId'], { unique: true }) // Subject name should be unique within a school
@@ -28,10 +29,21 @@ export class SubjectEntity {
   @Column({ name: 'school_id', type: 'uuid' })
   schoolId: string;
 
-  @ManyToOne(() => School, { onDelete: 'CASCADE' }) // If school is deleted, its subjects are deleted.
+  @ManyToOne(() => School, { 
+    onDelete: 'CASCADE',
+    lazy: true
+  }) // If school is deleted, its subjects are deleted.
   @JoinColumn({ name: 'school_id' })
-  school: School;
+  school: Promise<School>;
 
-  @ManyToMany(() => ClassEntity, cls => cls.subjects, { cascade: false })
-  classes: ClassEntity[];
+  @ManyToMany(() => ClassEntity, cls => cls.subjects, { 
+    cascade: false,
+    lazy: true
+  })
+  classes: Promise<ClassEntity[]>;
+
+  @OneToMany(() => ClassSchedule, (schedule) => schedule.subject, {
+    lazy: true
+  })
+  classSchedules: Promise<ClassSchedule[]>;
 }

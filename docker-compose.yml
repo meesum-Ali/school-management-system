@@ -27,6 +27,14 @@ services:
       - DATABASE_NAME=sms_db
       - JWT_SECRET=your_jwt_secret_key_here
       - JWT_EXPIRES_IN=1d
+      # Super Admin Configuration
+      - SUPERADMIN_USERNAME=${SUPERADMIN_USERNAME:-meesum}
+      - SUPERADMIN_EMAIL=${SUPERADMIN_EMAIL:-meesum@example.com}
+      - SUPERADMIN_PASSWORD=${SUPERADMIN_PASSWORD:-ChangeMe123!}
+      # Ensure these are not overridden by .env file
+      - SUPERADMIN_USERNAME
+      - SUPERADMIN_EMAIL
+      - SUPERADMIN_PASSWORD
     env_file:
       - ./backend/.env
     depends_on:
@@ -48,6 +56,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sms_db
+      # Super Admin Configuration
+      SUPERADMIN_USERNAME: meesum
+      SUPERADMIN_EMAIL: meesum@example.com
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-ChangeMe123!}
     ports:
       - "5432:5432"
     volumes:

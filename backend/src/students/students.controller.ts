@@ -33,7 +33,7 @@ import { UserRole } from '../users/entities/user.entity';
 @UseGuards(JwtAuthGuard, RolesGuard)
 // Default role for student management is ADMIN (school admin)
 // SUPER_ADMIN might access these if explicitly given the role or via a separate interface.
-@Roles(UserRole.ADMIN)
+@Roles(UserRole.SCHOOL_ADMIN)
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 

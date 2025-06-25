@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ClassDto } from '../../classes/dto/class.dto'; // Import ClassDto
 import { IsOptional } from 'class-validator';
+import { ClassBasicDto } from '../../classes/dto/class-basic.dto';
 
 export class SubjectDto {
   @ApiProperty({ example: 'd1e2f3a4-b5c6-7890-1234-567890abcdef', description: 'Unique identifier of the subject (UUID)' })
@@ -15,9 +15,9 @@ export class SubjectDto {
   @ApiPropertyOptional({ example: 'Basic concepts of algebra for beginners.', description: 'Description of the subject', nullable: true })
   description?: string | null;
 
-  @ApiPropertyOptional({ type: () => [ClassDto], description: 'List of classes this subject is part of' })
+  @ApiPropertyOptional({ type: () => [ClassBasicDto], description: 'List of classes this subject is part of' })
   @IsOptional()
-  classes?: ClassDto[];
+  classes?: ClassBasicDto[];
 
   @ApiProperty({ description: 'Date and time when the subject record was created' })
   createdAt: Date;
