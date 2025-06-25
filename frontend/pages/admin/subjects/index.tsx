@@ -29,7 +29,7 @@ const SubjectsPage = () => {
   };
 
   useEffect(() => {
-    if (user?.roles.includes(UserRole.ADMIN)) {
+    if (user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
         loadSubjects();
     } else {
         setIsLoading(false);
@@ -49,7 +49,7 @@ const SubjectsPage = () => {
     }
   };
 
-  if (!user?.roles.includes(UserRole.ADMIN) && !isLoading) {
+  if (!user?.roles.includes(UserRole.SCHOOL_ADMIN) && !isLoading) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -74,7 +74,7 @@ const SubjectsPage = () => {
 };
 
 const ProtectedSubjectsPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPER_ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <SubjectsPage />
     </ProtectedRoute>
 );

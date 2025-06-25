@@ -29,7 +29,7 @@ const CreateSubjectPage = () => {
     }
   };
 
-  if (!user?.roles.includes(UserRole.ADMIN)) {
+  if (!user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -53,7 +53,7 @@ const CreateSubjectPage = () => {
 };
 
 const ProtectedCreateSubjectPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <CreateSubjectPage />
     </ProtectedRoute>
 );

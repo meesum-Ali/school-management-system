@@ -30,7 +30,7 @@ const ClassesPage = () => {
   };
 
   useEffect(() => {
-    if (user?.roles.includes(UserRole.ADMIN)) { // Only load if admin
+    if (user?.roles.includes(UserRole.SCHOOL_ADMIN)) { // Only load if admin
         loadClasses();
     } else {
         setIsLoading(false);
@@ -53,7 +53,7 @@ const ClassesPage = () => {
   };
 
   // Conceptual RBAC for page content, actual route protection is via ProtectedRoute and backend
-  if (!user?.roles.includes(UserRole.ADMIN)) {
+  if (!user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -78,9 +78,9 @@ const ClassesPage = () => {
   );
 };
 
-// Wrap with ProtectedRoute to ensure user is authenticated and has ADMIN or SUPER_ADMIN role
+// Wrap with ProtectedRoute to ensure user is authenticated and has SCHOOL_ADMIN role
 const ProtectedClassesPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPER_ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <ClassesPage />
     </ProtectedRoute>
 );

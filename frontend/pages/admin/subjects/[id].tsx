@@ -19,7 +19,7 @@ const EditSubjectPage = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    if (id && typeof id === 'string' && user?.roles.includes(UserRole.ADMIN)) {
+    if (id && typeof id === 'string' && user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
       const loadSubject = async () => {
         try {
           setIsLoading(true);
@@ -34,7 +34,7 @@ const EditSubjectPage = () => {
         }
       };
       loadSubject();
-    } else if (id && !user?.roles.includes(UserRole.ADMIN)) {
+    } else if (id && !user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
         setError("You don't have permission to view this subject.");
         setIsLoading(false);
     } else {
@@ -57,7 +57,7 @@ const EditSubjectPage = () => {
     }
   };
 
-  if (!user?.roles.includes(UserRole.ADMIN) && !isLoading) {
+  if (!user?.roles.includes(UserRole.SCHOOL_ADMIN) && !isLoading) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -101,7 +101,7 @@ const EditSubjectPage = () => {
 };
 
 const ProtectedEditSubjectPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <EditSubjectPage />
     </ProtectedRoute>
 );

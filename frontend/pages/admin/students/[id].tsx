@@ -72,7 +72,7 @@ const EditStudentPage = () => {
 
   if (isLoading || classesLoading) {
     return (
-      <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
+      <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">Loading data...</div>
         </AdminLayout>
@@ -82,7 +82,7 @@ const EditStudentPage = () => {
 
   if (!student && !error) {
      return (
-      <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
+      <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">Student not found.</div>
         </AdminLayout>
@@ -91,7 +91,7 @@ const EditStudentPage = () => {
   }
 
   return (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
       <AdminLayout>
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">

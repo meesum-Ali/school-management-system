@@ -58,7 +58,7 @@ const EditUserPage = () => {
 
   if (isLoading) {
     return (
-      <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+      <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">Loading user data...</div>
         </AdminLayout>
@@ -68,7 +68,7 @@ const EditUserPage = () => {
 
   if (!user && !error) {
      return (
-      <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+      <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <AdminLayout>
           <div className="container mx-auto p-4 text-center">User not found.</div>
         </AdminLayout>
@@ -77,7 +77,7 @@ const EditUserPage = () => {
   }
 
   return (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl"> {/* Matched UserForm width */}

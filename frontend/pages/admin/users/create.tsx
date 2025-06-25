@@ -30,7 +30,7 @@ const CreateUserPage = () => {
   };
 
   return (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl"> {/* Matched UserForm width */}

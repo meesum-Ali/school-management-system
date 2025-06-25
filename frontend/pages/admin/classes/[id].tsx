@@ -43,7 +43,7 @@ const EditClassPage = () => {
   const { user } = useContext(AuthContext);
 
   const loadClassDetailsAndStudents = useCallback(async () => {
-    if (classId && typeof classId === 'string' && user?.roles.includes(UserRole.ADMIN)) {
+    if (classId && typeof classId === 'string' && user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
       try {
         setIsLoading(true);
         setIsLoadingStudents(true);
@@ -72,7 +72,7 @@ const EditClassPage = () => {
         setIsLoading(false);
         setIsLoadingStudents(false);
       }
-    } else if (classId && !user?.roles.includes(UserRole.ADMIN)) {
+    } else if (classId && !user?.roles.includes(UserRole.SCHOOL_ADMIN)) {
       setError("You don't have permission to view this class details.");
       setIsLoading(false);
       setIsLoadingStudents(false);
@@ -165,7 +165,7 @@ const EditClassPage = () => {
   );
 
   // Client-side check, though backend will enforce
-  if (!user?.roles.includes(UserRole.ADMIN) && !isLoading && !isLoadingStudents) {
+  if (!user?.roles.includes(UserRole.SCHOOL_ADMIN) && !isLoading && !isLoadingStudents) {
     return (
         <AdminLayout>
             <div className="container mx-auto p-4">
@@ -287,7 +287,7 @@ const EditClassPage = () => {
 };
 
 const ProtectedEditClassPage = () => (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN]}>
         <EditClassPage />
     </ProtectedRoute>
 );

@@ -48,7 +48,8 @@ const UsersPage = () => {
   };
 
   return (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPER_ADMIN]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN]}>
+
       <AdminLayout> {/* Changed to AdminLayout */}
         <div className="container mx-auto p-4">
           {error && <Notification message={error} type="error" onClose={() => setError(null)} />}

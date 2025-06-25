@@ -7,7 +7,7 @@ const Sidebar: React.FC = () => {
   const { user } = useContext(AuthContext);
   const userRoles = user?.roles || [];
 
-  const canManageSchoolResources = userRoles.includes(UserRole.ADMIN) || userRoles.includes(UserRole.SUPER_ADMIN);
+  const canManageSchoolResources = userRoles.includes(UserRole.SCHOOL_ADMIN) || userRoles.includes(UserRole.SUPER_ADMIN);
   const isSuperAdmin = userRoles.includes(UserRole.SUPER_ADMIN);
 
   // Remove "Teacher Management" as it's part of "User Management" now.

@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   // This method is called by AuthController after validateUser is successful
-  async login(userPayload: ValidatedUser & { schoolId?: string | null }) { // Ensure schoolId is typed on payload
+  async login(userPayload: ValidatedUser & { schoolId?: string | null }) {
     // The userPayload here is the result from validateUser (without password)
     // We need roles for the JWT payload if we want to use them in RolesGuard
     const userWithRoles = await this.usersService.findOneEntity(userPayload.id); // Fetch full user for roles
@@ -59,11 +59,48 @@ export class AuthService {
       throw new UnauthorizedException('User not found after validation.'); // Should not happen
     }
 
+    // Get roles and ensure it's an array of strings
+    let roles: string[] = [];
+    
+    // Handle different possible formats of roles
+    if (Array.isArray(userWithRoles.roles)) {
+      // If it's already an array, ensure each item is a string
+      roles = userWithRoles.roles.map(role => {
+        if (typeof role === 'string') {
+          // Remove any curly braces and trim
+          return role.replace(/[{}]/g, '').trim();
+        }
+        return String(role).trim();
+      });
+    } else if (typeof userWithRoles.roles === 'string') {
+      // If it's a string, try to parse it as JSON
+      try {
+        const parsed = JSON.parse(userWithRoles.roles);
+        if (Array.isArray(parsed)) {
+          roles = parsed.map(r => String(r).trim());
+        } else if (parsed) {
+          roles = [String(parsed).trim()];
+        }
+      } catch (e) {
+        // If not valid JSON, try to split by comma or use as single role
+        const roleStr = String(userWithRoles.roles).replace(/[{}]/g, '').trim();
+        roles = roleStr ? roleStr.split(',').map(r => r.trim()) : [];
+      }
+    }
+    
+    // Ensure we have at least one role
+    if (roles.length === 0) {
+      roles = ['USER'];
+    }
+    
+    // Log the roles for debugging
+    console.log('User roles after processing:', roles);
+
     const payload = {
       username: userWithRoles.username,
       sub: userWithRoles.id,
-      roles: userWithRoles.roles,
-      schoolId: userWithRoles.schoolId, // Include schoolId in the JWT payload
+      roles: roles, // This should now be a proper string array
+      schoolId: userWithRoles.schoolId,
     };
     return {
       access_token: this.jwtService.sign(payload),

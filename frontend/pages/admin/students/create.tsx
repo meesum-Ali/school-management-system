@@ -49,7 +49,7 @@ const CreateStudentPage = () => {
   };
 
   return (
-    <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.TEACHER]}>
+    <ProtectedRoute requiredRoles={[UserRole.SCHOOL_ADMIN, UserRole.TEACHER]}>
       <AdminLayout>
         <div className="container mx-auto p-4 flex justify-center">
           <div className="w-full max-w-2xl">

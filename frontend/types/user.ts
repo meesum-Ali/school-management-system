@@ -1,11 +1,10 @@
 // Corresponds to backend UserRole enum
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  TEACHER = 'teacher',
-  ACCOUNTANT = 'accountant',
-  STUDENT = 'student',
-  PARENT = 'parent',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  SCHOOL_ADMIN = 'SCHOOL_ADMIN',
+  TEACHER = 'TEACHER',
+  STUDENT = 'STUDENT',
+  PARENT = 'PARENT',
 }
 
 // Corresponds to backend/src/users/dto/user.dto.ts (UserDto)
