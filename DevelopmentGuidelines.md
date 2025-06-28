@@ -68,7 +68,40 @@ Key aspects include:
     - **Performance:** Optimize for fast load times and smooth interactions.
     - **Accessibility (A11y):** Strive to meet WCAG (Web Content Accessibility Guidelines) standards. This includes considerations for keyboard navigation, screen reader compatibility, sufficient color contrast, and clear labeling.
 
-## 4. Backend Philosophy
+## 4. Frontend Development with Material-UI
+
+### 4.1. Material-UI Guidelines
+
+#### Component Usage
+- **Prefer MUI Components**: Always use Material-UI components as the foundation for UI elements.
+- **Custom Styling**: Use the `sx` prop for one-off styles and `styled()` from `@mui/material/styles` for reusable styled components.
+- **Theming**: Extend the theme in `src/theme` for global styling needs. Access theme values using the `useTheme` hook or `sx` prop.
+- **Icons**: Use icons from `@mui/icons-material` for consistency.
+
+#### Layout and Responsiveness
+- **Grid System**: Use MUI's `Grid` component for responsive layouts.
+- **Breakpoints**: Utilize the responsive breakpoints: `xs`, `sm`, `md`, `lg`, `xl`.
+- **Box Component**: Use the `Box` component as a wrapper for layout composition.
+
+#### Best Practices
+- **Accessibility**: Ensure all interactive elements have proper ARIA attributes.
+- **Performance**: Use `React.memo` for performance optimization of components.
+- **Code Organization**:
+  - Keep component files in their own directories.
+  - Co-locate styles with components.
+  - Document component props and usage.
+
+### 4.2. State Management
+- **Local State**: Use React's `useState` and `useReducer` hooks.
+- **Global State**: Use React Context or a state management library for shared state.
+- **Data Fetching**: Use React Query or SWR for server state management.
+
+### 4.3. Testing
+- **Unit Tests**: Write tests for components and hooks using React Testing Library.
+- **Integration Tests**: Test component interactions and state changes.
+- **Accessibility Testing**: Use tools like axe-core for accessibility testing.
+
+## 5. Backend Philosophy
 
 Our backend development follows an API-first approach, ensuring that our APIs are robust, reliable, and easy for client applications to consume.
 

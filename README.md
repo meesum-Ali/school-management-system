@@ -35,6 +35,7 @@ School Management System is a [Next.js](https://nextjs.org/) frontend and [NestJ
 - **User-Focused Frontend:** Frontend developed with a user-first mindset, emphasizing usability and component-based design.
 - **Dockerized:** Fully containerized for easy setup, development, and deployment.
 - **TypeScript:** End-to-end TypeScript for enhanced type safety and developer experience.
+- **Material-UI (MUI):** Comprehensive React UI framework following Material Design principles for a consistent and responsive user interface.
 - **Development Guidelines:** Clear development practices outlined in `DevelopmentGuidelines.md`.
 
 ## Architectural Overview
@@ -187,11 +188,14 @@ LinkedIn: [Syed Meesum Ali](https://linkedin.com/in/smeesumali)
 
 ## Acknowledgements
 
-- [Next.js](https://nextjs.org/) for powering the frontend.
-- [NestJS](https://nestjs.com/) for the robust backend framework.
-- [Docker](https://www.docker.com/) for containerization.
-- [pnpm](https://pnpm.io/) for efficient package management.
-- Testing frameworks and libraries for robust application testing.
+- **Next.js** - React framework for building the frontend
+- **NestJS** - Node.js framework for building the backend
+- **PostgreSQL** - Relational database
+- **TypeORM** - ORM for database operations
+- **Docker** - Containerization platform
+- **TypeScript** - Type-safe JavaScript
+- **Material-UI (MUI)** - React component library for Material Design
+- **Emotion** - CSS-in-JS library used by Material-UI for styling
 
 ---
 

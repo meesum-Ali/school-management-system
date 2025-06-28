@@ -2,6 +2,39 @@
 
 This document records significant architectural and technical decisions made during the development of the School Management System.
 
+## 2025-06-28: Material-UI Implementation
+
+### UI Framework Selection
+- **Chosen Framework**: Material-UI (MUI) v5
+  - **Rationale**:
+    - Provides a comprehensive set of pre-built, accessible React components following Google's Material Design guidelines.
+    - Offers a consistent design system with theming support for brand customization.
+    - Strong TypeScript support aligns with our tech stack.
+    - Active community and good documentation.
+    - Built-in responsive design utilities.
+
+### Implementation Details
+- **Component Library**: Using MUI's core components for all UI elements (Buttons, Forms, Dialogs, etc.)
+- **Theming**: Custom theme configuration in `frontend/src/theme` to match brand colors and typography.
+- **Styling**: Using Emotion (included with MUI v5) for component styling.
+- **Icons**: Utilizing `@mui/icons-material` for consistent iconography.
+- **Responsive Design**: Leveraging MUI's Grid and Box components with responsive breakpoints.
+
+### Custom Components
+- Creating reusable wrapper components that extend MUI components with our custom styling and behavior.
+- Documenting component usage in Storybook for better developer experience.
+
+### Benefits
+- Faster UI development with pre-built, accessible components.
+- Consistent look and feel across the application.
+- Responsive design out of the box.
+- Easy theming and customization.
+- Strong TypeScript support for better developer experience.
+
+### Integration with Next.js
+- Using the `@emotion/cache` to ensure proper server-side rendering with Next.js.
+- Wrapped the application with `ThemeProvider` and `CssBaseline` for consistent styling.
+
 ## 2025-06-26: Initial Project Setup
 
 ### Technology Stack
