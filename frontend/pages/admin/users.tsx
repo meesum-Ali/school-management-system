@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+// Removed useRouter import as it's not used
 import UserList from '../../components/Users/UserList';
 import { fetchUsers, deleteUser as apiDeleteUser } from '../../utils/api';
 import { User, UserRole } from '../../types/user';
@@ -11,7 +11,7 @@ const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const router = useRouter(); // Keep if navigation is needed from here
+  // const router = useRouter(); // Removed as it's not used
 
   const loadUsers = async () => {
     try {

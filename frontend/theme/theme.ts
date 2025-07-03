@@ -1,16 +1,16 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface Theme {
     custom: {
-      drawerWidth: number;
-    };
+      drawerWidth: number
+    }
   }
   // Allow configuration using `createTheme`
   interface ThemeOptions {
     custom?: {
-      drawerWidth?: number;
-    };
+      drawerWidth?: number
+    }
   }
 }
 
@@ -107,6 +107,6 @@ const theme = createTheme({
   custom: {
     drawerWidth: 240,
   },
-});
+})
 
-export default theme;
+export default theme

@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 
@@ -13,9 +13,9 @@ const UnauthorizedPage: React.FC = () => {
         <p className='text-gray-600 dark:text-gray-400 mb-6'>
           You do not have permission to view this page.
         </p>
-        <Link href='/login'>
-          <Button className='w-auto px-4 py-2'>Go to Login</Button>
-        </Link>
+        <Button component={Link} to='/login' className='w-auto px-4 py-2'>
+          Go to Login
+        </Button>
       </Card>
     </div>
   )

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Student } from '../../types/student';
@@ -14,9 +14,9 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
     <Card>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Student Management</h1>
-        <Link href="/admin/students/create">
-          <Button>Create Student</Button>
-        </Link>
+        <Button component={Link} to="/admin/students/create">
+          Create Student
+        </Button>
       </div>
       {students.length === 0 ? (
         <p>No students found.</p>
@@ -52,9 +52,9 @@ const StudentList: React.FC<StudentListProps> = ({ students, onDelete }) => {
                     {new Date(student.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                    <Link href={`/admin/students/${student.id}`} passHref>
-                      <Button variant="outline" size="sm" className="mr-2">Edit</Button>
-                    </Link>
+                    <Button component={Link} to={`/admin/students/${student.id}`} variant="outline" size="sm" className="mr-2">
+                      Edit
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"

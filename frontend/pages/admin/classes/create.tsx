@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom'; // Changed import
 import ClassForm from '../../../components/Classes/ClassForm';
 import { createClass as apiCreateClass } from '../../../utils/api';
 import { Class, CreateClassDto, UpdateClassDto } from '../../../types/class';
@@ -9,9 +9,8 @@ import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 import { AuthContext } from '../../../contexts/AuthContext';
 
-
 const CreateClassPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed hook
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useContext(AuthContext);
@@ -24,7 +23,7 @@ const CreateClassPage = () => {
     setError(null);
     try {
       await apiCreateClass(createData);
-      router.push('/admin/classes');
+      navigate('/admin/classes'); // Changed to navigate
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create class.';
       setError(errorMessage);

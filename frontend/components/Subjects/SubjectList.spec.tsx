@@ -4,11 +4,13 @@ import '@testing-library/jest-dom';
 import SubjectList from './SubjectList';
 import { Subject } from '../../types/subject';
 
-jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
-    return <a href={href}>{children}</a>;
-  };
-});
+// Mock react-router-dom Link component
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => {
+    return <a href={to}>{children}</a>;
+  },
+}));
 
 describe('SubjectList', () => {
   const mockSubjects: Subject[] = [

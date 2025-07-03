@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useNavigate } from 'react-router-dom'; // Changed import
 import SubjectForm from '../../../components/Subjects/SubjectForm';
 import { fetchSubjectById, updateSubject as apiUpdateSubject } from '../../../utils/api';
 import { Subject, UpdateSubjectDto } from '../../../types/subject';
@@ -10,8 +10,8 @@ import Notification from '../../../components/Layout/Notification';
 import { AuthContext } from '../../../contexts/AuthContext';
 
 const EditSubjectPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const navigate = useNavigate(); // Added for navigation
+  const { id } = useParams<{ id: string }>(); // Changed to useParams, ensure type for id
   const [subject, setSubject] = useState<Subject | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +49,7 @@ const EditSubjectPage = () => {
     setError(null);
     try {
       await apiUpdateSubject(id, data);
-      router.push('/admin/subjects');
+      navigate('/admin/subjects'); // Changed to navigate
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update subject.';
       setError(errorMessage);

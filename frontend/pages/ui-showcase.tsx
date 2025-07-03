@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async'; // Changed import
 import { 
   Box, 
   Container, 
@@ -36,9 +36,9 @@ const UIShowcase = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Head>
+      <Helmet> {/* Changed Head to Helmet */}
         <title>UI Components Showcase</title>
-      </Head>
+      </Helmet>
 
       <Box mb={6}>
         <Typography variant="h4" component="h1" gutterBottom>

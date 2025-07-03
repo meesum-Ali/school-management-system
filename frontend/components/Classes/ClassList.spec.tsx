@@ -4,12 +4,26 @@ import '@testing-library/jest-dom';
 import ClassList from './ClassList';
 import { Class } from '../../types/class'; // Assuming Class type includes id, name, level, homeroomTeacherId, subjects array
 
-// Mock Next.js Link component
-jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
-    return <a href={href}>{children}</a>;
-  };
-});
+// Mock react-router-dom Link component
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => {
+    // The Button component will receive 'to' as 'href' if 'component={Link}' is used.
+    // Or, if Link wraps Button, children is Button.
+    // For <Button component={Link} to="...">, this mock might not be strictly necessary
+    // if RTL correctly renders the underlying <a> tag from the MUI Button's behavior.
+    // However, providing a simple mock ensures tests don't break due to Link internals.
+    // Let's assume the MUI Button with component={Link} renders an <a> tag with href={to}.
+    // If children is a component (like Button), we need to render it.
+    // If children is text, it's simpler.
+    // The actual rendered output by RTL will be an <a href={to}>...</a> due to MUI Button's behavior.
+    // This mock just ensures 'Link' is defined.
+    // A more accurate mock if Link wraps a component:
+    // return React.cloneElement(children as React.ReactElement, { href: to });
+    // For now, a simple anchor is fine for testing href.
+    return <a href={to}>{children}</a>;
+  },
+}));
 
 describe('ClassList', () => {
   const mockClasses: Class[] = [

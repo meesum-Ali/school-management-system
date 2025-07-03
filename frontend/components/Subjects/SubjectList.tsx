@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Subject } from '../../types/subject';
@@ -14,9 +14,9 @@ const SubjectList: React.FC<SubjectListProps> = ({ subjects, onDelete }) => {
     <Card>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Subject Management</h1>
-        <Link href="/admin/subjects/create" passHref>
-          <Button>Create Subject</Button>
-        </Link>
+        <Button component={Link} to="/admin/subjects/create">
+          Create Subject
+        </Button>
       </div>
       {subjects.length === 0 ? (
         <p>No subjects found.</p>
@@ -42,9 +42,9 @@ const SubjectList: React.FC<SubjectListProps> = ({ subjects, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs">{subject.description || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{subject.classes?.length || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                    <Link href={`/admin/subjects/${subject.id}`} passHref>
-                      <Button variant="outline" size="sm" className="mr-2">Edit / View Classes</Button>
-                    </Link>
+                    <Button component={Link} to={`/admin/subjects/${subject.id}`} variant="outline" size="sm" className="mr-2">
+                      Edit / View Classes
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"

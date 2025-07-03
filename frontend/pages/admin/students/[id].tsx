@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useNavigate } from 'react-router-dom'; // Changed import
 import StudentForm from '../../../components/Students/StudentForm';
 import { fetchStudentById, updateStudent as apiUpdateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
 import { Student, UpdateStudentDto } from '../../../types/student';
@@ -10,8 +10,8 @@ import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 
 const EditStudentPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const navigate = useNavigate(); // Added for navigation
+  const { id } = useParams<{ id: string }>(); // Changed to useParams, ensure type for id
   const [student, setStudent] = useState<Student | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true); // For student data
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +62,7 @@ const EditStudentPage = () => {
       // The dateOfBirth should already be in YYYY-MM-DD format from the form
       // No need to convert it since it's already a string
       await apiUpdateStudent(id as string, data);
-      router.push('/admin/students');
+      navigate('/admin/students'); // Changed to navigate
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update student.');
       console.error(err);

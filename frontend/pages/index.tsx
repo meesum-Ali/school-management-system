@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom'; // Changed import
 
 const Home = () => {
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed hook
 
   useEffect(() => {
     // Redirect to login page by default
-    router.push('/login');
-  }, [router]);
+    navigate('/login', { replace: true }); // Changed method, added replace: true
+  }, [navigate]);
 
-  return null; // This page will immediately redirect, so no need to render anything
+  return null; // This page will immediately redirect
 };
 
 export default Home;
