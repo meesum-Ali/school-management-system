@@ -3,14 +3,15 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StudentList from './StudentList';
 import { Student } from '../../types/student';
-import { Button } from '../ui/Button'; // Assuming Button is used and Next.js Link is handled
+import { Button } from '../ui/Button'; // Assuming Button is used
 
-// Mock Next.js Link component
-jest.mock('next/link', () => {
-  return ({children, href}: {children: React.ReactNode, href: string}) => {
-    return <a href={href}>{children}</a>;
-  };
-});
+// Mock react-router-dom Link component
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => {
+    return <a href={to}>{children}</a>;
+  },
+}));
 
 // Mock Button component if it has complex logic or styles affecting tests
 // jest.mock('../ui/Button', () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; // Added useEffect
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom'; // Changed import
 import StudentForm from '../../../components/Students/StudentForm';
 import { createStudent as apiCreateStudent, fetchClasses } from '../../../utils/api'; // Added fetchClasses
 import { CreateStudentDto, UpdateStudentDto } from '../../../types/student';
@@ -10,7 +10,7 @@ import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 
 const CreateStudentPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed hook
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [availableClasses, setAvailableClasses] = useState<Class[]>([]);
@@ -40,7 +40,7 @@ const CreateStudentPage = () => {
       // The dateOfBirth is already in YYYY-MM-DD format from the form
       // Type assertion to CreateStudentDto since we're in the create page
       await apiCreateStudent(data as CreateStudentDto);
-      router.push('/admin/students');
+      navigate('/admin/students'); // Changed to navigate
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create student.');
       console.error(err);

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { User } from '../../types/user'; // Using the new User type
@@ -14,9 +14,9 @@ const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
     <Card>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">User Management</h1>
-        <Link href="/admin/users/create" passHref>
-          <Button>Create User</Button>
-        </Link>
+        <Button component={Link} to="/admin/users/create">
+          Create User
+        </Button>
       </div>
       {users.length === 0 ? (
         <p>No users found.</p>
@@ -49,9 +49,9 @@ const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
                     }
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                    <Link href={`/admin/users/${user.id}`} passHref>
-                      <Button variant="outline" size="sm" className="mr-2">Edit</Button>
-                    </Link>
+                    <Button component={Link} to={`/admin/users/${user.id}`} variant="outline" size="sm" className="mr-2">
+                      Edit
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"

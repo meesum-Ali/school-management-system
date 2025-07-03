@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+// Removed useRouter import as it's not used
 import StudentList from '../../components/Students/StudentList';
 import { fetchStudents, deleteStudent as apiDeleteStudent } from '../../utils/api';
 import { Student } from '../../types/student';
@@ -12,7 +12,7 @@ const StudentsPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  // const router = useRouter(); // Removed as it's not used
 
   const loadStudents = async () => {
     try {

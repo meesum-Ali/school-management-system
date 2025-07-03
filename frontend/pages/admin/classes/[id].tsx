@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useNavigate } from 'react-router-dom'; // Changed import
 import ClassForm from '../../../components/Classes/ClassForm';
 import {
     fetchClassById,
@@ -23,8 +23,8 @@ import { Card } from '../../../components/ui/Card';
 import { Select } from '../../../components/ui/Select'; // Assuming a Select component
 
 const EditClassPage = () => {
-  const router = useRouter();
-  const { id: classId } = router.query; // classId from route
+  const navigate = useNavigate(); // Added for navigation
+  const { id: classId } = useParams<{ id: string }>(); // classId from route, ensure type for id
   const [classInstance, setClassInstance] = useState<Class | undefined>(undefined);
   const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
   const [selectedSubjectToAssign, setSelectedSubjectToAssign] = useState<string>('');
@@ -96,7 +96,7 @@ const EditClassPage = () => {
       const updatedClass = await apiUpdateClass(classId, data);
       setClassInstance(updatedClass); // Update local state with returned class
       // Optionally show a success notification here before or instead of push
-      // router.push('/admin/classes'); // Or stay on page
+      // navigate('/admin/classes'); // Or stay on page, example of navigation
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update class.';
       setError(errorMessage);
