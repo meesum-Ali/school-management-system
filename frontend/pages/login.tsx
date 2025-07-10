@@ -1,9 +1,7 @@
 // frontend/pages/login.tsx
 
-'use client'
-
 import React, { useState, useContext } from 'react'
-import { useRouter } from 'next/router'
+import { useNavigate, Link } from 'react-router-dom' // Changed import
 import { AuthContext } from '../contexts/AuthContext'
 import { UserIcon, LockClosedIcon, BuildingOffice2Icon } from '@heroicons/react/24/solid' // Added BuildingOffice2Icon
 import { Button } from '../components/ui/Button'
@@ -13,7 +11,7 @@ import { PasswordToggle } from '../components/ui/PasswordToggle'
 
 const LoginPage: React.FC = () => {
   const { login } = useContext(AuthContext)
-  const router = useRouter()
+  const navigate = useNavigate() // Changed hook
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -26,7 +24,7 @@ const LoginPage: React.FC = () => {
     try {
       // Pass schoolIdentifier to login function. It's optional.
       await login(username, password, schoolIdentifier || undefined)
-      router.push('/admin/dashboard')
+      navigate('/admin/dashboard') // Changed to navigate
     } catch (err) {
       console.error(err)
       setError('Invalid credentials')
@@ -106,12 +104,12 @@ const LoginPage: React.FC = () => {
         {/* Additional Links */}
         <p className='text-center text-gray-600 dark:text-gray-400 mt-4'>
           Don&apos;t have an account?{' '}
-          <a
-            href='/register'
+          <Link
+            to='/register' // Changed to Link and to prop
             className='text-blue-600 dark:text-blue-400 hover:underline'
           >
             Register here
-          </a>
+          </Link>
         </p>
       </Card>
     </div>

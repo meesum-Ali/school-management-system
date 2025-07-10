@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom'; // Changed import
 import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import AdminLayout from '../../../components/Layout/AdminLayout';
 import UserForm from '../../../components/Users/UserForm';
@@ -8,7 +8,7 @@ import { CreateUserDto, UpdateUserDto } from '../../../types/user';
 import Notification from '../../../components/Layout/Notification';
 
 const AddUserPage: React.FC = () => {
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed hook
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ const AddUserPage: React.FC = () => {
       // Type assertion to CreateUserDto since we're in the create page
       await apiCreateUser(data as CreateUserDto);
       // Optionally show success message before navigating
-      router.push('/admin/users');
+      navigate('/admin/users'); // Changed to navigate
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create user.';
       setError(errorMessage);

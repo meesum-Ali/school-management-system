@@ -29,8 +29,7 @@ import {
   CalendarMonth,
   Assessment,
 } from '@mui/icons-material';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; // Changed imports
 
 interface AppBarProps {
   onMenuClick?: () => void;
@@ -38,18 +37,20 @@ interface AppBarProps {
   sx?: SxProps<Theme>;
 }
 
+// Note: paths for menuItems might need to be prefixed with /admin if they are all admin paths
 const menuItems = [
-  { title: 'Dashboard', path: '/dashboard', icon: <Dashboard fontSize="small" /> },
-  { title: 'Students', path: '/students', icon: <Group fontSize="small" /> },
-  { title: 'Teachers', path: '/teachers', icon: <School fontSize="small" /> },
-  { title: 'Classes', path: '/classes', icon: <Book fontSize="small" /> },
-  { title: 'Schedule', path: '/schedule', icon: <CalendarMonth fontSize="small" /> },
-  { title: 'Reports', path: '/reports', icon: <Assessment fontSize="small" /> },
+  { title: 'Dashboard', path: '/admin/dashboard', icon: <Dashboard fontSize="small" /> },
+  { title: 'Students', path: '/admin/students', icon: <Group fontSize="small" /> },
+  { title: 'Teachers', path: '/admin/teachers', icon: <School fontSize="small" /> }, // Assuming /admin/teachers
+  { title: 'Classes', path: '/admin/classes', icon: <Book fontSize="small" /> },
+  { title: 'Schedule', path: '/admin/schedule', icon: <CalendarMonth fontSize="small" /> }, // Assuming /admin/schedule
+  { title: 'Reports', path: '/admin/reports', icon: <Assessment fontSize="small" /> }, // Assuming /admin/reports
 ];
 
 export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed hook
+  const location = useLocation(); // Added hook
   const theme = useTheme();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -61,9 +62,14 @@ export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarP
   };
 
   const handleLogout = () => {
-    // Handle logout logic here
+    // Handle logout logic here (e.g., call auth context logout)
     handleMenuClose();
-    router.push('/login');
+    navigate('/login'); // Changed from router.push
+  };
+
+  const handleProfileNavigation = (path: string) => {
+    handleMenuClose();
+    navigate(path); // Changed from router.push
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -118,13 +124,14 @@ export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarP
         </Typography>
       </Box>
       <Divider />
-      <MenuItem onClick={() => { handleMenuClose(); router.push('/profile'); }}>
+      {/* Assuming /admin/profile and /admin/settings for these routes */}
+      <MenuItem onClick={() => handleProfileNavigation('/admin/profile')}>
         <ListItemIcon>
           <AccountCircle fontSize="small" />
         </ListItemIcon>
         <ListItemText>Profile</ListItemText>
       </MenuItem>
-      <MenuItem onClick={() => { handleMenuClose(); router.push('/settings'); }}>
+      <MenuItem onClick={() => handleProfileNavigation('/admin/settings')}>
         <ListItemIcon>
           <Settings fontSize="small" />
         </ListItemIcon>
@@ -186,11 +193,13 @@ export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarP
             {menuItems.map((item) => (
               <Button
                 key={item.path}
-                component={Link}
-                href={item.path}
+                component={Link} // Use react-router-dom Link
+                to={item.path} // Changed href to to
                 startIcon={item.icon}
                 sx={{
-                  color: router.pathname === item.path ? 'primary.main' : 'text.primary',
+                  // Using location.pathname to check active link
+                  color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                  fontWeight: location.pathname === item.path ? 'bold' : 'normal',
                   '&:hover': {
                     backgroundColor: 'action.hover',
                   },

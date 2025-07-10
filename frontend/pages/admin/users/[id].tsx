@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useNavigate } from 'react-router-dom'; // Changed import
 import UserForm from '../../../components/Users/UserForm';
 import { fetchUserById, updateUser as apiUpdateUser } from '../../../utils/api';
 import { User, UpdateUserDto, UserRole } from '../../../types/user';
@@ -8,8 +8,8 @@ import ProtectedRoute from '../../../components/Auth/ProtectedRoute';
 import Notification from '../../../components/Layout/Notification';
 
 const EditUserPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const navigate = useNavigate(); // Added for navigation
+  const { id } = useParams<{ id: string }>(); // Changed to useParams, ensure type for id
   const [user, setUser] = useState<User | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +47,7 @@ const EditUserPage = () => {
     try {
       await apiUpdateUser(id, data);
       // Optionally show success message
-      router.push('/admin/users');
+      navigate('/admin/users'); // Changed to navigate
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update user.';
       setError(errorMessage);

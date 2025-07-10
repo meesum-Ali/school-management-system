@@ -4,12 +4,13 @@ import '@testing-library/jest-dom';
 import UserList from './UserList';
 import { User, UserRole } from '../../types/user';
 
-// Mock Next.js Link component
-jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
-    return <a href={href}>{children}</a>;
-  };
-});
+// Mock react-router-dom Link component
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => {
+    return <a href={to}>{children}</a>;
+  },
+}));
 
 describe('UserList', () => {
   const mockUsers: User[] = [

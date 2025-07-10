@@ -1,6 +1,6 @@
 # AI Agent Contribution Guidelines
 
-This repository contains a Next.js frontend and a NestJS backend written in TypeScript. The product goals and requirements are described in `School Management System PRD.pdf`.
+This repository contains a Vite-based React frontend and a NestJS backend written in TypeScript. The product goals and requirements are described in `School Management System PRD.pdf`.
 
 ## General Principles
 - Follow the architectural and coding conventions outlined in `DevelopmentGuidelines.md` and `CONTRIBUTING.md`.

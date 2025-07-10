@@ -1,34 +1,54 @@
-import { useContext, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { AuthContext } from '../../contexts/AuthContext'
+import React, { useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AuthContext } from '../../contexts/AuthContext'; // Adjust path if necessary due to src/
+import { UserRole } from '../../types/user'; // Adjust path if necessary
 
 interface ProtectedRouteProps {
-  requiredRoles?: string[]
-  children: React.ReactNode
+  requiredRoles?: UserRole[];
+  children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles, children }) => {
-  const { isAuthenticated, user } = useContext(AuthContext)
-  const router = useRouter()
+  const { isAuthenticated, user, isLoading } = useContext(AuthContext); // Assuming AuthContext provides isLoading
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    if (isLoading) {
+      return; // Wait for authentication status to be resolved
+    }
+
     if (!isAuthenticated) {
-      router.push('/login')
+      navigate('/login', { state: { from: location }, replace: true });
     } else if (
       requiredRoles &&
       requiredRoles.length > 0 &&
-      user?.roles &&
-      !user.roles.some(role => requiredRoles.includes(role))
+      (!user?.roles || !user.roles.some(role => requiredRoles.includes(role as UserRole)))
     ) {
-      router.push('/unauthorized')
+      navigate('/unauthorized', { replace: true });
     }
-  }, [isAuthenticated, requiredRoles, user, router])
+  }, [isAuthenticated, user, requiredRoles, navigate, isLoading, location]);
 
-  if (!isAuthenticated) {
-    return <div>Loading...</div>
+  if (isLoading) {
+    return <div>Loading Authentication...</div>; // Or a global spinner
   }
 
-  return <>{children}</>
-}
+  if (!isAuthenticated) {
+    // This case should ideally be caught by the useEffect redirect,
+    // but as a fallback or for initial render before effect.
+    return <div>Redirecting to login...</div>;
+  }
 
-export default ProtectedRoute
+  if (
+    requiredRoles &&
+    requiredRoles.length > 0 &&
+    (!user?.roles || !user.roles.some(role => requiredRoles.includes(role as UserRole)))
+  ) {
+    // This case should ideally be caught by the useEffect redirect.
+    return <div>Redirecting to unauthorized...</div>;
+  }
+
+  return <>{children}</>;
+};
+
+export default ProtectedRoute;
