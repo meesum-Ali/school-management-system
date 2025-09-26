@@ -86,6 +86,30 @@ services:
     networks:
       - sms-network
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command:
+      - "start-dev"
+      - "--import-realm"
+    volumes:
+      - ./init-db/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=db
+      - KC_DB_URL_DATABASE=sms_db
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=postgres
+      - KC_DB_SCHEMA=public
+    ports:
+      - "8888:8080"
+    networks:
+      - sms-network
+    depends_on:
+      - db
+
 networks:
   sms-network:
     driver: bridge
