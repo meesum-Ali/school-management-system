@@ -1,20 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ClassesService } from './classes.service';
-import { Class } from './entities/class.entity';
 import { Student } from '../students/entities/student.entity';
-import { Subject } from '../subjects/entities/subject.entity';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
-import { ClassDto } from './dto/class.dto';
-import { NotFoundException, ConflictException } from '@nestjs/common';
-import { TenantProvider } from '../core/tenant/tenant.provider';
 import { School } from '../schools/entities/school.entity';
 import { Teacher } from '../teachers/entities/teacher.entity';
-import { StudentDto } from '../students/dto/student.dto';
-import { SubjectDto } from '../subjects/dto/subject.dto';
-import { SubjectBasicDto } from '../subjects/dto/subject-basic.dto';
 import { UsersService } from '../users/users.service';
 import { User, UserRole } from '../users/entities/user.entity';
 import { ClassEntity } from './entities/class.entity';
@@ -34,6 +26,7 @@ const mockClassRepository = () => ({
 
 const mockSubjectRepository = () => ({
     findBy: jest.fn(),
+    findOne: jest.fn(),
   });
 
 const mockUsersService = () => ({
@@ -44,9 +37,16 @@ const mockSchool = new School();
 mockSchool.id = 'school-1';
 mockSchool.name = 'Test School';
 
-const mockTeacher = new User();
+const mockTeacherUser = new User();
+mockTeacherUser.id = 'teacher-user-1';
+mockTeacherUser.roles = [UserRole.TEACHER];
+
+const mockTeacher = new Teacher();
 mockTeacher.id = 'teacher-1';
-mockTeacher.roles = [UserRole.TEACHER];
+mockTeacher.userId = mockTeacherUser.id;
+mockTeacher.schoolId = mockSchool.id;
+mockTeacher.employeeId = 'EMP-1';
+mockTeacher.hireDate = new Date();
 
 const mockStudent1 = new Student();
 mockStudent1.id = 'student-1';
@@ -64,7 +64,6 @@ describe('ClassesService', () => {
   let service: ClassesService;
   let classRepository: jest.Mocked<Repository<ClassEntity>>;
   let subjectRepository: jest.Mocked<Repository<SubjectEntity>>;
-  let usersService: jest.Mocked<UsersService>;
 
   beforeEach(async () => {
     mockClassEntity = new ClassEntity();
@@ -92,7 +91,10 @@ describe('ClassesService', () => {
     service = module.get<ClassesService>(ClassesService);
     classRepository = module.get(getRepositoryToken(ClassEntity));
     subjectRepository = module.get(getRepositoryToken(SubjectEntity));
-    usersService = module.get(UsersService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -103,7 +105,7 @@ describe('ClassesService', () => {
     const createDto: CreateClassDto = { name: 'Grade 11', level: '11' };
 
     it('should create a class successfully', async () => {
-      classRepository.findOne.mockResolvedValue(null);
+      classRepository.findOne.mockResolvedValueOnce(null);
       const createdEntity = { ...mockClassEntity, ...createDto, subjects: Promise.resolve([]) };
       classRepository.create.mockReturnValue(createdEntity);
       classRepository.save.mockResolvedValue(createdEntity);
@@ -122,10 +124,12 @@ describe('ClassesService', () => {
     const updateDto: UpdateClassDto = { name: 'Grade 10 Advanced' };
 
     it('should update a class successfully', async () => {
-        classRepository.findOne.mockResolvedValue(mockClassEntity);
+        classRepository.findOne
+          .mockResolvedValueOnce(mockClassEntity)
+          .mockResolvedValueOnce(mockClassEntity);
         const updatedEntity = { ...mockClassEntity, ...updateDto };
         classRepository.save.mockResolvedValue(updatedEntity);
-        classRepository.findOne.mockResolvedValue(updatedEntity);
+        classRepository.findOne.mockResolvedValueOnce(updatedEntity);
 
         const result = await service.update('class-1', updateDto, 'school-1');
 
@@ -136,7 +140,8 @@ describe('ClassesService', () => {
   describe('assignSubject', () => {
     it('should assign a subject to a class', async () => {
         classRepository.findOne.mockResolvedValue(mockClassEntity);
-        subjectRepository.findBy.mockResolvedValue([mockSubject2]);
+        subjectRepository.findBy.mockResolvedValueOnce([mockSubject2]);
+        subjectRepository.findOne.mockResolvedValue(mockSubject2);
         mockClassEntity.subjects = Promise.resolve([]);
 
         await service.assignSubject('class-1', 'subject-2', 'school-1');
@@ -148,7 +153,8 @@ describe('ClassesService', () => {
   describe('removeSubjectFromClass', () => {
     it('should remove a subject from a class', async () => {
         classRepository.findOne.mockResolvedValue(mockClassEntity);
-        subjectRepository.findBy.mockResolvedValue([mockSubject1]);
+        subjectRepository.findBy.mockResolvedValueOnce([mockSubject1]);
+        subjectRepository.findOne.mockResolvedValue(mockSubject1);
 
         await service.removeSubjectFromClass('class-1', 'subject-1', 'school-1');
 

@@ -1,20 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, QueryFailedError, Not } from 'typeorm';
+import { Repository, QueryFailedError } from 'typeorm';
 import {
   ConflictException,
-  ForbiddenException,
   NotFoundException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from './users.service';
 import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDto } from './dto/user.dto';
-import { TenantProvider } from '../core/tenant/tenant.provider';
-import { REQUEST } from '@nestjs/core';
 import { School } from '../schools/entities/school.entity';
 
 // Mock bcrypt
@@ -85,6 +80,10 @@ describe('UsersService', () => {
     (bcrypt.compare as jest.Mock).mockClear();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -100,7 +99,7 @@ describe('UsersService', () => {
     };
 
     it('should create and return a user dto if username and email are unique', async () => {
-        repository.findOne.mockResolvedValue(null);
+        repository.findOne.mockResolvedValueOnce(null);
         const newUser = new User();
         Object.assign(newUser, createUserDto, {
           id: 'new-uuid',
@@ -112,13 +111,22 @@ describe('UsersService', () => {
 
         const result = await service.create(createUserDto);
 
-        expect(result).toBeInstanceOf(UserDto);
-        expect(result.username).toEqual(createUserDto.username);
-        expect(result).not.toHaveProperty('password');
+        expect(result).toMatchObject({
+          username: createUserDto.username,
+          email: createUserDto.email,
+          firstName: createUserDto.firstName,
+          lastName: createUserDto.lastName,
+          roles: createUserDto.roles,
+        });
+        expect((result as any).password).toBeUndefined();
       });
 
     it('should throw ConflictException if username already exists', async () => {
-      repository.findOne.mockResolvedValue(mockUserEntity);
+      repository.findOne.mockResolvedValueOnce(null);
+      const uniqueViolation = new QueryFailedError('', [], new Error());
+      (uniqueViolation as any).code = '23505';
+      (uniqueViolation as any).message = 'duplicate key value violates unique constraint "users_username_key"';
+      repository.save.mockRejectedValueOnce(uniqueViolation);
       await expect(service.create(createUserDto)).rejects.toThrow(
         ConflictException,
       );
@@ -127,28 +135,48 @@ describe('UsersService', () => {
 
   describe('findAll', () => {
     it('should return an array of user dtos for the current tenant', async () => {
-      repository.find.mockResolvedValue([mockUserEntity]);
+      repository.find.mockResolvedValueOnce([mockUserEntity]);
       const result = await service.findAll('school-1');
       expect(repository.find).toHaveBeenCalledWith({
         where: { schoolId: 'school-1' },
       });
-      expect(result).toEqual([new UserDto(mockUserEntity)]);
-      expect(result[0].schoolId).toEqual('school-1');
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        id: mockUserEntity.id,
+        username: mockUserEntity.username,
+        email: mockUserEntity.email,
+        firstName: mockUserEntity.firstName,
+        lastName: mockUserEntity.lastName,
+        isActive: mockUserEntity.isActive,
+        roles: mockUserEntity.roles,
+        schoolId: 'school-1',
+      });
+      expect((result[0] as any).password).toBeUndefined();
     });
   });
 
   describe('findOne', () => {
     it('should return a user dto if found in the current tenant', async () => {
-      repository.findOneBy.mockResolvedValue(mockUserEntity);
+      repository.findOneBy.mockResolvedValueOnce(mockUserEntity);
       const result = await service.findOne('some-uuid', 'school-1');
       expect(repository.findOneBy).toHaveBeenCalledWith({
         id: 'some-uuid'
       });
-      expect(result).toEqual(new UserDto(mockUserEntity));
+      expect(result).toMatchObject({
+        id: mockUserEntity.id,
+        username: mockUserEntity.username,
+        email: mockUserEntity.email,
+        firstName: mockUserEntity.firstName,
+        lastName: mockUserEntity.lastName,
+        isActive: mockUserEntity.isActive,
+        roles: mockUserEntity.roles,
+        schoolId: mockUserEntity.schoolId,
+      });
+      expect((result as any).password).toBeUndefined();
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      repository.findOneBy.mockResolvedValue(null);
+      repository.findOneBy.mockResolvedValueOnce(null);
       await expect(service.findOne('bad-uuid', 'school-1')).rejects.toThrow(
         NotFoundException,
       );
@@ -160,7 +188,6 @@ describe('UsersService', () => {
       firstName: 'Updated',
       email: 'updated@example.com',
     };
-    const adminUser = { ...mockUserEntity, roles: [UserRole.SCHOOL_ADMIN] };
 
     beforeEach(() => {
       // Mock the initial lookup in the update method
@@ -169,14 +196,17 @@ describe('UsersService', () => {
 
     it('should update and return a user dto if found', async () => {
         const updatedUser = { ...mockUserEntity, ...updateUserDto };
-        repository.findOne.mockResolvedValue(null);
+        repository.findOne.mockResolvedValueOnce(null);
         repository.save.mockResolvedValue(updatedUser);
 
         const result = await service.update('some-uuid', updateUserDto, 'school-1');
 
         expect(repository.save).toHaveBeenCalledWith(expect.objectContaining(updateUserDto));
-        expect(result).toBeInstanceOf(UserDto);
-        expect(result.firstName).toEqual('Updated');
+        expect(result).toMatchObject({
+          id: mockUserEntity.id,
+          firstName: 'Updated',
+          email: updateUserDto.email,
+        });
       });
 
     it('should throw NotFoundException if user to update is not found', async () => {
@@ -187,14 +217,14 @@ describe('UsersService', () => {
     });
 
     it('should throw ConflictException if updated username already exists for another user', async () => {
-      const anotherUser = { ...mockUserEntity, id: 'another-uuid' };
-      repository.findOne.mockResolvedValue(anotherUser);
+      const conflictingUser = { ...mockUserEntity, id: 'another-uuid', username: 'newusername' };
+      repository.findOne.mockResolvedValueOnce(conflictingUser);
       await expect(
-        service.update('some-uuid', { username: 'testuser' }, 'school-1'),
+        service.update('some-uuid', { username: 'newusername' }, 'school-1'),
       ).rejects.toThrow(ConflictException);
       expect(repository.findOne).toHaveBeenCalledWith({
         where: {
-          username: 'testuser',
+          username: 'newusername',
           schoolId: 'school-1',
         },
       });
@@ -203,8 +233,8 @@ describe('UsersService', () => {
 
   describe('remove', () => {
     it('should remove a user successfully', async () => {
-      repository.findOneBy.mockResolvedValue(mockUserEntity);
-      repository.delete.mockResolvedValue({ affected: 1, raw: '' });
+      repository.findOneBy.mockResolvedValueOnce(mockUserEntity);
+      repository.delete.mockResolvedValueOnce({ affected: 1, raw: '' });
       await service.remove('some-uuid', 'school-1');
       expect(repository.findOneBy).toHaveBeenCalledWith({
         id: 'some-uuid'
@@ -213,7 +243,7 @@ describe('UsersService', () => {
     });
 
     it('should throw NotFoundException if user to remove is not found', async () => {
-      repository.findOneBy.mockResolvedValue(null);
+      repository.findOneBy.mockResolvedValueOnce(null);
       await expect(service.remove('bad-uuid', 'school-1')).rejects.toThrow(
         NotFoundException,
       );
