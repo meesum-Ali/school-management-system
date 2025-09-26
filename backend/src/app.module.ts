@@ -24,10 +24,14 @@ import { Teacher } from './teachers/entities/teacher.entity';
 import { ClassSchedule } from './class-schedule/entities/class-schedule.entity';
 import { HealthModule } from './health/health.module';
 import { SuperAdminModule } from './core/super-admin/super-admin.module';
+import { KeycloakModule } from './keycloak/keycloak.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard, RoleGuard } from 'nest-keycloak-connect';
      // Import other modules as needed
 
      @Module({
        imports: [
+         KeycloakModule,
          ConfigModule.forRoot({
            isGlobal: true,
            load: [configuration],
@@ -47,29 +51,6 @@ import { SuperAdminModule } from './core/super-admin/super-admin.module';
              API_PREFIX: Joi.string().default('/api'),
            }),
          }),
-         TypeOrmModule.forRootAsync({
-           imports: [ConfigModule], // Make ConfigService available
-           useFactory: (configService: ConfigService) => ({
-             type: 'postgres',
-             host: configService.get<string>('database.host'),
-             port: configService.get<number>('database.port'),
-             username: configService.get<string>('database.username'),
-             password: configService.get<string>('database.password'),
-             database: configService.get<string>('database.name'),
-             entities: [
-  User,
-  Student,
-  ClassEntity,
-  SubjectEntity,
-  School,
-  Teacher,
-  ClassSchedule
-], // Add School entity
-             synchronize: configService.get<string>('NODE_ENV') !== 'production',
-             // You might want to add other TypeORM options like logging, etc.
-           }),
-           inject: [ConfigService], // Inject ConfigService into the factory
-         }),
          StudentsModule,
          UsersModule,
          AuthModule,
@@ -80,8 +61,30 @@ import { SuperAdminModule } from './core/super-admin/super-admin.module';
          ClassScheduleModule,
          HealthModule,
          SuperAdminModule,
+         TypeOrmModule.forRootAsync({
+           imports: [ConfigModule],
+           useFactory: (configService: ConfigService) => {
+             const dbConfig = configService.get('database');
+             return {
+               ...dbConfig,
+               autoLoadEntities: true,
+               synchronize: configService.get('env') !== 'production',
+             };
+           },
+           inject: [ConfigService],
+         }),
        ],
        controllers: [AppController],
-       providers: [AppService],
+       providers: [
+         AppService,
+         {
+           provide: APP_GUARD,
+           useClass: AuthGuard,
+         },
+         {
+           provide: APP_GUARD,
+           useClass: RoleGuard,
+         },
+       ],
      })
      export class AppModule {}

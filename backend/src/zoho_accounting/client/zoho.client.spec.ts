@@ -60,19 +60,20 @@ describe('ZohoClient', () => {
 
   describe('Constructor', () => {
     it('should initialize with config values', () => {
-      expect(mockConfigService.get).toHaveBeenCalledWith('ZOHO_REGION', 'com');
-      expect(mockConfigService.get).toHaveBeenCalledWith('ZOHO_CLIENT_ID');
-      // ... other config gets
+      expect(client['zohoConfig'].region).toBe('com');
+      expect(client['zohoConfig'].clientId).toBe('test_client_id');
       expect(client['zohoConfig'].organizationId).toBe('test_org_id');
     });
 
     it('should throw error if essential config is missing', () => {
-      mockConfigService.get.mockImplementationOnce((key: string) => {
-        if (key === 'ZOHO_CLIENT_ID') return undefined;
-        return 'test_value';
-      });
+      const tempConfigService = {
+        get: jest.fn((key: string) => {
+          if (key === 'ZOHO_CLIENT_ID') return undefined;
+          return 'test_value';
+        }),
+      };
       expect(
-        () => new ZohoClient(mockHttpService as any, mockConfigService as any),
+        () => new ZohoClient(mockHttpService as any, tempConfigService as any),
       ).toThrow('Zoho API configuration is incomplete.');
     });
   });
@@ -181,7 +182,7 @@ describe('ZohoClient', () => {
       const mockApiResponse: AxiosResponse = { data: { id: '456', ...postData }, status: 201, statusText: 'Created', headers: {}, config: {} as any };
       mockHttpService.request.mockReturnValue(of(mockApiResponse));
 
-      const response = await client.post('items', postData);
+      const response = await client.post<{id: string, name: string}>('items', postData);
       expect(response.data.id).toBe('456');
       expect(mockHttpService.request).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -203,6 +204,7 @@ describe('ZohoClient', () => {
         message: 'Request failed with status code 401',
         config: {} as any,
         response: { data: { message: 'Unauthorized' }, status: 401, statusText: 'Unauthorized', headers: {}, config: {} as any },
+        toJSON: () => ({}),
       };
       const successResponse: AxiosResponse = { data: { id: '123' }, status: 200, statusText: 'OK', headers: {}, config: {} as any };
       const refreshTokenResponse: AxiosResponse = {
@@ -217,7 +219,7 @@ describe('ZohoClient', () => {
       // Second call to request (retry) -> success
       mockHttpService.request.mockReturnValueOnce(of(successResponse));
 
-      const response = await client.get('items/123');
+      const response = await client.get<{id: string, name: string}>('items/123');
       expect(response.data.id).toBe('123');
       expect(client['zohoConfig'].accessToken).toBe('new_refreshed_token');
       expect(mockHttpService.post).toHaveBeenCalledTimes(1); // Token refresh
@@ -232,6 +234,7 @@ describe('ZohoClient', () => {
         message: 'Request failed with status code 500',
         config: {} as any,
         response: { data: { message: 'Server Error' }, status: 500, statusText: 'Internal Server Error', headers: {}, config: {} as any },
+        toJSON: () => ({}),
       };
       mockHttpService.request.mockReturnValue(throwError(() => errorResponse));
 
@@ -244,10 +247,12 @@ describe('ZohoClient', () => {
       const error401: AxiosError = {
         isAxiosError: true, name: 'AxiosError', message: 'Request failed with status code 401', config: {} as any,
         response: { data: { message: 'Unauthorized' }, status: 401, statusText: 'Unauthorized', headers: {}, config: {} as any },
+        toJSON: () => ({}),
       };
       const refreshError: AxiosError = {
         isAxiosError: true, name: 'AxiosError', message: 'Refresh failed', config: {} as any,
         response: { data: { error: 'invalid_grant' }, status: 400, statusText: 'Bad Request', headers: {}, config: {} as any },
+        toJSON: () => ({}),
       };
 
       mockHttpService.request.mockReturnValueOnce(throwError(() => error401)); // Initial request fails with 401
