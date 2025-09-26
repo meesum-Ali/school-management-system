@@ -1,19 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In, Not, IsNull } from 'typeorm';
+import { Repository, QueryFailedError } from 'typeorm';
 import { StudentsService } from './students.service';
 import { Student } from './entities/student.entity';
-import { Class } from '../classes/entities/class.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { StudentDto } from './dto/student.dto';
 import {
   NotFoundException,
   ConflictException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
-import { TenantProvider } from '../core/tenant/tenant.provider';
 import { School } from '../schools/entities/school.entity';
 import { ClassEntity } from '../classes/entities/class.entity';
 
@@ -82,6 +77,10 @@ describe('StudentsService', () => {
     classRepository = module.get(getRepositoryToken(ClassEntity));
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -96,11 +95,12 @@ describe('StudentsService', () => {
     };
 
     it('should create a student successfully', async () => {
-        studentRepository.findOne.mockResolvedValue(null);
         const createdStudent = { ...baseMockStudentEntity, ...createDto, id: 'student-2' };
+        studentRepository.findOne
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce(createdStudent);
         studentRepository.create.mockReturnValue(createdStudent);
         studentRepository.save.mockResolvedValue(createdStudent);
-        studentRepository.findOne.mockResolvedValue(createdStudent); // For the re-fetch
 
         const result = await service.create(createDto, 'school-1');
 
@@ -113,7 +113,13 @@ describe('StudentsService', () => {
       });
 
     it('should throw ConflictException if email already exists', async () => {
-        studentRepository.findOne.mockResolvedValue(baseMockStudentEntity);
+        const uniqueViolation = new QueryFailedError('', [], new Error());
+        (uniqueViolation as any).code = '23505';
+        (uniqueViolation as any).message = 'duplicate key value violates unique constraint on email';
+        const createdStudent = { ...baseMockStudentEntity, ...createDto, id: 'student-2' };
+        studentRepository.findOne.mockResolvedValue(null);
+        studentRepository.create.mockReturnValue(createdStudent);
+        studentRepository.save.mockRejectedValue(uniqueViolation);
       await expect(service.create(createDto, 'school-1')).rejects.toThrow(ConflictException);
     });
   });
@@ -133,7 +139,7 @@ describe('StudentsService', () => {
 
   describe('findOne', () => {
     it('should return a single student DTO if found', async () => {
-        studentRepository.findOne.mockResolvedValue(baseMockStudentEntity);
+        studentRepository.findOne.mockResolvedValueOnce(baseMockStudentEntity);
       const result = await service.findOne('student-1', 'school-1');
       expect(studentRepository.findOne).toHaveBeenCalledWith({
         where: { id: 'student-1', schoolId: 'school-1' },
@@ -143,7 +149,7 @@ describe('StudentsService', () => {
     });
 
     it('should throw NotFoundException if student not found', async () => {
-        studentRepository.findOne.mockResolvedValue(null);
+        studentRepository.findOne.mockResolvedValueOnce(null);
       await expect(service.findOne('non-existent', 'school-1')).rejects.toThrow(NotFoundException);
     });
   });
@@ -154,7 +160,7 @@ describe('StudentsService', () => {
     it('should update a student successfully', async () => {
       const existingStudent = { ...baseMockStudentEntity };
       const updatedStudent = { ...existingStudent, ...updateDto };
-      studentRepository.findOne.mockResolvedValue(existingStudent);
+      studentRepository.findOne.mockResolvedValueOnce(existingStudent);
       studentRepository.save.mockResolvedValue(updatedStudent);
 
       const result = await service.update('student-1', updateDto, 'school-1');
@@ -166,9 +172,13 @@ describe('StudentsService', () => {
 
     it('should throw ConflictException if updated email or studentId exists for another student', async () => {
       const updateDtoWithConflict: UpdateStudentDto = { email: 'another@example.com' };
-      studentRepository.findOne.mockResolvedValue(baseMockStudentEntity);
-      studentRepository.findOne.mockResolvedValueOnce(baseMockStudentEntity).mockResolvedValueOnce(baseMockStudentEntity);
-
+      const uniqueViolation = new QueryFailedError('', [], new Error());
+      (uniqueViolation as any).code = '23505';
+      (uniqueViolation as any).message = 'duplicate key value violates unique constraint on email';
+      studentRepository.findOne
+        .mockResolvedValueOnce(baseMockStudentEntity)
+        .mockResolvedValueOnce(null);
+      studentRepository.save.mockRejectedValue(uniqueViolation);
 
       await expect(service.update('student-1', updateDtoWithConflict, 'school-1')).rejects.toThrow(ConflictException);
     });
@@ -185,7 +195,7 @@ describe('StudentsService', () => {
       });
 
     it('should throw NotFoundException if student to remove is not found', async () => {
-        studentRepository.findOneBy.mockResolvedValue(null);
+        studentRepository.findOneBy.mockResolvedValueOnce(null);
       await expect(service.remove('non-existent', 'school-1')).rejects.toThrow(NotFoundException);
     });
   });

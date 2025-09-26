@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, QueryFailedError } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SubjectsService } from './subjects.service';
 import { SubjectEntity } from './entities/subject.entity';
 import { ClassEntity } from '../classes/entities/class.entity';
@@ -63,6 +63,10 @@ describe('SubjectsService', () => {
     );
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -72,7 +76,7 @@ describe('SubjectsService', () => {
     const createdEntity = { ...baseMockSubjectEntity, ...createDto, id: 'new-uuid', classes: Promise.resolve([]) };
 
     it('should create and return a subject DTO if name and code are unique', async () => {
-      repository.findOne.mockResolvedValue(null);
+      repository.findOne.mockResolvedValueOnce(null);
       repository.create.mockReturnValue(createdEntity);
       repository.save.mockResolvedValue(createdEntity);
 
@@ -94,7 +98,7 @@ describe('SubjectsService', () => {
   describe('findOne', () => {
     it('should return a subject DTO with classes if found', async () => {
       const subjectWithClasses = { ...baseMockSubjectEntity, classes: Promise.resolve([new ClassEntity()]) };
-      repository.findOne.mockResolvedValue(subjectWithClasses);
+      repository.findOne.mockResolvedValueOnce(subjectWithClasses);
       const result = await service.findOne('subject-uuid-1', 'school-uuid-1');
       expect(result.classes.length).toBeGreaterThan(0);
     });
@@ -105,10 +109,10 @@ describe('SubjectsService', () => {
     const updatedEntity = { ...baseMockSubjectEntity, ...updateDto };
 
     it('should update and return a subject DTO if found', async () => {
-        repository.findOneBy.mockResolvedValue(baseMockSubjectEntity);
-        repository.findOne.mockResolvedValue(null); // for conflict check
+        repository.findOneBy.mockResolvedValueOnce(baseMockSubjectEntity);
+        repository.findOne.mockResolvedValueOnce(null); // for conflict check
         repository.save.mockResolvedValue(updatedEntity);
-        repository.findOne.mockResolvedValue(updatedEntity); // for the final fetch
+        repository.findOne.mockResolvedValueOnce(updatedEntity); // for the final fetch
         const result = await service.update('subject-uuid-1', updateDto, 'school-uuid-1');
         expect(result.name).toEqual(updateDto.name);
       });
