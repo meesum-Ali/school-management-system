@@ -68,7 +68,7 @@ import { AuthGuard } from '@nestjs/passport';
              return {
                ...dbConfig,
                autoLoadEntities: true,
-               synchronize: configService.get('env') !== 'production',
+               synchronize: false, // Disabled - use migrations instead
              };
            },
            inject: [ConfigService],

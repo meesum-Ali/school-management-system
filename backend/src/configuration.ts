@@ -1,9 +1,10 @@
 export interface DatabaseConfig {
+  type: 'postgres';
   host: string;
   port: number;
   username: string;
   password: string;
-  name: string;
+  database: string;
 }
 
 export interface JwtConfig {
@@ -24,11 +25,12 @@ export interface AppConfig {
 export default (): AppConfig => ({
   port: parseInt(process.env.PORT, 10) || 5000,
   database: {
+    type: 'postgres',
     host: process.env.DATABASE_HOST,
     port: parseInt(process.env.DATABASE_PORT, 10),
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
-    name: process.env.DATABASE_NAME,
+    database: process.env.DATABASE_NAME,
   },
   jwt: {
     secret: process.env.JWT_SECRET,

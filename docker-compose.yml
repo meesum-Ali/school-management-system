@@ -3,6 +3,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5001/api}
+        - NEXT_PUBLIC_ZITADEL_ISSUER=${NEXT_PUBLIC_ZITADEL_ISSUER:-http://localhost:8888}
+        - NEXT_PUBLIC_ZITADEL_CLIENT_ID=${NEXT_PUBLIC_ZITADEL_CLIENT_ID}
+        - NEXT_PUBLIC_ZITADEL_REDIRECT_URI=${NEXT_PUBLIC_ZITADEL_REDIRECT_URI:-http://localhost:3001/auth/callback}
     ports:
       - "3001:3000"
     env_file:
@@ -20,6 +25,7 @@ services:
       - "5001:5000"
     environment:
       - NODE_ENV=production
+      - DATABASE_TYPE=postgres
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - DATABASE_USER=postgres
@@ -85,12 +91,12 @@ services:
       - db
     networks:
       - sms-network
-
+  
   zitadel:
     image: ghcr.io/zitadel/zitadel:latest
     container_name: zitadel
-    restart: always
-    command: 'start-from-init --masterkeyFromEnv --tlsMode disabled'
+    restart: unless-stopped
+    command: 'start-from-init --masterkey "a1b2c3d4e5f678901234567890abcdef"'  # 32 chars
     environment:
       - ZITADEL_DATABASE_POSTGRES_HOST=db
       - ZITADEL_DATABASE_POSTGRES_PORT=5432
@@ -102,17 +108,31 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD=postgres
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
       - ZITADEL_EXTERNALSECURE=false
+      - ZITADEL_EXTERNALDOMAIN=localhost
       - ZITADEL_EXTERNALPORT=8888
-      - ZITADEL_MASTERKEYFROMANV=MasterkeyNeedsToHave32Characters
+      - ZITADEL_TLS_ENABLED=false
+      - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
+      - ZITADEL_LOG_LEVEL=debug
+      - ZITADEL_DEFAULTINSTANCE_LOGINV2_REQUIRED=false
       - ZITADEL_FIRSTINSTANCE_ORG_NAME=SMS_Organization
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME=admin
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD=Password1!
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL=admin@localhost
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL_VERIFIED=true
     ports:
       - "8888:8080"
     networks:
       - sms-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/debug/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
 
 networks:
   sms-network:

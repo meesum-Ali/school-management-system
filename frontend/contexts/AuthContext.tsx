@@ -46,6 +46,7 @@ interface AuthContextProps {
   ) => Promise<void>
   logout: () => void
   isLoading: boolean
+  loadUserFromToken: (token: string) => void
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -54,6 +55,7 @@ const AuthContext = createContext<AuthContextProps>({
   login: async () => {},
   logout: () => {},
   isLoading: true,
+  loadUserFromToken: () => {},
 })
 
 export { AuthContext }
@@ -169,7 +171,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, isLoading }}
+      value={{ isAuthenticated, user, login, logout, isLoading, loadUserFromToken }}
     >
       {children}
     </AuthContext.Provider>

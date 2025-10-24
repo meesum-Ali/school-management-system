@@ -161,6 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
   const userRoles = user?.roles || [];
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
 
   const canManageSchoolResources = userRoles.includes(UserRole.SCHOOL_ADMIN) || userRoles.includes(UserRole.SUPER_ADMIN);
   const isSuperAdmin = userRoles.includes(UserRole.SUPER_ADMIN);
@@ -173,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
   });
 
   useEffect(() => {
-    const currentPath = location.pathname;
+    const currentPath = pathname || '';
     const newOpenGroups: Record<string, boolean> = {
       userManagement: currentPath.startsWith('/admin/users') ||
                       currentPath.startsWith('/admin/students') ||
@@ -184,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
       settings: currentPath.startsWith('/admin/settings'),
     };
     setOpenGroups(newOpenGroups);
-  }, [location.pathname]);
+  }, [pathname]);
 
   const toggleGroup = (group: string) => {
     setOpenGroups(prev => ({
