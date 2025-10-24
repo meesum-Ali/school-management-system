@@ -9,7 +9,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassDto } from './dto/class.dto';
 import { SubjectDto } from '../subjects/dto/subject.dto';
 import { StudentDto } from '../students/dto/student.dto'; // Import StudentDto
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
@@ -17,7 +17,7 @@ import { UserRole } from '../users/entities/user.entity';
 @ApiTags('Classes Management')
 @ApiBearerAuth()
 @Controller('classes')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 @Roles(UserRole.SCHOOL_ADMIN) // Restrict class CRUD to SCHOOL_ADMIN
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 export class ClassesController {

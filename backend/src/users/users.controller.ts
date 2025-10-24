@@ -20,7 +20,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './entities/user.entity';
@@ -29,7 +29,7 @@ import { UserRole } from './entities/user.entity';
 @ApiBearerAuth() // Indicates all routes in this controller require Bearer token
 @Controller('users')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 // Default role for most operations might be ADMIN (school admin)
 // SUPER_ADMIN will have explicit overrides or broader access via service logic
 export class UsersController {

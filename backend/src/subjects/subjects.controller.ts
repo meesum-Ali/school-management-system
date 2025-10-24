@@ -8,7 +8,7 @@ import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectDto } from './dto/subject.dto';
 import { ClassDto } from '../classes/dto/class.dto'; // Import ClassDto
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
@@ -16,7 +16,7 @@ import { UserRole } from '../users/entities/user.entity';
 @ApiTags('Subjects Management')
 @ApiBearerAuth()
 @Controller('subjects')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 @Roles(UserRole.SCHOOL_ADMIN) // Restrict subject CRUD to SCHOOL_ADMIN
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
 export class SubjectsController {

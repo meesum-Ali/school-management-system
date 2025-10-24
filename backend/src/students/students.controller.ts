@@ -20,7 +20,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentDto } from './dto/student.dto';
 import { AssignClassDto } from './dto/assign-class.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
@@ -30,7 +30,7 @@ import { UserRole } from '../users/entities/user.entity';
 @ApiBearerAuth()
 @Controller('students')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 // Default role for student management is ADMIN (school admin)
 // SUPER_ADMIN might access these if explicitly given the role or via a separate interface.
 @Roles(UserRole.SCHOOL_ADMIN)

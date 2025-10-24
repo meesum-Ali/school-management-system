@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = () => ({
+    port: parseInt(process.env.PORT, 10) || 5000,
+    database: {
+        host: process.env.DATABASE_HOST,
+        port: parseInt(process.env.DATABASE_PORT, 10),
+        username: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        name: process.env.DATABASE_NAME,
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        expiration: process.env.JWT_EXPIRATION || '3600s',
+    },
+    logLevel: process.env.LOG_LEVEL || 'debug',
+    apiPrefix: process.env.API_PREFIX || '/api',
+    appVersion: process.env.APP_VERSION || '1.0.0',
+    apiDocsPath: process.env.API_DOCS_PATH || '/api-docs',
+});
+//# sourceMappingURL=configuration.js.map

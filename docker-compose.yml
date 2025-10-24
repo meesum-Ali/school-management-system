@@ -86,23 +86,27 @@ services:
     networks:
       - sms-network
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
-    command:
-      - "start-dev"
-      - "--import-realm"
-    volumes:
-      - ./init-db/realm-export.json:/opt/keycloak/data/import/realm-export.json
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:latest
+    container_name: zitadel
+    restart: always
+    command: 'start-from-init --masterkeyFromEnv --tlsMode disabled'
     environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_DB=postgres
-      - KC_DB_URL_HOST=db
-      - KC_DB_URL_DATABASE=sms_db
-      - KC_DB_USERNAME=postgres
-      - KC_DB_PASSWORD=postgres
-      - KC_DB_SCHEMA=public
+      - ZITADEL_DATABASE_POSTGRES_HOST=db
+      - ZITADEL_DATABASE_POSTGRES_PORT=5432
+      - ZITADEL_DATABASE_POSTGRES_DATABASE=sms_db
+      - ZITADEL_DATABASE_POSTGRES_USER_USERNAME=postgres
+      - ZITADEL_DATABASE_POSTGRES_USER_PASSWORD=postgres
+      - ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE=disable
+      - ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME=postgres
+      - ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD=postgres
+      - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
+      - ZITADEL_EXTERNALSECURE=false
+      - ZITADEL_EXTERNALPORT=8888
+      - ZITADEL_MASTERKEYFROMANV=MasterkeyNeedsToHave32Characters
+      - ZITADEL_FIRSTINSTANCE_ORG_NAME=SMS_Organization
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME=admin
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD=Password1!
     ports:
       - "8888:8080"
     networks:

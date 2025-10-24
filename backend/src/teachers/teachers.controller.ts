@@ -13,13 +13,13 @@ import {
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
 @Controller('teachers')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 @Roles(UserRole.SCHOOL_ADMIN) // Removed ADMIN as it's no longer a valid role
 export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}

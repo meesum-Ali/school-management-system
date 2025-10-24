@@ -1,9 +1,26 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { Public } from './decorators/public.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  // The login endpoint is no longer needed as Keycloak handles the authentication process.
-  // This controller can be used for other authentication-related endpoints in the future.
+  constructor(private readonly authService: AuthService) {}
+
+  // Local login endpoint (fallback when Zitadel is not available)
+  @Public()
+  @Post('login')
+  @ApiOperation({ summary: 'Local login with email and password' })
+  async login(@Body() loginDto: { email: string; password: string }) {
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+    return this.authService.login(user);
+  }
+
+  // Zitadel OAuth flow is handled on the frontend
+  // This controller can be extended for token refresh, logout, etc.
 }
+

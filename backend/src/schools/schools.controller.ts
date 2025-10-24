@@ -2,14 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUID
 import { SchoolsService } from './schools.service';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../users/entities/user.entity'; // Assuming UserRole is defined here
+import { UserRole } from '../users/entities/user.entity';
 import { School } from './entities/school.entity';
 
 @Controller('schools')
-@UseGuards(JwtAuthGuard, RolesGuard) // Protect all routes in this controller
+@UseGuards(AuthGuard('zitadel'), RolesGuard) // Protect all routes with Zitadel auth
 export class SchoolsController {
   constructor(private readonly schoolsService: SchoolsService) {}
 

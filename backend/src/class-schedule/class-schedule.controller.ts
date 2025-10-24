@@ -26,7 +26,7 @@ import {
 import { ClassScheduleService } from './class-schedule.service';
 import { CreateClassScheduleDto } from './dto/create-class-schedule.dto';
 import { UpdateClassScheduleDto } from './dto/update-class-schedule.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
@@ -35,7 +35,7 @@ import { ClassSchedule } from './entities/class-schedule.entity';
 @ApiTags('Class Schedule')
 @ApiBearerAuth()
 @Controller('class-schedule')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthGuard('zitadel'), RolesGuard)
 @Roles(UserRole.SCHOOL_ADMIN, UserRole.TEACHER) // Removed duplicate SCHOOL_ADMIN
 export class ClassScheduleController {
   constructor(private readonly classScheduleService: ClassScheduleService) {}

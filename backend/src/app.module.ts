@@ -24,14 +24,14 @@ import { Teacher } from './teachers/entities/teacher.entity';
 import { ClassSchedule } from './class-schedule/entities/class-schedule.entity';
 import { HealthModule } from './health/health.module';
 import { SuperAdminModule } from './core/super-admin/super-admin.module';
-import { KeycloakModule } from './keycloak/keycloak.module';
+import { ZitadelModule } from './zitadel/zitadel.module';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard, RoleGuard } from 'nest-keycloak-connect';
+import { AuthGuard } from '@nestjs/passport';
      // Import other modules as needed
 
      @Module({
        imports: [
-         KeycloakModule,
+         ZitadelModule,
          ConfigModule.forRoot({
            isGlobal: true,
            load: [configuration],
@@ -77,14 +77,8 @@ import { AuthGuard, RoleGuard } from 'nest-keycloak-connect';
        controllers: [AppController],
        providers: [
          AppService,
-         {
-           provide: APP_GUARD,
-           useClass: AuthGuard,
-         },
-         {
-           provide: APP_GUARD,
-           useClass: RoleGuard,
-         },
+         // Zitadel auth is handled via @UseGuards(AuthGuard('zitadel')) on controllers
+         // No global guard needed - use @Public() decorator for public routes
        ],
      })
      export class AppModule {}

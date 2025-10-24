@@ -16,8 +16,13 @@ import { jwtDecode } from 'jwt-decode'
 
 interface DecodedJwtPayload {
   sub: string // User ID
-  username: string
-  roles: UserRole[]
+  email?: string
+  preferred_username?: string
+  username?: string
+  name?: string
+  roles?: UserRole[]
+  'urn:zitadel:iam:org:project:roles'?: Record<string, any> // Zitadel roles
+  'urn:zitadel:iam:org:id'?: string // Zitadel organization ID
   schoolId?: string | null
   iat?: number
   exp?: number
@@ -74,11 +79,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         api.defaults.headers.Authorization = ''
         return
       }
+
+      // Handle both local JWT and Zitadel JWT formats
+      const username = decoded.username || decoded.preferred_username || decoded.email || 'Unknown'
+      const roles = decoded.roles || (decoded['urn:zitadel:iam:org:project:roles'] 
+        ? Object.keys(decoded['urn:zitadel:iam:org:project:roles']).filter(role => 
+            ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'].includes(role)
+          ) as UserRole[]
+        : [])
+      const schoolId = decoded.schoolId || decoded['urn:zitadel:iam:org:id'] || null
+
       setUser({
         id: decoded.sub,
-        username: decoded.username,
-        roles: decoded.roles,
-        schoolId: decoded.schoolId,
+        username,
+        roles,
+        schoolId,
       })
       setIsAuthenticated(true)
       api.defaults.headers.Authorization = `Bearer ${token}`
