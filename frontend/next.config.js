@@ -5,10 +5,7 @@ const nextConfig = {
     // Enable SWC minification
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Disable the app directory to prevent conflicts
-  experimental: {
-    // Add any experimental features here if needed
-  },
+  // No need to disable app directory - we're using it now!
 };
 
 module.exports = nextConfig;

@@ -1,5 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react'; // Added React
-import { useLocation, Link } from 'react-router-dom'; // Changed imports
+'use client';
+
+import React, { useState, useContext, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Box, 
   Drawer, 
@@ -65,32 +68,31 @@ interface NavItemProps {
 }
 
 const NavItem = ({ icon, text, href, level = 0, exact = false, sx, onClick }: NavItemProps) => {
-  const location = useLocation(); // Changed from useRouter
-  const isActive = exact ? location.pathname === href : location.pathname.startsWith(href);
+  const pathname = usePathname();
+  const isActive = exact ? pathname === href : pathname?.startsWith(href);
 
   return (
-    // Use component={Link} and to={href} on StyledNavItem (ListItemButton)
-    <StyledNavItem
-      component={Link}
-      to={href} // Changed from href on Link wrapper
-      selected={isActive}
-      sx={{
-        pl: 2 + level * 2,
-        ...sx,
-      }}
-      onClick={onClick}
-    >
-      <ListItemIcon sx={{ minWidth: 40 }}>
-        {icon}
-      </ListItemIcon>
-      <ListItemText
-        primary={text}
-        primaryTypographyProps={{
-          variant: 'body2',
-          fontWeight: isActive ? 600 : 400,
+    <Link href={href} passHref legacyBehavior>
+      <StyledNavItem
+        selected={isActive}
+        sx={{
+          pl: 2 + level * 2,
+          ...sx,
         }}
-      />
-    </StyledNavItem>
+        onClick={onClick}
+      >
+        <ListItemIcon sx={{ minWidth: 40 }}>
+          {icon}
+        </ListItemIcon>
+        <ListItemText
+          primary={text}
+          primaryTypographyProps={{
+            variant: 'body2',
+            fontWeight: isActive ? 600 : 400,
+          }}
+        />
+      </StyledNavItem>
+    </Link>
   );
 };
 
@@ -158,7 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
   const { user } = useContext(AuthContext);
   const userRoles = user?.roles || [];
   const theme = useTheme();
-  const location = useLocation(); // Changed from useRouter
+  const router = useRouter();
 
   const canManageSchoolResources = userRoles.includes(UserRole.SCHOOL_ADMIN) || userRoles.includes(UserRole.SUPER_ADMIN);
   const isSuperAdmin = userRoles.includes(UserRole.SUPER_ADMIN);
@@ -194,39 +196,40 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
   const drawerContent = (
     <div>
       <Toolbar>
-        <Box 
-          display="flex" 
-          alignItems="center" 
-          sx={{ 
-            textDecoration: 'none',
-            color: 'inherit',
-            width: '100%',
-            p: 1,
-            borderRadius: 1,
-            '&:hover': {
-              bgcolor: 'action.hover',
-            },
-          }}
-          component={Link} // Use react-router-dom Link
-          to="/admin/dashboard" // Changed from href
-        >
-          <SchoolIcon sx={{ mr: 1, color: 'primary.main' }} />
-          <Typography 
-            variant="h6" 
-            noWrap 
-            component="div"
-            sx={{
-              fontWeight: 700,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textFillColor: 'transparent',
+        <Link href="/admin/dashboard" passHref legacyBehavior>
+          <Box 
+            component="a"
+            display="flex" 
+            alignItems="center" 
+            sx={{ 
+              textDecoration: 'none',
+              color: 'inherit',
+              width: '100%',
+              p: 1,
+              borderRadius: 1,
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
             }}
           >
-            SchoolMS
-          </Typography>
-        </Box>
+            <SchoolIcon sx={{ mr: 1, color: 'primary.main' }} />
+            <Typography 
+              variant="h6" 
+              noWrap 
+              component="div"
+              sx={{
+                fontWeight: 700,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textFillColor: 'transparent',
+              }}
+            >
+              SchoolMS
+            </Typography>
+          </Box>
+        </Link>
       </Toolbar>
       <Divider />
       

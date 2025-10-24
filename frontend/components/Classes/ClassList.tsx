@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Class } from '../../types/class';
@@ -14,7 +14,7 @@ const ClassList: React.FC<ClassListProps> = ({ classes, onDelete }) => {
     <Card>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Class Management</h1>
-        <Button component={Link} to="/admin/classes/create">
+        <Button href="/admin/classes/create">
           Create Class
         </Button>
       </div>
@@ -42,15 +42,15 @@ const ClassList: React.FC<ClassListProps> = ({ classes, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cls.homeroomTeacherId || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cls.subjects?.length || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                    <Button
-                      component={Link}
-                      to={`/admin/classes/${cls.id}`}
-                      variant="outline"
-                      size="sm"
-                      className="mr-2"
-                    >
-                      Edit / View Subjects
-                    </Button>
+                    <Link href={`/admin/classes/${cls.id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                      >
+                        Edit / View Subjects
+                      </Button>
+                    </Link>
                     <Button
                       variant="destructive"
                       size="sm"

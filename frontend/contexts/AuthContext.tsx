@@ -1,5 +1,7 @@
-'use client' // This directive is Next.js specific. For Vite, it has no effect.
-// It's kept here as it might indicate an intention for this code if it were in a Next.js App Router context.
+'use client';
+
+// frontend/contexts/AuthContext.tsx
+// AuthContext for Next.js - handles authentication state and token management
 
 import React, {
   createContext,
@@ -9,14 +11,14 @@ import React, {
   useCallback,
 } from 'react'
 import api from '../utils/api'
-import { UserRole } from '../types/user' // Use the global User type, removed User
-import { jwtDecode } from 'jwt-decode' // Corrected import
+import { UserRole } from '../types/user'
+import { jwtDecode } from 'jwt-decode'
 
 interface DecodedJwtPayload {
   sub: string // User ID
   username: string
   roles: UserRole[]
-  schoolId?: string | null // Added schoolId
+  schoolId?: string | null
   iat?: number
   exp?: number
 }
@@ -26,7 +28,7 @@ interface AuthUser {
   id: string
   username: string
   roles: UserRole[]
-  schoolId?: string | null // Added schoolId
+  schoolId?: string | null
 }
 
 interface AuthContextProps {
@@ -36,7 +38,7 @@ interface AuthContextProps {
     username: string,
     password: string,
     schoolIdentifier?: string,
-  ) => Promise<void> // Added schoolIdentifier
+  ) => Promise<void>
   logout: () => void
   isLoading: boolean
 }
@@ -44,7 +46,7 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
   user: null,
-  login: async () => {}, // Default empty function
+  login: async () => {},
   logout: () => {},
   isLoading: true,
 })
@@ -56,17 +58,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true) // Start with loading true
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const loadUserFromToken = useCallback((token: string) => {
     try {
       const decoded = jwtDecode<DecodedJwtPayload>(token)
-      // Check token expiration (optional, jwtDecode doesn't validate, api interceptor might catch it on next call)
+      // Check token expiration
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        localStorage.removeItem('token')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token')
+          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+        }
         setIsAuthenticated(false)
         setUser(null)
-        api.defaults.headers.Authorization = '' // Clear auth header
+        api.defaults.headers.Authorization = ''
         return
       }
       setUser({
@@ -79,7 +84,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       api.defaults.headers.Authorization = `Bearer ${token}`
     } catch (error) {
       console.error('Failed to decode token or token expired:', error)
-      localStorage.removeItem('token')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token')
+        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+      }
       setIsAuthenticated(false)
       setUser(null)
       api.defaults.headers.Authorization = ''
@@ -87,15 +95,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [])
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      loadUserFromToken(token)
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token')
+      if (token) {
+        loadUserFromToken(token)
+      }
     }
-    // else {
-    //   // No token, attempt to fetch /auth/me might be an option if using HttpOnly cookies + CSRF
-    //   // For localStorage tokens, if no token, not authenticated.
-    // }
-    setIsLoading(false) // Done loading initial auth state
+    setIsLoading(false)
   }, [loadUserFromToken])
 
   const login = async (
@@ -118,7 +125,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         loginPayload,
       )
       const { access_token } = response.data
-      localStorage.setItem('token', access_token)
+      
+      // Store in both localStorage and cookie for SSR compatibility
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', access_token)
+        // Set cookie with 7-day expiration
+        const expirationDate = new Date()
+        expirationDate.setDate(expirationDate.getDate() + 7)
+        document.cookie = `token=${access_token}; path=/; expires=${expirationDate.toUTCString()}; SameSite=Strict`
+      }
+      
       loadUserFromToken(access_token)
     } catch (error) {
       console.error('Login failed:', error)
@@ -127,12 +143,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token')
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+    }
     setIsAuthenticated(false)
     setUser(null)
-    api.defaults.headers.Authorization = '' // Clear auth header
-    // Optionally, redirect to login page or home
-    // window.location.href = '/login'; // Or use Next.js router if available here
+    api.defaults.headers.Authorization = ''
   }
 
   return (

@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "start": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.6",
@@ -17,25 +18,24 @@
     "@mui/icons-material": "^7.1.2",
     "@mui/lab": "^7.0.0-beta.14",
     "@mui/material": "^7.1.2",
+    "@tanstack/react-query": "^5.90.5",
     "axios": "^1.7.9",
     "jwt-decode": "^4.0.0",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-helmet-async": "^2.0.5",
+    "next": "^14.2.22",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
-    "react-router-dom": "^7.6.3",
     "yup": "^1.5.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18",
-    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "@vitejs/plugin-react-swc": "^3.10.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.22",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
@@ -43,8 +43,6 @@
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.16",
-    "typescript": "^5",
-    "vite": "^7.0.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "typescript": "^5"
   }
 }

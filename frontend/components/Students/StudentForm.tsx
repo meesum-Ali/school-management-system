@@ -163,10 +163,10 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitti
 
         <div>
           <label htmlFor="classId" className="block mb-1 font-medium">Assign to Class</label>
-          <Select
+          <select
             id="classId"
             {...register('classId')}
-            className={errors.classId ? 'border-red-500' : ''}
+            className={`w-full p-2 border rounded ${errors.classId ? 'border-red-500' : 'border-gray-300'}`}
           >
             <option value="">No Class / Unassign</option>
             {availableClasses.map((cls) => (
@@ -174,7 +174,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, isSubmitti
                 {cls.name}
               </option>
             ))}
-          </Select>
+          </select>
           {errors.classId && (
             <p className="text-red-500 text-sm mt-1">{errors.classId.message}</p>
           )}

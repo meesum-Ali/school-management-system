@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { School } from '../../types/school';
 import { Button } from '../ui/Button'; // Assuming Button component exists
 import { Card } from '../ui/Card'; // Assuming Card component exists
@@ -15,7 +15,7 @@ const SchoolList: React.FC<SchoolListProps> = ({ schools, onDelete }) => {
       <Card>
         <p className="text-center text-gray-500">No schools found.</p>
         <div className="mt-4 text-center">
-          <Button component={Link} to="/admin/schools/create">
+          <Button href="/admin/schools/create">
             Create New School
           </Button>
         </div>
@@ -27,7 +27,7 @@ const SchoolList: React.FC<SchoolListProps> = ({ schools, onDelete }) => {
     <Card>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Schools</h2>
-        <Button component={Link} to="/admin/schools/create">
+        <Button href="/admin/schools/create">
           Create New School
         </Button>
       </div>
@@ -48,7 +48,7 @@ const SchoolList: React.FC<SchoolListProps> = ({ schools, onDelete }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{school.domain || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{school.adminUserId || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <Button component={Link} to={`/admin/schools/${school.id}`} variant="outline" size="sm" className="mr-2">
+                  <Button href={`/admin/schools/${school.id}`} variant="outline" size="sm" className="mr-2">
                     Edit
                   </Button>
                   <Button variant="destructive" size="sm" onClick={() => onDelete(school.id)}>

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { 
   AppBar as MuiAppBar, 
@@ -29,7 +31,8 @@ import {
   CalendarMonth,
   Assessment,
 } from '@mui/icons-material';
-import { useNavigate, useLocation, Link } from 'react-router-dom'; // Changed imports
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link'; // Changed imports
 
 interface AppBarProps {
   onMenuClick?: () => void;
@@ -49,8 +52,8 @@ const menuItems = [
 
 export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const navigate = useNavigate(); // Changed hook
-  const location = useLocation(); // Added hook
+  const router = useRouter();
+  const pathname = usePathname();
   const theme = useTheme();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -64,12 +67,12 @@ export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarP
   const handleLogout = () => {
     // Handle logout logic here (e.g., call auth context logout)
     handleMenuClose();
-    navigate('/login'); // Changed from router.push
+    router.push('/login'); // Changed from router.push
   };
 
   const handleProfileNavigation = (path: string) => {
     handleMenuClose();
-    navigate(path); // Changed from router.push
+    router.push(path); // Changed from router.push
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -191,22 +194,20 @@ export const AppBar = ({ onMenuClick, title = 'School Management', sx }: AppBarP
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, ml: 2, gap: 1 }}>
             {menuItems.map((item) => (
-              <Button
-                key={item.path}
-                component={Link} // Use react-router-dom Link
-                to={item.path} // Changed href to to
-                startIcon={item.icon}
-                sx={{
-                  // Using location.pathname to check active link
-                  color: location.pathname === item.path ? 'primary.main' : 'text.primary',
-                  fontWeight: location.pathname === item.path ? 'bold' : 'normal',
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                  },
-                }}
-              >
-                {item.title}
-              </Button>
+              <Link key={item.path} href={item.path} passHref legacyBehavior>
+                <Button
+                  startIcon={item.icon}
+                  sx={{
+                    color: pathname === item.path ? 'primary.main' : 'text.primary',
+                    fontWeight: pathname === item.path ? 'bold' : 'normal',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                    },
+                  }}
+                >
+                  {item.title}
+                </Button>
+              </Link>
             ))}
           </Box>
 

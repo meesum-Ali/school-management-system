@@ -1,17 +1,18 @@
 import React, { useContext, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../../contexts/AuthContext'; // Adjust path if necessary due to src/
-import { UserRole } from '../../types/user'; // Adjust path if necessary
+import { useRouter } from 'next/navigation';
+import { AuthContext } from '../../contexts/AuthContext';
+import { UserRole } from '../../types/user';
 
 interface ProtectedRouteProps {
   requiredRoles?: UserRole[];
   children: React.ReactNode;
 }
 
+// Note: With Next.js middleware handling auth, this component is primarily for client-side
+// role-based content protection within a page, not for route protection
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles, children }) => {
-  const { isAuthenticated, user, isLoading } = useContext(AuthContext); // Assuming AuthContext provides isLoading
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { isAuthenticated, user, isLoading } = useContext(AuthContext);
+  const router = useRouter();
 
   useEffect(() => {
     if (isLoading) {
@@ -19,23 +20,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles, children
     }
 
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: location }, replace: true });
+      router.push('/login');
     } else if (
       requiredRoles &&
       requiredRoles.length > 0 &&
       (!user?.roles || !user.roles.some(role => requiredRoles.includes(role as UserRole)))
     ) {
-      navigate('/unauthorized', { replace: true });
+      router.push('/unauthorized');
     }
-  }, [isAuthenticated, user, requiredRoles, navigate, isLoading, location]);
+  }, [isAuthenticated, user, requiredRoles, router, isLoading]);
 
   if (isLoading) {
-    return <div>Loading Authentication...</div>; // Or a global spinner
+    return <div>Loading Authentication...</div>;
   }
 
   if (!isAuthenticated) {
-    // This case should ideally be caught by the useEffect redirect,
-    // but as a fallback or for initial render before effect.
     return <div>Redirecting to login...</div>;
   }
 
@@ -44,7 +43,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles, children
     requiredRoles.length > 0 &&
     (!user?.roles || !user.roles.some(role => requiredRoles.includes(role as UserRole)))
   ) {
-    // This case should ideally be caught by the useEffect redirect.
     return <div>Redirecting to unauthorized...</div>;
   }
 

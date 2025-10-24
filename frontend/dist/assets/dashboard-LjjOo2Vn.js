@@ -1,1 +1,0 @@
-import{j as e,P as r,U as s,G as o}from"./index-C8VS4fXx.js";const a=()=>e.jsx(r,{requiredRoles:[s.SUPER_ADMIN,s.SCHOOL_ADMIN],children:e.jsx(o,{children:e.jsx("h1",{className:"text-3xl font-bold",children:"Admin Dashboard"})})});export{a as default};
