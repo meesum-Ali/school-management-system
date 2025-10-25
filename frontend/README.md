@@ -1,114 +1,85 @@
-# Frontend Application (Next.js + React + TypeScript)
+# Frontend Application (Next.js 16 App Router)
 
-This project is a modern frontend application built with [Next.js](https://nextjs.org/), [React](https://reactjs.org/), and [TypeScript](https://www.typescriptlang.org/), using the Pages Router for SSR-first architecture.
+This frontend uses Next.js 16 (App Router) with React 18, TypeScript (strict), MUI 7, Tailwind, React Query, and a custom Auth provider.
 
-## Architecture
+## Architecture and standards
 
-- **Framework**: Next.js 14 (Pages Router)
-- **Rendering Strategy**: Server-Side Rendering (SSR) by default
-- **Authentication**: Cookie + localStorage-based JWT with middleware protection
-- **Styling**: Tailwind CSS + Material-UI (MUI)
-- **State Management**: React Context API
+- App Router under `app/` with server/client components as appropriate
+- Edge auth enforcement via `proxy.ts` (Next 16 replacement for `middleware.ts`)
+- SSR-safe API client (`lib/api.ts`) using a browser-only token accessor (`lib/browser.ts`)
+- Theming, Auth, and React Query providers are mounted in `app/layout.tsx`
+- ESLint flat config with `eslint-config-next` and Prettier enforcing core web vitals and formatting
 
-## Getting Started
+## Requirements and environment
 
-To get the development server running:
+Environment variables (client-safe need NEXT_PUBLIC_ prefix):
 
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd frontend
-    ```
+```
+NEXT_PUBLIC_API_URL=<http://localhost:3000 or your backend>
+NEXT_PUBLIC_ZITADEL_ISSUER=<issuer URL>
+NEXT_PUBLIC_ZITADEL_CLIENT_ID=<client id>
+NEXT_PUBLIC_ZITADEL_REDIRECT_URI=http://localhost:3001/auth/callback
+```
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+## Getting started
 
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
+```bash
+cd frontend
+npm install
+npm run dev            # defaults to port 3000
+# or specify a port
+PORT=3001 npm run dev
+```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 (or your chosen port).
 
-The application uses Next.js file-based routing. Pages are located in the `pages/` directory:
-- `pages/index.tsx` - Home page (redirects to login)
-- `pages/login.tsx` - Login page
-- `pages/admin/*` - Protected admin pages (requires authentication)
+## Available scripts
 
-## Available Scripts
+- `npm run dev` – Start Next dev server (Turbopack)
+- `npm run build` – Production build
+- `npm start` – Start production server
+- `npm run lint` – Lint using ESLint with Next config
 
-In the `frontend` directory, you can run the following scripts:
+## Auth and routing
 
-*   `npm run dev`: Runs the app in development mode with hot-reloading on port 3000.
-*   `npm run build`: Builds the app for production to the `.next` folder.
-*   `npm start`: Starts the production server (requires `npm run build` first).
-*   `npm run lint`: Lints the codebase using ESLint (Next.js config).
+- `proxy.ts` protects routes by checking cookies for `token`/`id_token`, performs PKCE redirects to Zitadel when unauthenticated, validates expiry, and enforces roles for `/admin/*` (requires `SUPER_ADMIN` or `SCHOOL_ADMIN`).
+- Public routes are allowed (e.g., `/unauthorized`, `/debug-token`, `/test-auth`).
+- Client navigations should use `next/link` rather than `<a>` for in-app routes.
 
-## SSR Architecture
+## SSR-safe API client
 
-### Server-Side Rendering
-All pages use SSR by default via `getServerSideProps`. This means:
-- Initial page load is server-rendered for better SEO and performance
-- Authentication checks happen on the server
-- Data fetching can occur server-side before rendering
+- `lib/api.ts` centralizes Axios with baseURL from `lib/config.ts`.
+- Token is read via `lib/browser.ts` to avoid accessing `localStorage` on the server.
 
-### Middleware Authentication
-The `middleware.ts` file protects all `/admin/*` routes:
-- Validates JWT tokens from cookies
-- Checks user roles (SUPER_ADMIN or SCHOOL_ADMIN)
-- Redirects unauthorized users to `/login` or `/unauthorized`
-
-### When to Use CSR
-Use client-side rendering only for:
-- Highly interactive widgets that don't affect SEO
-- Real-time data updates
-- User-specific dynamic content after initial load
-
-## Project Structure
+## Project structure (simplified)
 
 ```
 frontend/
-├── pages/              # Next.js pages (file-based routing)
-│   ├── _app.tsx       # App wrapper with providers
-│   ├── _document.tsx  # Document wrapper for MUI SSR
-│   ├── index.tsx      # Home page
-│   ├── login.tsx      # Login page
-│   └── admin/         # Protected admin pages
-├── components/         # React components
-├── contexts/          # React Context providers (Auth, etc.)
-├── lib/               # Utility libraries
-├── pages/             # Next.js pages
-├── providers/         # Theme and other providers
-├── public/            # Static assets
-├── styles/            # Global styles and Tailwind
-├── types/             # TypeScript type definitions
-├── utils/             # Utility functions (API client, etc.)
-└── middleware.ts      # Next.js middleware for auth
+├── app/                    # App Router (layouts, pages, routes)
+├── components/             # UI and feature components
+├── hooks/                  # React Query hooks and helpers
+├── lib/                    # axios api, config, browser helpers
+├── public/                 # static assets
+├── styles/                 # global styles, Tailwind
+├── theme/                  # MUI theme
+├── types/                  # DTOs and shared types
+├── proxy.ts                # Edge proxy (auth)
+├── next.config.js          # Next config (Turbopack root pinned)
+└── eslint.config.mjs       # ESLint flat config (Next + Prettier)
 ```
 
-## Learn More
+## Upgrades and migration notes
 
-To learn more about the technologies used, check out the following resources:
-
-*   [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
-*   [Next.js Pages Router](https://nextjs.org/docs/pages) - File-based routing and SSR patterns.
-*   [React Documentation](https://reactjs.org/docs/getting-started.html) - Get started with React.
-*   [TypeScript Documentation](https://www.typescriptlang.org/docs/) - Understand TypeScript.
-*   [Material-UI Documentation](https://mui.com/getting-started/installation/) - For UI components.
-*   [Tailwind CSS Documentation](https://tailwindcss.com/docs/) - For utility-first CSS.
-*   [ESLint Documentation](https://eslint.org/docs/user-guide/getting-started) - For linting.
+- Migrated from `middleware.ts` to `proxy.ts` (Next 16).
+- Moved viewport config from `metadata` to `export const viewport` in `app/layout.tsx`.
+- Replaced `<a>` with `Link` in app pages for internal navigation.
+- Enabled linting across all source folders; fixed formatting via Prettier.
 
 ## Deployment
-
-The Next.js app can be deployed to Vercel, AWS, or any platform that supports Node.js:
 
 ```bash
 npm run build
 npm start
 ```
 
-Or deploy directly to Vercel:
-```bash
-npx vercel
-```
+Vercel or any Node host is supported. Ensure the env vars above are set in your hosting environment.

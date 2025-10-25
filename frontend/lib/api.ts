@@ -1,5 +1,6 @@
 import axios from 'axios'
-import config from '../lib/config' // Import config to use its apiUrl
+import config from '../lib/config' // Centralized apiUrl
+import { getToken } from './browser' // Browser-only token accessor
 
 const api = axios.create({
   baseURL: config.apiUrl, // Use the centralized apiUrl
@@ -9,9 +10,14 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  // Safe on server: getToken() returns null when not in the browser
+  const token = getToken()
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    if (config.headers) {
+      ;(config.headers as any).Authorization = `Bearer ${token}`
+    } else {
+      config.headers = { Authorization: `Bearer ${token}` } as any
+    }
   }
   return config
 })

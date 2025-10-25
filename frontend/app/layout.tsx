@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { AuthProvider } from '@/components/providers/auth-provider'
 import ThemeProvider from '@/components/providers/theme-provider'
 import { ReactQueryProvider } from '@/components/providers/react-query-provider'
@@ -11,7 +11,11 @@ import '@fontsource/roboto/700.css'
 export const metadata: Metadata = {
   title: 'School Management System',
   description: 'Modern school management platform',
-  viewport: 'initial-scale=1, width=device-width',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({

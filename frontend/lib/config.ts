@@ -7,7 +7,9 @@ interface Config {
 // Next.js uses NEXT_PUBLIC_ prefix for client-side environment variables
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 if (!apiUrl) {
-  console.error('FATAL ERROR: NEXT_PUBLIC_API_URL is not set. API calls will fail.')
+  console.error(
+    'FATAL ERROR: NEXT_PUBLIC_API_URL is not set. API calls will fail.',
+  )
   // In a server-side environment or build process, you might throw an error:
   // throw new Error("FATAL ERROR: NEXT_PUBLIC_API_URL is not set.");
 }

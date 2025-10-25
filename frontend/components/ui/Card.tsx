@@ -1,11 +1,19 @@
-import { Card as MuiCard, CardProps as MuiCardProps, CardContent, CardHeader, CardActions, SxProps, Theme } from '@mui/material';
-import { ReactNode } from 'react';
+import {
+  Card as MuiCard,
+  CardProps as MuiCardProps,
+  CardContent,
+  CardHeader,
+  CardActions,
+  SxProps,
+  Theme,
+} from '@mui/material'
+import { ReactNode } from 'react'
 
 export interface CardProps extends Omit<MuiCardProps, 'title'> {
-  children: ReactNode;
-  title?: ReactNode;
-  actions?: ReactNode;
-  contentSx?: SxProps<Theme>;
+  children: ReactNode
+  title?: ReactNode
+  actions?: ReactNode
+  contentSx?: SxProps<Theme>
 }
 
 export const Card = ({
@@ -16,7 +24,7 @@ export const Card = ({
   contentSx,
   ...props
 }: CardProps) => (
-  <MuiCard 
+  <MuiCard
     className={className}
     sx={{
       borderRadius: 2,
@@ -24,20 +32,20 @@ export const Card = ({
       border: '1px solid',
       borderColor: 'divider',
       overflow: 'hidden',
-      ...props.sx
+      ...props.sx,
     }}
     {...props}
   >
     {title && (
-      <CardHeader 
-        title={title} 
+      <CardHeader
+        title={title}
         titleTypographyProps={{
           variant: 'h6',
           component: 'h2',
-          sx: { 
+          sx: {
             fontWeight: 600,
-            lineHeight: 1.2
-          }
+            lineHeight: 1.2,
+          },
         }}
         sx={{
           pb: 1,
@@ -52,21 +60,17 @@ export const Card = ({
         }}
       />
     )}
-    <CardContent 
+    <CardContent
       sx={{
         p: 3,
         '&:last-child': {
           pb: 3,
         },
-        ...contentSx
+        ...contentSx,
       }}
     >
       {children}
     </CardContent>
-    {actions && (
-      <CardActions sx={{ p: 2, pt: 0 }}>
-        {actions}
-      </CardActions>
-    )}
+    {actions && <CardActions sx={{ p: 2, pt: 0 }}>{actions}</CardActions>}
   </MuiCard>
-);
+)

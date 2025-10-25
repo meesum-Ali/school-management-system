@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
-import React, { useState, useContext, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { 
-  Box, 
-  Drawer, 
-  Toolbar, 
-  List, 
-  Divider, 
-  ListItemButton, 
-  ListItemIcon, 
-  ListItemText, 
+import React, { useState, useContext, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import {
+  Box,
+  Drawer,
+  Toolbar,
+  List,
+  Divider,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Typography,
   Collapse,
   useTheme,
@@ -19,7 +19,7 @@ import {
   styled,
   SxProps,
   Theme,
-} from '@mui/material';
+} from '@mui/material'
 import {
   Dashboard as DashboardIcon,
   School as SchoolIcon,
@@ -32,11 +32,11 @@ import {
   Assessment as ReportIcon,
   Settings as SettingsIcon,
   Assessment as AssessmentIcon,
-} from '@mui/icons-material';
-import { AuthContext } from '@/components/providers/auth-provider'; // Auth provider
-import { UserRole } from '../../types/user'; // Adjust path if necessary
+} from '@mui/icons-material'
+import { AuthContext } from '@/components/providers/auth-provider' // Auth provider
+import { UserRole } from '../../types/user' // Adjust path if necessary
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const StyledNavItem = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -55,21 +55,29 @@ const StyledNavItem = styled(ListItemButton)(({ theme }) => ({
       backgroundColor: alpha(theme.palette.primary.main, 0.24),
     },
   },
-}));
+}))
 
 interface NavItemProps {
-  icon: React.ReactNode;
-  text: string;
-  href: string; // Will be used as 'to' prop
-  level?: number;
-  exact?: boolean;
-  sx?: SxProps<Theme>;
-  onClick?: () => void;
+  icon: React.ReactNode
+  text: string
+  href: string // Will be used as 'to' prop
+  level?: number
+  exact?: boolean
+  sx?: SxProps<Theme>
+  onClick?: () => void
 }
 
-const NavItem = ({ icon, text, href, level = 0, exact = false, sx, onClick }: NavItemProps) => {
-  const pathname = usePathname();
-  const isActive = exact ? pathname === href : pathname?.startsWith(href);
+const NavItem = ({
+  icon,
+  text,
+  href,
+  level = 0,
+  exact = false,
+  sx,
+  onClick,
+}: NavItemProps) => {
+  const pathname = usePathname()
+  const isActive = exact ? pathname === href : pathname?.startsWith(href)
 
   return (
     <Link href={href} passHref legacyBehavior>
@@ -81,9 +89,7 @@ const NavItem = ({ icon, text, href, level = 0, exact = false, sx, onClick }: Na
         }}
         onClick={onClick}
       >
-        <ListItemIcon sx={{ minWidth: 40 }}>
-          {icon}
-        </ListItemIcon>
+        <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
         <ListItemText
           primary={text}
           primaryTypographyProps={{
@@ -93,34 +99,41 @@ const NavItem = ({ icon, text, href, level = 0, exact = false, sx, onClick }: Na
         />
       </StyledNavItem>
     </Link>
-  );
-};
-
-interface NavGroupProps {
-  icon: React.ReactNode;
-  text: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  isOpen?: boolean; // Allow controlled open state
-  onToggle?: () => void; // Allow parent to control toggle
+  )
 }
 
-const NavGroup = ({ icon, text, children, defaultOpen = false, isOpen, onToggle }: NavGroupProps) => {
+interface NavGroupProps {
+  icon: React.ReactNode
+  text: string
+  children: React.ReactNode
+  defaultOpen?: boolean
+  isOpen?: boolean // Allow controlled open state
+  onToggle?: () => void // Allow parent to control toggle
+}
+
+const NavGroup = ({
+  icon,
+  text,
+  children,
+  defaultOpen = false,
+  isOpen,
+  onToggle,
+}: NavGroupProps) => {
   // If isOpen and onToggle are provided, this becomes a controlled component
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const open = isOpen !== undefined ? isOpen : internalOpen;
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
+  const open = isOpen !== undefined ? isOpen : internalOpen
 
   const handleClick = () => {
     if (onToggle) {
-      onToggle();
+      onToggle()
     } else {
-      setInternalOpen(!internalOpen);
+      setInternalOpen(!internalOpen)
     }
-  };
-  
+  }
+
   return (
     <>
-      <ListItemButton 
+      <ListItemButton
         onClick={handleClick}
         sx={{
           '&:hover': {
@@ -131,78 +144,87 @@ const NavGroup = ({ icon, text, children, defaultOpen = false, isOpen, onToggle 
           p: (theme) => theme.spacing(1, 2),
         }}
       >
-        <ListItemIcon sx={{ minWidth: 40 }}>
-          {icon}
-        </ListItemIcon>
-        <ListItemText 
-          primary={text} 
+        <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+        <ListItemText
+          primary={text}
           primaryTypographyProps={{
             variant: 'subtitle2', // Slightly more prominent for group titles
             fontWeight: 500,
           }}
         />
-        {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        {open ? (
+          <ExpandLess fontSize='small' />
+        ) : (
+          <ExpandMore fontSize='small' />
+        )}
       </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={open} timeout='auto' unmountOnExit>
         {children}
       </Collapse>
     </>
-  );
-};
-
-interface SidebarProps {
-  mobileOpen: boolean;
-  onClose: () => void;
-  width?: number | string;
+  )
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWidth }) => {
-  const { user } = useContext(AuthContext);
-  const userRoles = user?.roles || [];
-  const theme = useTheme();
-  const router = useRouter();
-  const pathname = usePathname();
+interface SidebarProps {
+  mobileOpen: boolean
+  onClose: () => void
+  width?: number | string
+}
 
-  const canManageSchoolResources = userRoles.includes(UserRole.SCHOOL_ADMIN) || userRoles.includes(UserRole.SUPER_ADMIN);
-  const isSuperAdmin = userRoles.includes(UserRole.SUPER_ADMIN);
+const Sidebar: React.FC<SidebarProps> = ({
+  mobileOpen,
+  onClose,
+  width = drawerWidth,
+}) => {
+  const { user } = useContext(AuthContext)
+  const userRoles = user?.roles || []
+  const theme = useTheme()
+  const pathname = usePathname()
+
+  const canManageSchoolResources =
+    userRoles.includes(UserRole.SCHOOL_ADMIN) ||
+    userRoles.includes(UserRole.SUPER_ADMIN)
+  const isSuperAdmin = userRoles.includes(UserRole.SUPER_ADMIN)
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     userManagement: false,
     academic: false,
     reports: false,
     settings: false,
-  });
+  })
 
   useEffect(() => {
-    const currentPath = pathname || '';
+    const currentPath = pathname || ''
     const newOpenGroups: Record<string, boolean> = {
-      userManagement: currentPath.startsWith('/admin/users') ||
-                      currentPath.startsWith('/admin/students') ||
-                      currentPath.startsWith('/admin/teachers'),
-      academic: currentPath.startsWith('/admin/classes') ||
-                currentPath.startsWith('/admin/subjects'),
+      userManagement:
+        currentPath.startsWith('/admin/users') ||
+        currentPath.startsWith('/admin/students') ||
+        currentPath.startsWith('/admin/teachers'),
+      academic:
+        currentPath.startsWith('/admin/classes') ||
+        currentPath.startsWith('/admin/subjects'),
       reports: currentPath.startsWith('/admin/reports'),
       settings: currentPath.startsWith('/admin/settings'),
-    };
-    setOpenGroups(newOpenGroups);
-  }, [pathname]);
+    }
+    setOpenGroups(newOpenGroups)
+  }, [pathname])
 
   const toggleGroup = (group: string) => {
-    setOpenGroups(prev => ({
+    setOpenGroups((prev) => ({
       ...prev,
-      [group]: !prev[group]
-    }));
-  };
+      [group]: !prev[group],
+    }))
+  }
 
   const drawerContent = (
     <div>
       <Toolbar>
-        <Link href="/admin/dashboard" passHref legacyBehavior>
-          <Box 
-            component="a"
-            display="flex" 
-            alignItems="center" 
-            sx={{ 
+        <Link href='/admin/dashboard' passHref legacyBehavior>
+          <Box
+            component='a'
+            display='flex'
+            alignItems='center'
+            sx={{
               textDecoration: 'none',
               color: 'inherit',
               width: '100%',
@@ -214,10 +236,10 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
             }}
           >
             <SchoolIcon sx={{ mr: 1, color: 'primary.main' }} />
-            <Typography 
-              variant="h6" 
-              noWrap 
-              component="div"
+            <Typography
+              variant='h6'
+              noWrap
+              component='div'
               sx={{
                 fontWeight: 700,
                 background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -233,87 +255,87 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
         </Link>
       </Toolbar>
       <Divider />
-      
-      <List component="nav" sx={{ p: 1 }}>
-        <NavItem 
-          icon={<DashboardIcon />} 
-          text="Dashboard" 
-          href="/admin/dashboard" 
+
+      <List component='nav' sx={{ p: 1 }}>
+        <NavItem
+          icon={<DashboardIcon />}
+          text='Dashboard'
+          href='/admin/dashboard'
           exact
         />
 
         {isSuperAdmin && (
-          <NavItem 
-            icon={<SchoolIcon />} 
-            text="Schools" 
-            href="/admin/schools" // Assuming /admin/schools
+          <NavItem
+            icon={<SchoolIcon />}
+            text='Schools'
+            href='/admin/schools' // Assuming /admin/schools
           />
         )}
 
         {canManageSchoolResources && (
           <>
-            <NavGroup 
-              icon={<PeopleIcon />} 
-              text="User Management"
+            <NavGroup
+              icon={<PeopleIcon />}
+              text='User Management'
               isOpen={openGroups.userManagement}
               onToggle={() => toggleGroup('userManagement')}
             >
-              <NavItem 
-                icon={<PersonIcon fontSize="small" />} 
-                text="All Users" 
-                href="/admin/users"
+              <NavItem
+                icon={<PersonIcon fontSize='small' />}
+                text='All Users'
+                href='/admin/users'
                 level={1}
               />
-              <NavItem 
-                icon={<PersonIcon fontSize="small" />} 
-                text="Students" 
-                href="/admin/students"
+              <NavItem
+                icon={<PersonIcon fontSize='small' />}
+                text='Students'
+                href='/admin/students'
                 level={1}
               />
-              <NavItem 
-                icon={<PersonIcon fontSize="small" />} 
-                text="Teachers" 
-                href="/admin/teachers" // Assuming /admin/teachers
+              <NavItem
+                icon={<PersonIcon fontSize='small' />}
+                text='Teachers'
+                href='/admin/teachers' // Assuming /admin/teachers
                 level={1}
               />
             </NavGroup>
 
-            <NavGroup 
-              icon={<ClassIcon />} 
-              text="Academic"
+            <NavGroup
+              icon={<ClassIcon />}
+              text='Academic'
               isOpen={openGroups.academic}
               onToggle={() => toggleGroup('academic')}
             >
-              <NavItem 
-                icon={<MenuBookIcon fontSize="small" />} 
-                text="Classes" 
-                href="/admin/classes"
+              <NavItem
+                icon={<MenuBookIcon fontSize='small' />}
+                text='Classes'
+                href='/admin/classes'
                 level={1}
               />
-              <NavItem 
-                icon={<MenuBookIcon fontSize="small" />} 
-                text="Subjects" 
-                href="/admin/subjects"
+              <NavItem
+                icon={<MenuBookIcon fontSize='small' />}
+                text='Subjects'
+                href='/admin/subjects'
                 level={1}
               />
             </NavGroup>
 
-            <NavGroup 
-              icon={<ReportIcon />} 
-              text="Reports"
+            <NavGroup
+              icon={<ReportIcon />}
+              text='Reports'
               isOpen={openGroups.reports}
               onToggle={() => toggleGroup('reports')}
             >
-              <NavItem 
-                icon={<AssessmentIcon fontSize="small" />} 
-                text="Attendance" 
-                href="/admin/reports/attendance" // Assuming /admin/reports/attendance
+              <NavItem
+                icon={<AssessmentIcon fontSize='small' />}
+                text='Attendance'
+                href='/admin/reports/attendance' // Assuming /admin/reports/attendance
                 level={1}
               />
-              <NavItem 
-                icon={<AssessmentIcon fontSize="small" />} 
-                text="Grades" 
-                href="/admin/reports/grades" // Assuming /admin/reports/grades
+              <NavItem
+                icon={<AssessmentIcon fontSize='small' />}
+                text='Grades'
+                href='/admin/reports/grades' // Assuming /admin/reports/grades
                 level={1}
               />
             </NavGroup>
@@ -322,39 +344,39 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
 
         {/* This spacer might not be needed or could be done differently */}
         {/* <Box sx={{ mt: 'auto' }} />  */}
-        
-        <NavGroup 
-          icon={<SettingsIcon />} 
-          text="Settings"
+
+        <NavGroup
+          icon={<SettingsIcon />}
+          text='Settings'
           isOpen={openGroups.settings}
           onToggle={() => toggleGroup('settings')}
         >
-          <NavItem 
-            icon={<SettingsIcon fontSize="small" />} 
-            text="Account" 
-            href="/admin/settings/account" // Assuming /admin/settings/account
+          <NavItem
+            icon={<SettingsIcon fontSize='small' />}
+            text='Account'
+            href='/admin/settings/account' // Assuming /admin/settings/account
             level={1}
           />
-          <NavItem 
-            icon={<SettingsIcon fontSize="small" />} 
-            text="School" 
-            href="/admin/settings/school" // Assuming /admin/settings/school
+          <NavItem
+            icon={<SettingsIcon fontSize='small' />}
+            text='School'
+            href='/admin/settings/school' // Assuming /admin/settings/school
             level={1}
           />
         </NavGroup>
       </List>
     </div>
-  );
+  )
 
   return (
     <Box
-      component="nav"
+      component='nav'
       sx={{ width: { md: width }, flexShrink: { md: 0 } }}
-      aria-label="mailbox folders"
+      aria-label='mailbox folders'
     >
       {/* Mobile drawer */}
       <Drawer
-        variant="temporary"
+        variant='temporary'
         open={mobileOpen}
         onClose={onClose}
         ModalProps={{
@@ -362,8 +384,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
             width: width,
             borderRight: 'none', // Or theme.palette.divider
             // boxShadow: theme.shadows[8], // Optional: if you want shadow
@@ -372,14 +394,14 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
       >
         {drawerContent}
       </Drawer>
-      
+
       {/* Desktop drawer */}
       <Drawer
-        variant="permanent"
+        variant='permanent'
         sx={{
           display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
             width: width,
             borderRight: 'none', // Or theme.palette.divider
             // backgroundColor: theme.palette.background.default, // Or a specific sidebar color
@@ -390,7 +412,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, width = drawerWi
         {drawerContent}
       </Drawer>
     </Box>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

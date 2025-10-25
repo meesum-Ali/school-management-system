@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 // components/providers/auth-provider.tsx
 // AuthContext for Next.js - handles authentication state and token management
@@ -74,7 +74,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token')
-          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+          document.cookie =
+            'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
         }
         setIsAuthenticated(false)
         setUser(null)
@@ -83,13 +84,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       }
 
       // Handle both local JWT and Zitadel JWT formats
-      const username = decoded.username || decoded.preferred_username || decoded.email || 'Unknown'
-      const roles = decoded.roles || (decoded['urn:zitadel:iam:org:project:roles'] 
-        ? Object.keys(decoded['urn:zitadel:iam:org:project:roles']).filter(role => 
-            ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'].includes(role)
-          ) as UserRole[]
-        : [])
-      const schoolId = decoded.schoolId || decoded['urn:zitadel:iam:org:id'] || null
+      const username =
+        decoded.username ||
+        decoded.preferred_username ||
+        decoded.email ||
+        'Unknown'
+      const roles =
+        decoded.roles ||
+        (decoded['urn:zitadel:iam:org:project:roles']
+          ? (Object.keys(decoded['urn:zitadel:iam:org:project:roles']).filter(
+              (role) =>
+                ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'].includes(
+                  role,
+                ),
+            ) as UserRole[])
+          : [])
+      const schoolId =
+        decoded.schoolId || decoded['urn:zitadel:iam:org:id'] || null
 
       setUser({
         id: decoded.sub,
@@ -103,7 +114,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.error('Failed to decode token or token expired:', error)
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token')
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
+        document.cookie =
+          'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
       }
       setIsAuthenticated(false)
       setUser(null)
@@ -125,7 +137,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             return
           }
         }
-      } catch (e) {
+      } catch {
         // ignore and fallback
       }
       // Fallback to localStorage for legacy/local auth
@@ -165,7 +177,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         loginPayload,
       )
       const { access_token } = response.data
-      
+
       // Store in both localStorage and cookie for SSR compatibility
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', access_token)
@@ -174,7 +186,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         expirationDate.setDate(expirationDate.getDate() + 7)
         document.cookie = `token=${access_token}; path=/; expires=${expirationDate.toUTCString()}; SameSite=Strict`
       }
-      
+
       loadUserFromToken(access_token)
     } catch (error) {
       console.error('Login failed:', error)
@@ -194,7 +206,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, isLoading, loadUserFromToken }}
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        isLoading,
+        loadUserFromToken,
+      }}
     >
       {children}
     </AuthContext.Provider>

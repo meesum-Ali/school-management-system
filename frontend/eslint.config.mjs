@@ -3,17 +3,13 @@ import prettierPlugin from 'eslint-plugin-prettier'
 import tseslintPlugin from '@typescript-eslint/eslint-plugin'
 
 const config = [
+  // Ignore only generated/build artifacts – lint all source files by default
   {
-    ignores: [
-      '**/*.spec.tsx',
-      '**/*.spec.ts',
-      'pages/**',
-      'components/**',
-      'lib/**',
-      'src/**',
-    ],
+    ignores: ['node_modules/**', '.next/**', 'out/**'],
   },
+  // Next.js recommended rules (core-web-vitals)
   ...eslintConfigNext,
+  // Project customizations
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
@@ -29,6 +25,9 @@ const config = [
           varsIgnorePattern: '^_',
         },
       ],
+      // Relax a few noisy rules while we incrementally refactor
+      'react/display-name': 'off',
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ]

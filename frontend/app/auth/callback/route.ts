@@ -4,7 +4,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { ZITADEL_CONFIG } from '@/lib/auth/config'
+import {
+  ZITADEL_CONFIG,
+  ZITADEL_TOKEN_ENDPOINT_BASE,
+  ZITADEL_EXTERNAL_HOST,
+} from '@/lib/auth/config'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,16 +80,20 @@ export async function GET(request: NextRequest) {
 
     // Exchange authorization code for tokens
     // With Nginx proxy, the issuer is consistent for both browser and server
-    console.log('Exchanging code for tokens...')
-    console.log('Token endpoint:', `${ZITADEL_CONFIG.issuer}/oauth/v2/token`)
+  console.log('Exchanging code for tokens...')
+  console.log('Token endpoint:', `${ZITADEL_TOKEN_ENDPOINT_BASE}/oauth/v2/token`)
 
     const tokenResponse = await fetch(
-      `${ZITADEL_CONFIG.issuer}/oauth/v2/token`,
+      `${ZITADEL_TOKEN_ENDPOINT_BASE}/oauth/v2/token`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          // Critical: ensure nginx forwards Host=localhost to Zitadel, matching its ExternalDomain
+          Host: ZITADEL_EXTERNAL_HOST,
+          'X-Forwarded-Host': ZITADEL_EXTERNAL_HOST,
+          'X-Forwarded-Proto': baseUrl.startsWith('https') ? 'https' : 'http',
+        } as any,
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code,
@@ -97,10 +105,20 @@ export async function GET(request: NextRequest) {
     )
 
     console.log('Token response status:', tokenResponse.status)
+    console.log('Token response headers:', Object.fromEntries(tokenResponse.headers.entries()))
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
-      console.error('Token exchange failed:', errorText)
+      console.error('=== TOKEN EXCHANGE FAILED ===')
+      console.error('Status:', tokenResponse.status)
+      console.error('Response body:', errorText)
+      console.error('Request details:')
+      console.error('  - grant_type: authorization_code')
+      console.error('  - code:', code.substring(0, 20) + '...')
+      console.error('  - redirect_uri:', ZITADEL_CONFIG.redirectUri)
+      console.error('  - client_id:', ZITADEL_CONFIG.clientId)
+      console.error('  - code_verifier length:', storedVerifier.length)
+      console.error('==============================')
 
       let errorData
       try {
@@ -175,7 +193,11 @@ export async function GET(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Unexpected error in callback handler:', error)
+    console.error('=== UNEXPECTED ERROR IN CALLBACK ===')
+    console.error('Error type:', error?.constructor?.name)
+    console.error('Error message:', error instanceof Error ? error.message : String(error))
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('====================================')
     return NextResponse.redirect(`${baseUrl}/unauthorized?error=server_error`)
   }
 }

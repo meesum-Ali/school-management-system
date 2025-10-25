@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
 import React, { useState } from 'react'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    setMobileOpen(!mobileOpen)
+  }
 
   return (
     <div className='flex h-screen bg-gray-100'>
