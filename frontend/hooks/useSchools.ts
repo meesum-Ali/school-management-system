@@ -5,7 +5,7 @@ import {
   updateSchool,
   deleteSchool,
   fetchSchoolById,
-} from '@/utils/api'
+} from '@/lib/api'
 import { CreateSchoolDto, UpdateSchoolDto } from '@/types/school'
 
 export const schoolKeys = {

@@ -9,7 +9,7 @@ import { CreateClassDto, UpdateClassDto } from '@/types/class'
 import { UserRole } from '@/types/user'
 import AdminLayout from '@/components/Layout/AdminLayout'
 import Notification from '@/components/Layout/Notification'
-import { AuthContext } from '@/contexts/AuthContext'
+import { AuthContext } from '@/components/providers/auth-provider'
 
 export default function CreateClassPage() {
   const router = useRouter()

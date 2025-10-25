@@ -5,7 +5,7 @@ import {
   updateClass,
   deleteClass,
   fetchClassById,
-} from '@/utils/api'
+} from '@/lib/api'
 import { CreateClassDto, UpdateClassDto } from '@/types/class'
 
 // Query keys

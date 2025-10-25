@@ -1,6 +1,6 @@
 'use client';
 
-// frontend/contexts/AuthContext.tsx
+// components/providers/auth-provider.tsx
 // AuthContext for Next.js - handles authentication state and token management
 
 import React, {
@@ -10,8 +10,8 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react'
-import api from '../utils/api'
-import { UserRole } from '../types/user'
+import api from '@/lib/api'
+import { UserRole } from '@/types/user'
 import { jwtDecode } from 'jwt-decode'
 
 interface DecodedJwtPayload {
@@ -112,14 +112,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [])
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token')
-      if (token) {
-        loadUserFromToken(token)
+    let isMounted = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/me', { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          if (isMounted && data?.isAuthenticated && data?.user) {
+            setUser(data.user)
+            setIsAuthenticated(true)
+            setIsLoading(false)
+            return
+          }
+        }
+      } catch (e) {
+        // ignore and fallback
       }
+      // Fallback to localStorage for legacy/local auth
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token')
+        if (token) {
+          loadUserFromToken(token)
+        } else {
+          setIsAuthenticated(false)
+          setUser(null)
+        }
+      }
+      if (isMounted) setIsLoading(false)
+    })()
+    return () => {
+      isMounted = false
     }
-    setIsLoading(false)
   }, [loadUserFromToken])
 
   const login = async (

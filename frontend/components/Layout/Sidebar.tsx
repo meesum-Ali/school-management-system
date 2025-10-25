@@ -33,7 +33,7 @@ import {
   Settings as SettingsIcon,
   Assessment as AssessmentIcon,
 } from '@mui/icons-material';
-import { AuthContext } from '../../contexts/AuthContext'; // Adjust path if necessary
+import { AuthContext } from '@/components/providers/auth-provider'; // Auth provider
 import { UserRole } from '../../types/user'; // Adjust path if necessary
 
 const drawerWidth = 240;

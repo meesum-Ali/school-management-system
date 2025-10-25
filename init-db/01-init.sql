@@ -103,12 +103,7 @@ CREATE TABLE IF NOT EXISTS subjects (
 CREATE TABLE IF NOT EXISTS class_subjects (
     class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
     subject_id UUID NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
-    teacher_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    academic_year VARCHAR(20) NOT NULL,
-    term term_enum NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    PRIMARY KEY (class_id, subject_id, academic_year, term)
+    PRIMARY KEY (class_id, subject_id)
 );
 
 -- Create students table (extends users)

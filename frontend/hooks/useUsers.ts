@@ -5,7 +5,7 @@ import {
   updateUser,
   deleteUser,
   fetchUserById,
-} from '@/utils/api'
+} from '@/lib/api'
 import { CreateUserDto, UpdateUserDto } from '@/types/user'
 
 export const userKeys = {

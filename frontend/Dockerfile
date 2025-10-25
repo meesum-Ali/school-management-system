@@ -48,6 +48,14 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/tailwind.config.js ./
 COPY --from=builder /app/postcss.config.js ./
+# Copy source files needed for App Router at runtime
+COPY --from=builder /app/app ./app
+COPY --from=builder /app/components ./components
+COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/hooks ./hooks
+COPY --from=builder /app/types ./types
+COPY --from=builder /app/styles ./styles
+COPY --from=builder /app/theme ./theme
 
 # Install only production dependencies
 RUN pnpm install --prod

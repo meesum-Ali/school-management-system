@@ -5,7 +5,7 @@ import {
   updateStudent,
   deleteStudent,
   fetchStudentById,
-} from '@/utils/api'
+} from '@/lib/api'
 import { CreateStudentDto, UpdateStudentDto } from '@/types/student'
 
 export const studentKeys = {

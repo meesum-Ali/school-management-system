@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthContext } from '../../contexts/AuthContext';
+import { AuthContext } from '@/components/providers/auth-provider';
 import { UserRole } from '../../types/user';
 
 interface ProtectedRouteProps {

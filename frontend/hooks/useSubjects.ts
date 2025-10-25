@@ -5,7 +5,7 @@ import {
   updateSubject,
   deleteSubject,
   fetchSubjectById,
-} from '@/utils/api'
+} from '@/lib/api'
 import { CreateSubjectDto, UpdateSubjectDto } from '@/types/subject'
 
 export const subjectKeys = {

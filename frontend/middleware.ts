@@ -1,65 +1,191 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { jwtDecode } from 'jwt-decode';
+// middleware.ts
+// Edge middleware for authentication and authorization
+// Handles PKCE generation and direct redirect to Zitadel for unauthenticated users
+
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { jwtDecode } from 'jwt-decode'
+
+// Zitadel configuration
+const ZITADEL_ISSUER =
+  process.env.NEXT_PUBLIC_ZITADEL_ISSUER || 'http://localhost:8888'
+const ZITADEL_CLIENT_ID = process.env.NEXT_PUBLIC_ZITADEL_CLIENT_ID || ''
+const ZITADEL_REDIRECT_URI =
+  process.env.NEXT_PUBLIC_ZITADEL_REDIRECT_URI ||
+  'http://localhost:3001/auth/callback'
 
 interface DecodedJwtPayload {
-  sub: string;
-  username: string;
-  roles: string[];
-  schoolId?: string | null;
-  iat?: number;
-  exp?: number;
+  sub: string
+  username: string
+  roles?: string[]
+  schoolId?: string | null
+  'urn:zitadel:iam:org:project:roles'?: Record<string, any>
+  'urn:zitadel:iam:org:id'?: string
+  iat?: number
+  exp?: number
 }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+// PKCE utilities (inline for Edge Runtime compatibility)
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  const base64 = btoa(String.fromCharCode(...array))
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
 
-  // Protect all /admin routes
-  if (pathname.startsWith('/admin')) {
-    // Get token from cookie or localStorage (for SSR, we use cookies)
-    const token = request.cookies.get('token')?.value;
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(verifier)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)))
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
 
-    if (!token) {
-      // No token, redirect to login
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+function generateState(): string {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  )
+}
 
-    try {
-      const decoded = jwtDecode<DecodedJwtPayload>(token);
-
-      // Check if token is expired
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        const loginUrl = new URL('/login', request.url);
-        loginUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-
-      // Check if user has required roles (SUPER_ADMIN or SCHOOL_ADMIN)
-      const hasAdminRole = decoded.roles.some(
-        (role) => role === 'SUPER_ADMIN' || role === 'SCHOOL_ADMIN'
-      );
-
-      if (!hasAdminRole) {
-        // User doesn't have permission
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
-      }
-
-      // User is authenticated and authorized
-      return NextResponse.next();
-    } catch (error) {
-      // Invalid token
-      console.error('Invalid token in middleware:', error);
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+// Extract roles from JWT
+function extractRoles(decoded: DecodedJwtPayload): string[] {
+  if (Array.isArray(decoded.roles)) {
+    return decoded.roles
   }
 
-  return NextResponse.next();
+  const zitadelRoles = decoded['urn:zitadel:iam:org:project:roles']
+  if (zitadelRoles && typeof zitadelRoles === 'object') {
+    return Object.keys(zitadelRoles).filter((role) =>
+      ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'].includes(role),
+    )
+  }
+
+  return []
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Public routes - allow without authentication
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/auth/callback') ||
+    pathname.startsWith('/auth/refresh') ||
+    pathname.startsWith('/auth/logout') ||
+    pathname === '/unauthorized' ||
+    pathname === '/favicon.ico'
+  ) {
+    return NextResponse.next()
+  }
+
+  // Get token from cookies
+  const token = request.cookies.get('token')?.value
+
+  // If no token, redirect to Zitadel with PKCE
+  if (!token) {
+    console.log(
+      `[Middleware] No token found for ${pathname}, redirecting to Zitadel`,
+    )
+
+    // Generate PKCE pair
+    const verifier = generateCodeVerifier()
+    const challenge = await generateCodeChallenge(verifier)
+    const state = generateState()
+
+    // Build Zitadel authorization URL
+    const authUrl = new URL(`${ZITADEL_ISSUER}/oauth/v2/authorize`)
+    authUrl.searchParams.set('client_id', ZITADEL_CLIENT_ID)
+    authUrl.searchParams.set('redirect_uri', ZITADEL_REDIRECT_URI)
+    authUrl.searchParams.set('response_type', 'code')
+    authUrl.searchParams.set(
+      'scope',
+      'openid profile email urn:zitadel:iam:org:project:id:zitadel:aud',
+    )
+    authUrl.searchParams.set('state', state)
+    authUrl.searchParams.set('code_challenge', challenge)
+    authUrl.searchParams.set('code_challenge_method', 'S256')
+
+    // Create redirect response
+    const response = NextResponse.redirect(authUrl)
+
+    // Store PKCE verifier and state in HTTP-only cookies
+    response.cookies.set('pkce_verifier', verifier, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 600, // 10 minutes
+      path: '/',
+    })
+
+    response.cookies.set('oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 600, // 10 minutes
+      path: '/',
+    })
+
+    // Store original destination
+    response.cookies.set('redirect_after_login', pathname, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 600, // 10 minutes
+      path: '/',
+    })
+
+    console.log(`[Middleware] Redirecting to Zitadel: ${authUrl.toString()}`)
+    return response
+  }
+
+  // Validate token
+  try {
+    const decoded = jwtDecode<DecodedJwtPayload>(token)
+
+    // Check if token is expired
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      console.log('[Middleware] Token expired, attempting refresh')
+      const url = new URL('/auth/refresh', request.url)
+      url.searchParams.set('returnTo', pathname)
+      return NextResponse.redirect(url)
+    }
+
+    // For /admin routes, check roles
+    if (pathname.startsWith('/admin')) {
+      const roles = extractRoles(decoded)
+      const hasAdminRole = roles.some(
+        (role) => role === 'SUPER_ADMIN' || role === 'SCHOOL_ADMIN',
+      )
+
+      if (!hasAdminRole) {
+        console.log(
+          '[Middleware] User lacks admin role, redirecting to unauthorized',
+        )
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+      }
+    }
+
+    // Token valid, allow request
+    return NextResponse.next()
+  } catch (error) {
+    console.error('[Middleware] Invalid token:', error)
+    const url = new URL('/auth/refresh', request.url)
+    url.searchParams.set('returnTo', pathname)
+    return NextResponse.redirect(url)
+  }
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
-};
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+  ],
+}
