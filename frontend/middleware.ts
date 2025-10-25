@@ -95,6 +95,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/auth/refresh') ||
     pathname.startsWith('/auth/logout') ||
     pathname === '/unauthorized' ||
+    pathname === '/debug-token' ||
+    pathname === '/test-auth' ||
     pathname === '/favicon.ico'
   ) {
     return NextResponse.next()
