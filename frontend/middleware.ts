@@ -50,22 +50,41 @@ function generateState(): string {
 
 // Extract roles from JWT
 function extractRoles(decoded: DecodedJwtPayload): string[] {
+  // Direct array case (unlikely for Zitadel but keep for compatibility)
   if (Array.isArray(decoded.roles)) {
-    return decoded.roles
+    return decoded.roles.map((r) => r.toUpperCase().replace(/[-\s]/g, '_'))
   }
 
-  const zitadelRoles = decoded['urn:zitadel:iam:org:project:roles']
-  if (zitadelRoles && typeof zitadelRoles === 'object') {
-    return Object.keys(zitadelRoles).filter((role) =>
-      ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'].includes(role),
-    )
+  const claim = decoded['urn:zitadel:iam:org:project:roles']
+  const collected: string[] = []
+  if (claim && typeof claim === 'object') {
+    // Two possible shapes:
+    // 1) { ROLE_A: true, ROLE_B: true }
+    // 2) { projectId: { ROLE_A: true, ROLE_B: true } }
+    for (const [k, v] of Object.entries(claim)) {
+      if (typeof v === 'boolean') {
+        collected.push(k)
+      } else if (v && typeof v === 'object') {
+        for (const innerKey of Object.keys(v as Record<string, boolean>)) {
+          collected.push(innerKey)
+        }
+      }
+    }
   }
 
-  return []
+  const normalized = collected.map((r) => r.toUpperCase().replace(/[-\s]/g, '_'))
+  const allowed = new Set(['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'])
+  return normalized.filter((r) => allowed.has(r))
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const secFetchMode = request.headers.get('sec-fetch-mode') || ''
+  const isNavigation = secFetchMode === 'navigate'
+  const isPrefetch =
+    request.headers.get('next-router-prefetch') === '1' ||
+    request.headers.get('purpose') === 'prefetch' ||
+    request.headers.get('rsc') === '1'
 
   // Public routes - allow without authentication
   if (
@@ -80,11 +99,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get token from cookies
-  const token = request.cookies.get('token')?.value
+  // Get tokens from cookies
+  const accessToken = request.cookies.get('token')?.value
+  const idToken = request.cookies.get('id_token')?.value
 
-  // If no token, redirect to Zitadel with PKCE
-  if (!token) {
+  // If no token, redirect to Zitadel with PKCE (only for real navigations)
+  if (!accessToken && !idToken) {
+    if (!isNavigation) {
+      // Avoid redirecting prefetch/data requests to external domain to prevent CORS errors
+      // Let the actual navigation trigger the redirect instead
+      console.log(
+        `[Middleware] No token for ${pathname} on non-navigation (mode=${secFetchMode}). Skipping redirect.`,
+      )
+      return NextResponse.next()
+    }
+
     console.log(
       `[Middleware] No token found for ${pathname}, redirecting to Zitadel`,
     )
@@ -101,7 +130,8 @@ export async function middleware(request: NextRequest) {
     authUrl.searchParams.set('response_type', 'code')
     authUrl.searchParams.set(
       'scope',
-      'openid profile email urn:zitadel:iam:org:project:id:zitadel:aud',
+      // Request roles claim so admin routes can be authorized client-side
+      'openid profile email urn:zitadel:iam:org:project:id:zitadel:aud urn:zitadel:iam:org:project:roles',
     )
     authUrl.searchParams.set('state', state)
     authUrl.searchParams.set('code_challenge', challenge)
@@ -142,7 +172,12 @@ export async function middleware(request: NextRequest) {
 
   // Validate token
   try {
-    const decoded = jwtDecode<DecodedJwtPayload>(token)
+    // Prefer ID token for identity/roles, fall back to access token
+    const tokenForAuth = idToken || accessToken
+    if (!tokenForAuth) {
+      throw new Error('No token available for decoding')
+    }
+    const decoded = jwtDecode<DecodedJwtPayload>(tokenForAuth)
 
     // Check if token is expired
     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
@@ -154,7 +189,11 @@ export async function middleware(request: NextRequest) {
 
     // For /admin routes, check roles
     if (pathname.startsWith('/admin')) {
+      // Log roles structure for debugging role-based access
+  const rawRoles = decoded['urn:zitadel:iam:org:project:roles'] || null
+      console.log('[Middleware] Raw roles claim:', JSON.stringify(rawRoles))
       const roles = extractRoles(decoded)
+      console.log('[Middleware] Extracted roles:', roles)
       const hasAdminRole = roles.some(
         (role) => role === 'SUPER_ADMIN' || role === 'SCHOOL_ADMIN',
       )

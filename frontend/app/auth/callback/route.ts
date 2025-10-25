@@ -9,6 +9,13 @@ import { ZITADEL_CONFIG } from '@/lib/auth/config'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  // Get host information for proper redirects (declared once at the top)
+  const host = request.headers.get('host') || 'localhost:3001'
+  const protocol =
+    request.headers.get('x-forwarded-proto') ||
+    (host.includes('localhost') ? 'http' : 'https')
+  const baseUrl = `${protocol}://${host}`
+
   try {
     const searchParams = request.nextUrl.searchParams
     const code = searchParams.get('code')
@@ -24,10 +31,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('OAuth error from Zitadel:', error)
       return NextResponse.redirect(
-        new URL(
-          `/unauthorized?error=${encodeURIComponent(error)}`,
-          request.url,
-        ),
+        `${baseUrl}/unauthorized?error=${encodeURIComponent(error)}`,
       )
     }
 
@@ -35,7 +39,7 @@ export async function GET(request: NextRequest) {
     if (!code || !state) {
       console.error('Missing code or state parameter')
       return NextResponse.redirect(
-        new URL('/unauthorized?error=missing_parameters', request.url),
+        `${baseUrl}/unauthorized?error=missing_parameters`,
       )
     }
 
@@ -60,7 +64,7 @@ export async function GET(request: NextRequest) {
       console.error('Expected:', storedState)
       console.error('Received:', state)
       return NextResponse.redirect(
-        new URL('/unauthorized?error=invalid_state', request.url),
+        `${baseUrl}/unauthorized?error=invalid_state`,
       )
     }
 
@@ -68,7 +72,7 @@ export async function GET(request: NextRequest) {
     if (!storedVerifier) {
       console.error('PKCE verifier not found in cookies')
       return NextResponse.redirect(
-        new URL('/unauthorized?error=missing_verifier', request.url),
+        `${baseUrl}/unauthorized?error=missing_verifier`,
       )
     }
 
@@ -107,10 +111,7 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.redirect(
-        new URL(
-          `/unauthorized?error=${encodeURIComponent(errorData.error_description || 'token_exchange_failed')}`,
-          request.url,
-        ),
+        `${baseUrl}/unauthorized?error=${encodeURIComponent(errorData.error_description || 'token_exchange_failed')}`,
       )
     }
 
@@ -123,10 +124,12 @@ export async function GET(request: NextRequest) {
     console.log('Expires in:', expires_in)
 
     // Create response with redirect
-    // Use new URL() with request.url to get the correct origin from the actual request
-    const response = NextResponse.redirect(
-      new URL(redirectAfterLogin, request.url),
-    )
+    // Construct the redirect URL using the host from the request headers to avoid 0.0.0.0 issues
+    const redirectUrl = `${baseUrl}${redirectAfterLogin}`
+
+    console.log('Redirect URL:', redirectUrl)
+
+    const response = NextResponse.redirect(redirectUrl)
 
     // Set secure HTTP-only cookies
     const maxAge = expires_in || 604800 // 7 days default
@@ -174,8 +177,6 @@ export async function GET(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Unexpected error in callback handler:', error)
-    return NextResponse.redirect(
-      new URL('/unauthorized?error=server_error', request.url),
-    )
+    return NextResponse.redirect(`${baseUrl}/unauthorized?error=server_error`)
   }
 }

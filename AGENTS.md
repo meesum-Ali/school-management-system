@@ -1,218 +1,61 @@
 # AI Agent Contribution Guidelines
 
-This repository contains a **Next.js 14 App Router** frontend and a **NestJS** backend written in TypeScript. The product goals and requirements are described in `PRD.md`.
+_Last reviewed: 2024-10-15 (AI agent audit)_
 
-## Architecture Overview
+This repository delivers a Next.js 14 frontend and a NestJS 10 backend. The stated goal is a DDD-aligned, clean, and scalable platform. The points below capture the current implementation realities and the guardrails agents **must** respect while iterating toward that goal.
 
-### Frontend
-- **Framework**: Next.js 14 with App Router (file-based routing)
-- **UI**: Material-UI 7 + Tailwind CSS
-- **State Management**: TanStack Query (React Query) for server state
-- **Authentication**: Zitadel OAuth/OIDC + local fallback
-- **TypeScript**: Strict mode enabled
+## Repository Snapshot
+- **Frontend**: Next.js 14 App Router, TypeScript (strict), React Query (TanStack), Material UI 7, Tailwind, custom Auth context
+- **Backend**: NestJS 10, TypeORM targeting PostgreSQL, resource-first modules (students, classes, etc.), Swagger docs, request-scoped multi-tenant helpers
+- **Auth**: Zitadel OIDC (JWT, JWKS) plus legacy local login fallback
+- **Tooling**: Docker Compose for Postgres + Zitadel, Jest unit tests (selected services), lint/build/test npm scripts per package
+- **Notable repos state**: `backend/dist/` and `node_modules/` folders are committed; revisit when adjusting CI/CD expectations
 
-### Backend
-- **Framework**: NestJS 10
-- **Database**: PostgreSQL with TypeORM
-- **Authentication**: Zitadel (JWT + JWKS validation)
-- **API Documentation**: Swagger/OpenAPI
-- **Multi-tenancy**: Organization-based (schoolId)
+## Backend Review
+- **Architecture**: Modules are generated via `nest g resource` and follow controller → service → TypeORM repository flow. There is **no explicit domain/application/infrastructure separation yet**; domain logic, DTO mapping, and persistence concerns are blended inside services (for example `students.service.ts`, `classes.service.ts`).
+- **Domain model**: TypeORM entities double as domain entities and are enriched with validation decorators (`students/entities/student.entity.ts`, `users/entities/user.entity.ts`). This mixes persistence and validation responsibilities and makes future domain evolution harder.
+- **Authentication & authorization**:
+  - `ZitadelStrategy` returns role maps, but controllers rely on `RolesGuard` that expects string arrays (`students.controller.ts`), leading to inconsistent role enforcement.
+  - `TenantProvider` reads `user.tenant` while most controllers expect `req.user.schoolId`; resolve this discrepancy before adding more tenant logic.
+- **Cross-cutting concerns**: Services perform synchronous console logging and manual DTO conversions. Consider introducing dedicated mappers and a structured logger once domain/application layers exist.
+- **Testing**: Only select services have unit coverage (e.g. `students.service.spec.ts`). Controller-level, domain-level, and multi-tenant guard tests are largely missing.
 
-### Infrastructure
-- **Containerization**: Docker Compose
-- **Auth Provider**: Zitadel (self-hosted on port 8888)
-- **Database**: PostgreSQL
-- **API Gateway**: NestJS on port 5000
-- **Frontend**: Next.js on port 3000
+## Frontend Review
+- **Client/server split**: Critical providers (`ReactQueryProvider`, `AuthProvider`) are client components, which is appropriate for the current setup. Pages that depend on React Query are marked `'use client'`.
+- **API access**: `lib/api.ts` centralizes Axios configuration and injects tokens from `localStorage`. Because this file can be imported by server code, always gate `localStorage` usage or refactor to a client-only accessor to avoid SSR crashes.
+- **State & types**: Hooks in `hooks/` wrap API calls with cache invalidation. DTO/types mirror backend shapes but still reflect persistence concerns; plan on introducing domain-facing view models when backend adopts DDD layers.
+- **UX & layout**: Admin pages use `AdminLayout` and simple loading/error placeholders. Standardize loading/error components when expanding feature set.
 
-## General Principles
-- Follow the architectural and coding conventions outlined in `DevelopmentGuidelines.md` and `CONTRIBUTING.md`
-- Keep code modular and well documented. Prefer descriptive names and TypeScript types
-- Ensure all changes include relevant tests when possible
-- Use TanStack Query hooks for all API interactions
-- Follow Next.js App Router conventions (server components by default, 'use client' when needed)
-- Maintain multi-tenancy awareness in all backend services
+## DDD & Clean Architecture Direction
+- Adopt a layered structure per bounded context (`/domain`, `/application`, `/infrastructure`):
+  1. **Domain**: Pure aggregates, value objects, domain services that encapsulate invariants (e.g., `Student`, `Class`, `School` aggregates with `SchoolId`, `Email` value objects). No NestJS or TypeORM imports here.
+  2. **Application**: Use cases orchestrating domain objects, handling transactions, and exposing DTOs. Keep mapping logic here.
+  3. **Infrastructure**: NestJS modules, controllers, TypeORM entities/repositories, mappers, and adapters that fulfill application contracts.
+- Move validation concerns to DTOs (`class-validator`) and keep entities free of presentation constraints.
+- Define a translation layer that normalizes Zitadel roles into `UserRole[]` once and shares it between backend guards and frontend auth context.
+- Wrap multi-tenant context (schoolId) in a dedicated request-scoped service backed by clear contracts so guards/controllers do not duplicate lookups.
+- Introduce domain-level tests (aggregate invariants), application-level tests (use case flows), and integration tests that include auth + multi-tenancy boundaries.
 
-## Development Setup
+## Actionable Focus for Agents
+1. **Align auth roles**: Create a mapper that converts Zitadel role claims to the internal `UserRole` enum and swap controllers to a single guard.
+2. **Decouple validation from entities**: Migrate validation decorators from TypeORM entities to DTOs and enforce invariants through domain constructors.
+3. **Introduce domain models incrementally**: Start with the most mature module (`students` or `classes`), extracting aggregates and value objects while keeping existing controllers functional via adapters.
+4. **Harmonize tenant context**: Standardize on `schoolId` everywhere; update `TenantProvider` and guards to enforce it.
+5. **Testing**: Extend existing Jest suites to cover authorization paths and domain rules before large refactors.
+6. **Repository hygiene**: Plan to drop `dist/` and `node_modules/` from version control once CI pipelines or build steps can recreate them deterministically.
 
-### Prerequisites
-```bash
-# Install dependencies
-docker-compose up -d db zitadel
-cd backend && npm install && cd ..
-cd frontend && npm install && cd ..
-```
+## Workflow Notes
+- Keep following `DevelopmentGuidelines.md`, `CONTRIBUTING.md`, and `MultiTenancyGuide.md` for coding standards and review requirements.
+- Run the documented lint/build/test scripts for both frontend and backend before submitting changes.
+- Use Docker Compose to bring up Postgres and Zitadel locally (`docker-compose up -d db zitadel`).
+- Environment: copy `.env.example` files, configure Zitadel according to `ZITADEL_SETUP.md`, and set `NEXT_PUBLIC_API_URL` for frontend builds.
 
-### Environment Variables
-Copy example files and configure:
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env.local
-```
+## Reference Library
+- PRD.md — product direction and feature scope
+- DevelopmentGuidelines.md — coding conventions
+- MultiTenancyGuide.md — tenant isolation strategy
+- Zitadel docs — https://zitadel.com/docs
+- NestJS docs — https://docs.nestjs.com
+- Next.js App Router docs — https://nextjs.org/docs/app
 
-See `ZITADEL_SETUP.md` for Zitadel configuration steps.
-
-## Programmatic Checks
-Run the following before committing:
-
-```bash
-# Backend
-cd backend
-npm install
-npm run lint
-npm run build
-npm test
-cd ..
-
-# Frontend
-cd frontend
-npm install
-npm run lint
-npm run build
-cd ..
-```
-
-## Code Quality Standards
-
-### Backend
-- Use DTOs for all request/response validation
-- Apply `@UseGuards(AuthGuard('zitadel'), RolesGuard)` to protected routes
-- Use `@Public()` decorator for public endpoints
-- Filter data by `schoolId` for multi-tenant isolation
-- Write unit tests for services
-- Write e2e tests for controllers
-
-### Frontend
-- Use TanStack Query hooks (no manual useState/useEffect for API calls)
-- Create custom hooks in `hooks/` directory for all resources
-- Server components by default; add `'use client'` only when needed
-- Handle loading and error states consistently
-- Use TypeScript interfaces from `types/` directory
-
-## Authentication & Authorization
-
-### Zitadel Integration
-- JWT tokens validated using JWKS endpoint
-- Roles: `SUPER_ADMIN`, `SCHOOL_ADMIN`, `TEACHER`, `STUDENT`
-- Organizations map to schools (schoolId)
-- Both OAuth and local auth supported
-
-### Protected Routes
-```typescript
-@Controller('resource')
-@UseGuards(AuthGuard('zitadel'), RolesGuard)
-export class ResourceController {
-  @Get()
-  @Roles(UserRole.SCHOOL_ADMIN)
-  findAll(@Req() req) {
-    // Access user via req.user
-    // Filter by req.user.schoolId for multi-tenancy
-  }
-}
-```
-
-## Multi-Tenancy Guidelines
-
-### Backend
-- Always filter queries by `schoolId` for SCHOOL_ADMIN users
-- SUPER_ADMIN can access all data
-- Store `schoolId` in entities where applicable
-- Validate user has access to requested resources
-
-### Frontend
-- Display only user's organization data
-- Handle organization context in AuthContext
-- Filter dropdowns and selectors by user's school
-
-## Testing
-
-### Backend Tests
-```bash
-cd backend
-npm test                    # Unit tests
-npm run test:e2e            # E2E tests
-npm run test:cov            # Coverage report
-```
-
-### Frontend Tests (when implemented)
-```bash
-cd frontend
-npm test
-```
-
-## Database Migrations
-
-```bash
-cd backend
-npm run migration:generate -- src/migrations/DescriptiveName
-npm run migration:run
-```
-
-## API Documentation
-
-Swagger available at: `http://localhost:5000/api-docs`
-
-## Common Tasks
-
-### Adding a New Resource
-
-1. **Backend**:
-   ```bash
-   cd backend/src
-   nest g resource resource-name
-   ```
-   - Add DTOs with validation
-   - Implement service with multi-tenancy
-   - Add guards and roles to controller
-   - Write tests
-
-2. **Frontend**:
-   ```bash
-   cd frontend
-   # Create hook file
-   touch hooks/useResourceName.ts
-   # Create page
-   mkdir -p app/admin/resource-name
-   touch app/admin/resource-name/page.tsx
-   ```
-   - Implement TanStack Query hooks
-   - Create list/create/edit pages
-   - Add navigation in Sidebar
-
-### Debugging
-
-```bash
-# View logs
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f zitadel
-
-# Check service health
-curl http://localhost:5000/api/health
-curl http://localhost:8888/.well-known/openid-configuration
-```
-
-## Pull Requests
-- Use clear commit messages following conventional commits (feat:, fix:, docs:, etc.)
-- Update documentation when behaviour changes
-- Ensure PRs pass all programmatic checks
-- Include screenshots for UI changes
-- Reference related issues
-- Test authentication flows if touching auth code
-- Verify multi-tenancy isolation if touching data access
-
-## Important Files
-- `PRD.md` - Product requirements
-- `ZITADEL_SETUP.md` - Authentication setup guide
-- `DevelopmentGuidelines.md` - Coding standards
-- `CONTRIBUTING.md` - Contribution process
-- `MultiTenancyGuide.md` - Multi-tenancy architecture
-- `docker-compose.yml` - Infrastructure setup
-
-## Resources
-- [Next.js App Router Docs](https://nextjs.org/docs/app)
-- [NestJS Docs](https://docs.nestjs.com)
-- [TanStack Query Docs](https://tanstack.com/query/latest)
-- [Zitadel Docs](https://zitadel.com/docs)
-- [TypeORM Docs](https://typeorm.io)
-
+Agents should treat the checklist above as the baseline truth when evaluating new changes. Call out deviations early, enforce DDD boundaries as they are introduced, and keep the documentation in sync with actual implementation.
