@@ -47,7 +47,9 @@ export function useUpdateSchool() {
       updateSchool(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: schoolKeys.all })
-      queryClient.invalidateQueries({ queryKey: schoolKeys.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: schoolKeys.detail(variables.id),
+      })
     },
   })
 }

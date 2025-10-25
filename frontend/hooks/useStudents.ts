@@ -47,7 +47,9 @@ export function useUpdateStudent() {
       updateStudent(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: studentKeys.all })
-      queryClient.invalidateQueries({ queryKey: studentKeys.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: studentKeys.detail(variables.id),
+      })
     },
   })
 }

@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   // Get host information for proper redirects (declared once at the top)
-  const host = request.headers.get('host') || 'localhost:3001'
+  const host = request.headers.get('host') || 'localhost'
   const protocol =
     request.headers.get('x-forwarded-proto') ||
     (host.includes('localhost') ? 'http' : 'https')
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get stored PKCE verifier and state from cookies
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const storedVerifier = cookieStore.get('pkce_verifier')?.value
     const storedState = cookieStore.get('oauth_state')?.value
     const redirectAfterLogin =
@@ -55,8 +55,6 @@ export async function GET(request: NextRequest) {
     console.log('Received state:', state)
     console.log('Stored state:', storedState)
     console.log('State match:', state === storedState)
-    console.log('Request URL:', request.url)
-    console.log('Request Host:', request.headers.get('host'))
 
     // Validate state (CSRF protection)
     if (state !== storedState) {
@@ -77,6 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Exchange authorization code for tokens
+    // With Nginx proxy, the issuer is consistent for both browser and server
     console.log('Exchanging code for tokens...')
     console.log('Token endpoint:', `${ZITADEL_CONFIG.issuer}/oauth/v2/token`)
 

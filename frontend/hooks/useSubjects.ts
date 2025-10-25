@@ -47,7 +47,9 @@ export function useUpdateSubject() {
       updateSubject(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: subjectKeys.all })
-      queryClient.invalidateQueries({ queryKey: subjectKeys.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: subjectKeys.detail(variables.id),
+      })
     },
   })
 }

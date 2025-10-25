@@ -35,7 +35,7 @@ function extractRoles(decoded: DecodedJwtPayload): UserRole[] {
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const idToken = cookieStore.get('id_token')?.value
   const accessToken = cookieStore.get('token')?.value
   const token = idToken || accessToken

@@ -6,6 +6,6 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   // No need to disable app directory - we're using it now!
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

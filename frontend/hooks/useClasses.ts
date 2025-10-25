@@ -52,7 +52,9 @@ export function useUpdateClass() {
       updateClass(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: classKeys.all })
-      queryClient.invalidateQueries({ queryKey: classKeys.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(variables.id),
+      })
     },
   })
 }

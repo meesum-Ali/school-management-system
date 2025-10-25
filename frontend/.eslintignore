@@ -1,6 +1,0 @@
-**/*.spec.tsx
-**/*.spec.ts
-pages/**
-components/**
-lib/**
-src/**

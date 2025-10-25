@@ -1,15 +1,36 @@
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+      - zitadel
+    networks:
+      - sms-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5001/api}
-        - NEXT_PUBLIC_ZITADEL_ISSUER=${NEXT_PUBLIC_ZITADEL_ISSUER:-http://localhost:8888}
+        - NEXT_PUBLIC_API_URL=http://localhost/api
+        - NEXT_PUBLIC_ZITADEL_ISSUER=http://localhost
         - NEXT_PUBLIC_ZITADEL_CLIENT_ID=${NEXT_PUBLIC_ZITADEL_CLIENT_ID}
-        - NEXT_PUBLIC_ZITADEL_REDIRECT_URI=${NEXT_PUBLIC_ZITADEL_REDIRECT_URI:-http://localhost:3001/auth/callback}
-    ports:
-      - "3001:3000"
+        - NEXT_PUBLIC_ZITADEL_REDIRECT_URI=http://localhost/auth/callback
+    expose:
+      - "3000"
     env_file:
       - ./frontend/.env
     depends_on:
@@ -21,8 +42,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "5001:5000"
+    expose:
+      - "5000"
     environment:
       - NODE_ENV=production
       - DATABASE_TYPE=postgres
@@ -109,7 +130,7 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
       - ZITADEL_EXTERNALSECURE=false
       - ZITADEL_EXTERNALDOMAIN=localhost
-      - ZITADEL_EXTERNALPORT=8888
+      - ZITADEL_EXTERNALPORT=80
       - ZITADEL_TLS_ENABLED=false
       - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
       - ZITADEL_LOG_LEVEL=debug
@@ -120,8 +141,8 @@ services:
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL=admin@localhost
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL_VERIFIED=true
-    ports:
-      - "8888:8080"
+    expose:
+      - "8080"
     networks:
       - sms-network
     depends_on:

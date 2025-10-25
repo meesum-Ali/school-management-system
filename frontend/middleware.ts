@@ -72,7 +72,9 @@ function extractRoles(decoded: DecodedJwtPayload): string[] {
     }
   }
 
-  const normalized = collected.map((r) => r.toUpperCase().replace(/[-\s]/g, '_'))
+  const normalized = collected.map((r) =>
+    r.toUpperCase().replace(/[-\s]/g, '_'),
+  )
   const allowed = new Set(['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'STUDENT'])
   return normalized.filter((r) => allowed.has(r))
 }
@@ -81,11 +83,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const secFetchMode = request.headers.get('sec-fetch-mode') || ''
   const isNavigation = secFetchMode === 'navigate'
-  const isPrefetch =
-    request.headers.get('next-router-prefetch') === '1' ||
-    request.headers.get('purpose') === 'prefetch' ||
-    request.headers.get('rsc') === '1'
-
+  const isPrefetchHeader = request.headers.get('next-router-prefetch') === '1'
+  const isRSC = request.headers.get('rsc') === '1'
+  // Treat as navigation when either traditional navigate OR RSC navigation (non-prefetch)
+  const isRSCNavigation = isRSC && !isPrefetchHeader
   // Public routes - allow without authentication
   if (
     pathname.startsWith('/_next') ||
@@ -105,11 +106,11 @@ export async function middleware(request: NextRequest) {
 
   // If no token, redirect to Zitadel with PKCE (only for real navigations)
   if (!accessToken && !idToken) {
-    if (!isNavigation) {
+    if (!(isNavigation || isRSCNavigation)) {
       // Avoid redirecting prefetch/data requests to external domain to prevent CORS errors
       // Let the actual navigation trigger the redirect instead
       console.log(
-        `[Middleware] No token for ${pathname} on non-navigation (mode=${secFetchMode}). Skipping redirect.`,
+        `[Middleware] No token for ${pathname} on non-navigation (mode=${secFetchMode}, rsc=${isRSC}). Skipping redirect.`,
       )
       return NextResponse.next()
     }
@@ -190,7 +191,7 @@ export async function middleware(request: NextRequest) {
     // For /admin routes, check roles
     if (pathname.startsWith('/admin')) {
       // Log roles structure for debugging role-based access
-  const rawRoles = decoded['urn:zitadel:iam:org:project:roles'] || null
+      const rawRoles = decoded['urn:zitadel:iam:org:project:roles'] || null
       console.log('[Middleware] Raw roles claim:', JSON.stringify(rawRoles))
       const roles = extractRoles(decoded)
       console.log('[Middleware] Extracted roles:', roles)
