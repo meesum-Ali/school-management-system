@@ -5,7 +5,7 @@ import { ClassSchedule } from '../../class-schedule/entities/class-schedule.enti
 
 @Entity('subjects')
 @Index(['name', 'schoolId'], { unique: true }) // Subject name should be unique within a school
-@Index(['code', 'schoolId'], { unique: true, where: `"code" IS NOT NULL AND "schoolId" IS NOT NULL` }) // Subject code should be unique within a school if provided
+@Index(['code', 'schoolId'], { unique: true, where: `"code" IS NOT NULL AND "school_id" IS NOT NULL` }) // Subject code should be unique within a school if provided
 export class SubjectEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

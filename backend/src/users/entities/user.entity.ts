@@ -33,10 +33,10 @@ export enum UserRole {
 }
 
 @Entity('users')
-@Index(['email', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }) // Unique email per school
-@Index(['username', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }) // Unique username per school
-@Index(['email'], { unique: true, where: `"schoolId" IS NULL` }) // Globally unique email for users not tied to a school (e.g. super_admin)
-@Index(['username'], { unique: true, where: `"schoolId" IS NULL` }) // Globally unique username for users not tied to a school
+@Index(['email', 'schoolId'], { unique: true, where: `"school_id" IS NOT NULL` }) // Unique email per school
+@Index(['username', 'schoolId'], { unique: true, where: `"school_id" IS NOT NULL` }) // Unique username per school
+@Index(['email'], { unique: true, where: `"school_id" IS NULL` }) // Globally unique email for users not tied to a school (e.g. super_admin)
+@Index(['username'], { unique: true, where: `"school_id" IS NULL` }) // Globally unique username for users not tied to a school
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;

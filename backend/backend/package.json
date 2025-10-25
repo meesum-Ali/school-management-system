@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dotenv": "^17.2.3",
     "ts-jest": "^29.4.4"
   }
 }
