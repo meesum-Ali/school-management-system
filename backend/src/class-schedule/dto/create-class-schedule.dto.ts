@@ -3,7 +3,6 @@ import {
   IsString,
   IsEnum,
   IsOptional,
-  IsTimeZone,
   IsNotEmpty,
   Matches,
 } from 'class-validator';

@@ -15,19 +15,9 @@ import { SubjectsModule } from './subjects/subjects.module';
 import { SchoolsModule } from './schools/schools.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { ClassScheduleModule } from './class-schedule/class-schedule.module';
-import { User } from './users/entities/user.entity';
-import { Student } from './students/entities/student.entity';
-import { ClassEntity } from './classes/entities/class.entity';
-import { SubjectEntity } from './subjects/entities/subject.entity';
-import { School } from './schools/entities/school.entity';
-import { Teacher } from './teachers/entities/teacher.entity';
-import { ClassSchedule } from './class-schedule/entities/class-schedule.entity';
 import { HealthModule } from './health/health.module';
 import { SuperAdminModule } from './core/super-admin/super-admin.module';
 import { ZitadelModule } from './zitadel/zitadel.module';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
-// Import other modules as needed
 
 @Module({
   imports: [

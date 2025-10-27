@@ -1,7 +1,6 @@
 import { CreateStudentUseCase } from './create-student.use-case';
 import { IStudentRepository } from '../../domain/repositories';
 import { Student } from '../../domain/models';
-import { InvalidStudentException } from '../../domain/exceptions';
 
 describe('CreateStudentUseCase', () => {
   let useCase: CreateStudentUseCase;
