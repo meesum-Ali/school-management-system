@@ -23,13 +23,19 @@ __decorate([
     __metadata("design:type", String)
 ], CreateClassDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Grade 10', description: 'Level or grade of the class' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'Grade 10',
+        description: 'Level or grade of the class',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateClassDto.prototype, "level", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'UUID of the homeroom teacher (User ID)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+        description: 'UUID of the homeroom teacher (User ID)',
+    }),
     (0, class_validator_1.IsUUID)('4'),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

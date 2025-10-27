@@ -22,14 +22,20 @@ __decorate([
     __metadata("design:type", String)
 ], LoginDto.prototype, "username", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'P@$$wOrd123', description: 'Password of the user (min 8 characters)' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'P@$$wOrd123',
+        description: 'Password of the user (min 8 characters)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)({ message: 'Password should not be empty' }),
     (0, class_validator_1.MinLength)(8, { message: 'Password must be at least 8 characters long' }),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'school-domain-or-code', description: 'Optional school identifier (e.g., domain or code) for tenant context.' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'school-domain-or-code',
+        description: 'Optional school identifier (e.g., domain or code) for tenant context.',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

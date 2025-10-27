@@ -30,11 +30,11 @@ let SubjectsService = class SubjectsService {
             description: subjectEntity.description,
             createdAt: subjectEntity.createdAt,
             updatedAt: subjectEntity.updatedAt,
-            schoolId: subjectEntity.schoolId
+            schoolId: subjectEntity.schoolId,
         });
         if (subjectEntity.classes) {
             const classes = await subjectEntity.classes;
-            subjectDto.classes = classes.map(cls => ({
+            subjectDto.classes = classes.map((cls) => ({
                 id: cls.id,
                 name: cls.name,
                 level: cls.level,
@@ -59,12 +59,16 @@ let SubjectsService = class SubjectsService {
     }
     async create(createSubjectDto, schoolId) {
         const { name, code } = createSubjectDto;
-        const nameConflict = await this.subjectsRepository.findOne({ where: { name, schoolId } });
+        const nameConflict = await this.subjectsRepository.findOne({
+            where: { name, schoolId },
+        });
         if (nameConflict) {
             throw new common_1.ConflictException(`Subject with name "${name}" already exists in this school.`);
         }
         if (code) {
-            const codeConflict = await this.subjectsRepository.findOne({ where: { code, schoolId } });
+            const codeConflict = await this.subjectsRepository.findOne({
+                where: { code, schoolId },
+            });
             if (codeConflict) {
                 throw new common_1.ConflictException(`Subject with code "${code}" already exists in this school.`);
             }
@@ -78,11 +82,15 @@ let SubjectsService = class SubjectsService {
             return this.mapSubjectToSubjectDto(savedSubject);
         }
         catch (error) {
-            if (error instanceof typeorm_2.QueryFailedError && error.code === '23505') {
-                if (error.message.includes('subjects_name_school_id_idx') || error.message.includes('UQ_subjects_name_schoolId')) {
+            if (error instanceof typeorm_2.QueryFailedError &&
+                error.code === '23505') {
+                if (error.message.includes('subjects_name_school_id_idx') ||
+                    error.message.includes('UQ_subjects_name_schoolId')) {
                     throw new common_1.ConflictException(`Subject with name "${name}" already exists in this school.`);
                 }
-                if (code && (error.message.includes('subjects_code_school_id_idx') || error.message.includes('UQ_subjects_code_schoolId'))) {
+                if (code &&
+                    (error.message.includes('subjects_code_school_id_idx') ||
+                        error.message.includes('UQ_subjects_code_schoolId'))) {
                     throw new common_1.ConflictException(`Subject with code "${code}" already exists in this school.`);
                 }
             }
@@ -93,12 +101,12 @@ let SubjectsService = class SubjectsService {
         const subjects = await this.subjectsRepository.find({
             where: { schoolId },
         });
-        return Promise.all(subjects.map(subjectEntity => this.mapSubjectToSubjectDto(subjectEntity)));
+        return Promise.all(subjects.map((subjectEntity) => this.mapSubjectToSubjectDto(subjectEntity)));
     }
     async findOne(id, schoolId) {
         const subjectEntity = await this.subjectsRepository.findOne({
             where: { id, schoolId },
-            relations: ['classes']
+            relations: ['classes'],
         });
         if (!subjectEntity) {
             throw new common_1.NotFoundException(`Subject with ID "${id}" not found in this school.`);
@@ -107,12 +115,17 @@ let SubjectsService = class SubjectsService {
     }
     async update(id, updateSubjectDto, schoolId) {
         const { name, code, description } = updateSubjectDto;
-        const subjectToUpdate = await this.subjectsRepository.findOneBy({ id, schoolId });
+        const subjectToUpdate = await this.subjectsRepository.findOneBy({
+            id,
+            schoolId,
+        });
         if (!subjectToUpdate) {
             throw new common_1.NotFoundException(`Subject with ID "${id}" not found in this school.`);
         }
         if (name && name !== subjectToUpdate.name) {
-            const nameConflict = await this.subjectsRepository.findOne({ where: { name, schoolId } });
+            const nameConflict = await this.subjectsRepository.findOne({
+                where: { name, schoolId },
+            });
             if (nameConflict && nameConflict.id !== id) {
                 throw new common_1.ConflictException(`Subject with name "${name}" already exists in this school.`);
             }
@@ -120,7 +133,9 @@ let SubjectsService = class SubjectsService {
         }
         if (updateSubjectDto.hasOwnProperty('code')) {
             if (code && code !== subjectToUpdate.code) {
-                const codeConflict = await this.subjectsRepository.findOne({ where: { code, schoolId } });
+                const codeConflict = await this.subjectsRepository.findOne({
+                    where: { code, schoolId },
+                });
                 if (codeConflict && codeConflict.id !== id) {
                     throw new common_1.ConflictException(`Subject with code "${code}" already exists in this school.`);
                 }
@@ -135,11 +150,16 @@ let SubjectsService = class SubjectsService {
             return await this.findOne(updatedSubject.id, schoolId);
         }
         catch (error) {
-            if (error instanceof typeorm_2.QueryFailedError && error.code === '23505') {
-                if (name && (error.message.includes('subjects_name_school_id_idx') || error.message.includes('UQ_subjects_name_schoolId'))) {
+            if (error instanceof typeorm_2.QueryFailedError &&
+                error.code === '23505') {
+                if (name &&
+                    (error.message.includes('subjects_name_school_id_idx') ||
+                        error.message.includes('UQ_subjects_name_schoolId'))) {
                     throw new common_1.ConflictException(`Subject with name "${name}" already exists in this school.`);
                 }
-                if (code && (error.message.includes('subjects_code_school_id_idx') || error.message.includes('UQ_subjects_code_schoolId'))) {
+                if (code &&
+                    (error.message.includes('subjects_code_school_id_idx') ||
+                        error.message.includes('UQ_subjects_code_schoolId'))) {
                     throw new common_1.ConflictException(`Subject with code "${code}" already exists in this school.`);
                 }
             }
@@ -147,7 +167,10 @@ let SubjectsService = class SubjectsService {
         }
     }
     async remove(id, schoolId) {
-        const subjectEntity = await this.subjectsRepository.findOneBy({ id, schoolId });
+        const subjectEntity = await this.subjectsRepository.findOneBy({
+            id,
+            schoolId,
+        });
         if (!subjectEntity) {
             throw new common_1.NotFoundException(`Subject with ID "${id}" not found in this school.`);
         }
@@ -159,13 +182,13 @@ let SubjectsService = class SubjectsService {
     async listClassesForSubject(subjectId, schoolId) {
         const subjectEntity = await this.subjectsRepository.findOne({
             where: { id: subjectId, schoolId },
-            relations: ['classes', 'classes.school']
+            relations: ['classes', 'classes.school'],
         });
         if (!subjectEntity) {
             throw new common_1.NotFoundException(`Subject with ID "${subjectId}" not found in this school.`);
         }
         const classes = await subjectEntity.classes;
-        return classes.map(cls => this.mapClassToBasicDto(cls));
+        return classes.map((cls) => this.mapClassToBasicDto(cls));
     }
 };
 exports.SubjectsService = SubjectsService;

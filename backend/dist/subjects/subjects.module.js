@@ -22,8 +22,8 @@ exports.SubjectsModule = SubjectsModule = __decorate([
         providers: [subjects_service_1.SubjectsService],
         exports: [
             subjects_service_1.SubjectsService,
-            typeorm_1.TypeOrmModule.forFeature([subject_entity_1.SubjectEntity])
-        ]
+            typeorm_1.TypeOrmModule.forFeature([subject_entity_1.SubjectEntity]),
+        ],
     })
 ], SubjectsModule);
 //# sourceMappingURL=subjects.module.js.map

@@ -111,7 +111,9 @@ let InvoiceService = InvoiceService_1 = class InvoiceService {
         this.logger.log(`Attempting to email invoice with ID: ${invoiceId}`);
         try {
             const response = await this.zohoClient.post(`${this.endpoint}/${invoiceId}/email`, emailDto || {});
-            if (response.data && response.data.code === 0 && response.data.message === 'success') {
+            if (response.data &&
+                response.data.code === 0 &&
+                response.data.message === 'success') {
                 this.logger.log(`Successfully sent email for invoice ID: ${invoiceId}. Message: ${response.data.message}`);
                 return true;
             }

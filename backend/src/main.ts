@@ -28,9 +28,9 @@ async function bootstrap() {
   const allowedOrigins = [
     'http://localhost:3001', // Frontend in development
     'http://localhost:3000', // Common Next.js dev server port
-    'http://frontend:3000',  // Frontend service in Docker
+    'http://frontend:3000', // Frontend service in Docker
   ];
-  
+
   if (configService.get<string>('NODE_ENV') === 'production') {
     // Add production frontend URL(s) here
     allowedOrigins.push('https://your-production-frontend-domain.com');
@@ -40,7 +40,7 @@ async function bootstrap() {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = `The CORS policy for this site does not allow access from the specified origin: ${origin}`;
         return callback(new Error(msg), false);
@@ -64,6 +64,8 @@ async function bootstrap() {
 
   await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
-  console.log(`API Documentation available at ${await app.getUrl()}${apiDocsPath}`);
+  console.log(
+    `API Documentation available at ${await app.getUrl()}${apiDocsPath}`,
+  );
 }
 bootstrap();

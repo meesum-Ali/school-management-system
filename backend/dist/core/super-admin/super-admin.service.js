@@ -36,7 +36,7 @@ let SuperAdminService = SuperAdminService_1 = class SuperAdminService {
         try {
             const existingUser = await this.usersRepository.findOne({
                 where: { username },
-                withDeleted: true
+                withDeleted: true,
             });
             if (existingUser) {
                 let needsUpdate = false;
@@ -64,7 +64,8 @@ let SuperAdminService = SuperAdminService_1 = class SuperAdminService {
                     existingUser.schoolId = null;
                     needsUpdate = true;
                 }
-                if (!existingUser.password || !existingUser.password.startsWith('$2b$')) {
+                if (!existingUser.password ||
+                    !existingUser.password.startsWith('$2b$')) {
                     const saltRounds = 10;
                     existingUser.password = await bcrypt.hash(password, saltRounds);
                     needsUpdate = true;

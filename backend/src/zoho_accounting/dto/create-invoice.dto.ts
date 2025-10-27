@@ -9,7 +9,7 @@ import {
   IsString,
   ValidateNested,
   Min,
-  IsPositive
+  IsPositive,
 } from 'class-validator';
 
 export class InvoiceLineItemDto {

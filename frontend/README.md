@@ -1,6 +1,6 @@
 # Frontend Application (Next.js 16 App Router)
 
-This frontend uses Next.js 16 (App Router) with React 18, TypeScript (strict), MUI 7, Tailwind, React Query, and a custom Auth provider.
+This frontend uses Next.js 16 (App Router) with React 18, TypeScript (strict), Material UI 7, Tailwind CSS, TanStack Query, and a custom Auth provider.
 
 ## Architecture and standards
 

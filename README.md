@@ -1,565 +1,173 @@
 ![License](https://img.shields.io/github/license/meesum-Ali/school-management-system)
 ![Contributors](https://img.shields.io/github/contributors/meesum-Ali/school-management-system)
 ![Issues](https://img.shields.io/github/issues/meesum-Ali/school-management-system)
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![NestJS](https://img.shields.io/badge/NestJS-10-red)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
 # School Management System
 
-A modern, full-stack School Management System built with [Next.js 14](https://nextjs.org/) (App Router) frontend and [NestJS 10](https://nestjs.com/) backend. This comprehensive solution provides efficient and scalable tools for educational institutions with multi-tenancy support, powered by Zitadel authentication.
+A modern, multi-tenant school management platform built with a Next.js 16 frontend and a NestJS 10 backend. The codebase targets Domain-Driven Design (DDD) boundaries, enforces strict tenant isolation, and uses Zitadel for authentication.
 
-## ✨ Features
+## Key Capabilities
 
-### Core Functionality
-- **User Management**: Secure user registration and login with role-based access control (RBAC)
-  - Roles: SUPER_ADMIN, SCHOOL_ADMIN, TEACHER, STUDENT
-  - Full CRUD operations with multi-tenant isolation
-- **Student Management**: Comprehensive CRUD operations for student records with class enrollment
-- **Class Management**: Create, view, update, and delete school classes with subject assignments
-- **Subject Management**: Define and manage academic subjects with metadata
-- **Class-Subject Assignment**: Link subjects to classes with flexible relationships
-- **Class Schedule Management**: Create and manage timetables for classes
-- **Teacher Management**: Manage teacher profiles and class assignments
+- Multi-tenant data model keyed by `schoolId` with request-scoped enforcement.
+- Role-based access control via Zitadel roles (`SUPER_ADMIN`, `SCHOOL_ADMIN`, `TEACHER`, `STUDENT`) plus a legacy local login fallback.
+- Modular NestJS services with service-layer orchestration and 90+ Jest tests.
+- Next.js App Router client with Material UI, Tailwind CSS, and TanStack Query for a responsive admin experience.
+- Docker Compose stack including Postgres, Zitadel, backend, frontend, nginx reverse proxy, and pgAdmin.
 
-### Advanced Features
-- **Multi-Tenancy (SaaS Ready)**: 
-  - Support for multiple schools with complete data isolation
-  - Organization-based architecture using Zitadel
-  - SUPER_ADMIN role for system-wide administration
-  - SCHOOL_ADMIN role for school-level management
-- **Modern Authentication**:
-  - Zitadel OAuth 2.0/OIDC integration
-  - JWT-based token validation with JWKS
-  - Local authentication fallback
-  - SSR-compatible auth flow
-- **Real-time Data Management**:
-  - TanStack Query (React Query) for efficient data fetching
-  - Automatic background refetching and cache invalidation
-  - Optimistic updates for better UX
+## Architecture Snapshot
 
-### Technical Excellence
-- **Scalable Architecture**: Next.js 14 App Router + NestJS 10
-- **Type Safety**: End-to-end TypeScript with strict mode
-- **Modern UI**: Material-UI 7 + Tailwind CSS
-- **API Documentation**: Auto-generated Swagger/OpenAPI docs
-- **Containerized**: Full Docker Compose setup for development
-- **SSR/SSG**: Server-side rendering and static generation support
-- **Progressive Enhancement**: Works without JavaScript where possible
+### Frontend
+- Next.js 16 App Router (React 18, strict TypeScript).
+- Global providers for authentication, theming, and TanStack Query configured in `app/layout.tsx`.
+- Axios client in `lib/api.ts` that injects bearer tokens client-side only.
+- Auth context normalises Zitadel and legacy JWT claims into a consistent `user` shape.
 
-## 🏗️ Architectural Overview
-
-### Frontend Architecture
-- **Framework**: Next.js 14 with App Router (file-based routing)
-- **UI Components**: Material-UI 7 with Emotion CSS-in-JS
-- **Styling**: Tailwind CSS for utility-first styling
-- **State Management**: 
-  - TanStack Query for server state
-  - React Context for auth state
-- **Data Fetching**: Custom hooks with React Query
-- **Type Safety**: TypeScript interfaces for all API responses
-
-### Backend Architecture
-- **Framework**: NestJS 10 with Express
-- **Database**: PostgreSQL with TypeORM
-- **Authentication**: Zitadel JWT validation via passport-jwt
-- **API Design**: RESTful with OpenAPI documentation
-- **Validation**: class-validator and class-transformer DTOs
-- **Multi-tenancy**: Organization-based data isolation
-- **Health Checks**: @nestjs/terminus for monitoring
+### Backend
+- NestJS 10 modular monolith with clear service interfaces per bounded context.
+- TypeORM 0.3 mapped to PostgreSQL with tenant-aware repositories.
+- Request-scoped `TenantProvider` and guards that apply RBAC and tenancy rules.
+- Swagger/OpenAPI docs, health checks, and Jest unit tests (91/91 passing).
 
 ### Infrastructure
-- **Containerization**: Docker Compose for all services
-- **Database**: PostgreSQL 14+
-- **Auth Provider**: Zitadel (self-hosted)
-- **Reverse Proxy**: Ready for Nginx/Traefik
-- **CI/CD**: GitHub Actions ready
+- Docker Compose orchestrates Postgres, Zitadel, backend, frontend, nginx, and pgAdmin.
+- Nginx proxies traffic to the backend and frontend containers.
+- Environment management via `.env` / `.env.local` files per package.
 
-For comprehensive development practices and architectural principles, see:
-- [Development Guidelines](DevelopmentGuidelines.md)
-- [Multi-Tenancy Guide](MultiTenancyGuide.md)
-- [Zitadel Setup](ZITADEL_SETUP.md)
-- [AI Agent Guidelines](AGENTS.md)
+## Documentation
 
-## 🚀 Technologies Used
+- [`DOCUMENTATION_INDEX.md`](DOCUMENTATION_INDEX.md) — overview of available documentation.
+- [`DevelopmentGuidelines.md`](DevelopmentGuidelines.md) — coding conventions and DDD direction.
+- [`AGENTS.md`](AGENTS.md) — project reality check and agent guardrails.
+- [`MultiTenancyGuide.md`](MultiTenancyGuide.md) — tenant isolation rules and patterns.
+- [`ZITADEL_SETUP.md`](ZITADEL_SETUP.md) — local and production Zitadel configuration.
+- [`PRD.md`](PRD.md) — product requirements and roadmap.
 
-### Frontend Stack
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-- **UI Library**: [React 18](https://reactjs.org/)
-- **Component Library**: [Material-UI 7](https://mui.com/)
-- **Styling**: [Tailwind CSS 3](https://tailwindcss.com/)
-- **State Management**: [TanStack Query 5](https://tanstack.com/query/latest)
-- **HTTP Client**: [Axios](https://axios-http.com/)
-- **JWT Decoding**: [jwt-decode](https://www.npmjs.com/package/jwt-decode)
+## Getting Started
 
-### Backend Stack
-- **Framework**: [NestJS 10](https://nestjs.com/)
-- **Database ORM**: [TypeORM 0.3](https://typeorm.io/)
-- **Database**: [PostgreSQL 14+](https://www.postgresql.org/)
-- **Authentication**: [Zitadel](https://zitadel.com/) + [Passport.js](http://www.passportjs.org/)
-- **Validation**: [class-validator](https://github.com/typestack/class-validator)
-- **API Docs**: [Swagger/OpenAPI](https://swagger.io/)
-- **Testing**: [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest)
+### 1. Clone the Repository
 
-### DevOps & Tools
-- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
-- **Containerization**: [Docker](https://www.docker.com/) + Docker Compose
-- **Package Manager**: [npm](https://www.npmjs.com/) / [pnpm](https://pnpm.io/)
-- **Linting**: [ESLint](https://eslint.org/)
-- **Version Control**: Git + GitHub
+```bash
+git clone https://github.com/meesum-Ali/school-management-system.git
+cd school-management-system
+```
 
+### 2. Run the Full Stack with Docker (recommended)
 
-## 📋 Getting Started
+```bash
+docker-compose up -d
+```
 
-### Prerequisites
+Services and defaults:
 
-- **Node.js** v18+ (v20 recommended)
-- **npm** v9+ or **pnpm** v8+
-- **Docker** & **Docker Compose** (for containerized setup)
-- **PostgreSQL** 14+ (if running without Docker)
+- Frontend (Next.js): http://localhost:3000
+- Backend API (NestJS): http://localhost:5000/api
+- Swagger UI: http://localhost:5000/api-docs
+- Zitadel console: http://localhost:8888/ui/console
+- pgAdmin: http://localhost:8080
 
-### Quick Start (Recommended)
+Follow the [`ZITADEL_SETUP.md`](ZITADEL_SETUP.md) guide to configure roles and applications.
 
-1. **Clone the Repository**
+### 3. Manual Setup
 
-   ```bash
-   git clone https://github.com/meesum-Ali/school-management-system.git
-   cd school-management-system
-   ```
+#### Backend
 
-2. **Start All Services with Docker**
+```bash
+cd backend
+npm install
+cp .env.example .env   # configure database + Zitadel values
+npm run migration:run  # optional if starting from an empty database
+npm run start:dev
+```
 
-   ```bash
-   docker-compose up -d
-   ```
+The API is served at http://localhost:5000.
 
-   This will start:
-   - PostgreSQL database (port 5432)
-   - Zitadel auth server (port 8888)
-   - NestJS backend (port 5000)
-   - Next.js frontend (port 3000)
-   - PgAdmin (port 8080)
+#### Frontend
 
-3. **Access the Application**
+```bash
+cd frontend
+npm install
+cp .env.example .env.local   # set NEXT_PUBLIC_* environment variables
+npm run dev
+```
 
-   - **Frontend**: http://localhost:3000
-   - **Backend API**: http://localhost:5000/api
-   - **API Documentation**: http://localhost:5000/api-docs
-   - **Zitadel Console**: http://localhost:8888/ui/console
-   - **PgAdmin**: http://localhost:8080
+The app runs at http://localhost:3000 by default. Override the port using `PORT=3001 npm run dev`.
 
-4. **Configure Zitadel Authentication**
+## Environment Variables
 
-   See [ZITADEL_SETUP.md](ZITADEL_SETUP.md) for detailed setup instructions:
-   - Initial login: `admin` / `Password1!`
-   - Create project and application
-   - Configure roles and organizations
-   - Update environment variables
-
-### Manual Setup
-
-#### Backend Setup
-
-1. **Navigate to backend directory**
-
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Run database migrations**
-
-   ```bash
-   npm run migration:run
-   ```
-
-5. **Start development server**
-
-   ```bash
-   npm run start:dev
-   ```
-
-   Backend will be available at http://localhost:5000
-
-#### Frontend Setup
-
-1. **Navigate to frontend directory**
-
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your configuration
-   ```
-
-4. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-   Frontend will be available at http://localhost:3000
-
-### Environment Variables
-
-#### Backend (.env)
+Set the following minimum configuration (see the `.env.example` files for the full list):
 
 ```env
-# Database
+# backend/.env
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_NAME=sms_db
 
-# JWT (for local auth)
-JWT_SECRET=your-super-secret-jwt-key
+JWT_SECRET=change-me
 JWT_EXPIRATION=3600s
 
-# Zitadel
 ZITADEL_ISSUER=http://localhost:8888
-ZITADEL_CLIENT_ID=your-client-id
-ZITADEL_CLIENT_SECRET=your-client-secret
-ZITADEL_REDIRECT_URI=http://localhost:3000/auth/callback
-```
+ZITADEL_CLIENT_ID=<client-id>
+ZITADEL_JWKS_URI=http://localhost:8888/oauth/v2/keys
 
-#### Frontend (.env.local)
-
-```env
+# frontend/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_ZITADEL_ISSUER=http://localhost:8888
-NEXT_PUBLIC_ZITADEL_CLIENT_ID=your-client-id
+NEXT_PUBLIC_ZITADEL_CLIENT_ID=<client-id>
+NEXT_PUBLIC_ZITADEL_REDIRECT_URI=http://localhost:3000/auth/callback
 ```
 
-See `.env.example` files for complete configuration options.
-
-
-## 📁 Project Structure
+## Project Layout
 
 ```
 school-management-system/
-├── frontend/                  # Next.js 14 App Router frontend
-│   ├── app/                  # Next.js app directory (routes)
-│   │   ├── layout.tsx       # Root layout with providers
-│   │   ├── page.tsx         # Home page
-│   │   ├── login/           # Login page
-│   │   ├── admin/           # Admin dashboard routes
-│   │   │   ├── dashboard/
-│   │   │   ├── students/
-│   │   │   ├── classes/
-│   │   │   ├── subjects/
-│   │   │   └── users/
-│   │   └── unauthorized/
-│   ├── components/          # React components
-│   │   ├── Auth/           # Authentication components
-│   │   ├── Layout/         # Layout components (Sidebar, Navbar)
-│   │   ├── Students/       # Student-specific components
-│   │   ├── Classes/        # Class management components
-│   │   └── ui/             # Reusable UI components
-│   ├── contexts/           # React contexts (AuthContext)
-│   ├── hooks/              # Custom React Query hooks
-│   │   ├── useStudents.ts
-│   │   ├── useClasses.ts
-│   │   ├── useSubjects.ts
-│   │   └── useUsers.ts
-│   ├── providers/          # App-level providers
-│   ├── types/              # TypeScript type definitions
-│   ├── utils/              # Utility functions
-│   └── middleware.ts       # Next.js middleware (auth)
-│
-├── backend/                # NestJS backend
+├── README.md
+├── AGENTS.md
+├── DOCUMENTATION_INDEX.md
+├── DevelopmentGuidelines.md
+├── MultiTenancyGuide.md
+├── PRD.md
+├── ZITADEL_SETUP.md
+├── backend/
 │   ├── src/
-│   │   ├── auth/          # Authentication module
-│   │   │   ├── decorators/
-│   │   │   ├── guards/
-│   │   │   └── dto/
-│   │   ├── zitadel/       # Zitadel integration
-│   │   │   ├── zitadel.strategy.ts
-│   │   │   ├── zitadel.config.ts
-│   │   │   └── zitadel-roles.guard.ts
-│   │   ├── users/         # User management
-│   │   ├── students/      # Student management
-│   │   ├── classes/       # Class management
-│   │   ├── subjects/      # Subject management
-│   │   ├── teachers/      # Teacher management
-│   │   ├── schools/       # School management
-│   │   ├── class-schedule/# Scheduling
-│   │   ├── health/        # Health check endpoint
-│   │   ├── core/          # Core utilities
-│   │   └── migrations/    # Database migrations
-│   ├── test/              # E2E tests
-│   └── dist/              # Compiled output (gitignored)
-│
-├── init-db/               # Database initialization scripts
-├── docker-compose.yml     # Docker services configuration
-├── ZITADEL_SETUP.md      # Zitadel setup guide
-├── AGENTS.md             # AI agent guidelines
-├── PRD.md                # Product requirements
-├── MultiTenancyGuide.md  # Multi-tenancy documentation
-└── README.md             # This file
+│   │   ├── auth/
+│   │   ├── classes/
+│   │   ├── core/tenant/
+│   │   ├── students/
+│   │   └── ...
+│   ├── test/
+│   └── package.json
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
+│   ├── proxy.ts
+│   └── package.json
+├── docker-compose.yml
+└── nginx/nginx.conf
 ```
 
-### Key Directories Explained
+## Testing & Quality
 
-- **`frontend/app/`**: Next.js 14 App Router directory - file-based routing
-- **`frontend/hooks/`**: Custom TanStack Query hooks for data fetching
-- **`backend/src/zitadel/`**: Zitadel authentication integration
-- **`backend/src/*/entities/`**: TypeORM entity definitions
-- **`backend/src/*/dto/`**: Data Transfer Objects for validation
+- Backend unit tests: `cd backend && npm run test`
+- Backend e2e tests: `cd backend && npm run test:e2e`
+- Backend linting: `cd backend && npm run lint`
+- Frontend linting: `cd frontend && npm run lint`
 
-## 🔐 Authentication & Authorization
+Treat any failing tests as blockers before committing. The existing suite (91/91) covers the refactored module boundaries.
 
-### Roles
+## Authentication & Tenancy
 
-- **SUPER_ADMIN**: System-wide administration, manages all schools
-- **SCHOOL_ADMIN**: School-level administration, manages school data
-- **TEACHER**: Teacher access, manages classes and students
-- **STUDENT**: Student access, views own data
+- Zitadel handles OIDC login. Tokens are validated against the configured JWKS and translated into `req.user`.
+- The `TenantProvider` exposes the current tenant to request-scoped services. Pass the derived `schoolId` into service methods and apply it to TypeORM queries.
+- See [`MultiTenancyGuide.md`](MultiTenancyGuide.md) for mandatory patterns and [`ZITADEL_SETUP.md`](ZITADEL_SETUP.md) for identity configuration.
+- A legacy local JWT login remains available for development; it populates the same `user` shape consumed by guards.
 
-### Authentication Flow
+## Contributing
 
-1. **Zitadel OAuth 2.0** (Recommended):
-   - User redirects to Zitadel login
-   - Authenticates with Zitadel
-   - Receives JWT token
-   - Token validated via JWKS endpoint
-
-2. **Local Authentication** (Fallback):
-   - POST to `/api/auth/login`
-   - Receives JWT token
-   - Token validated by backend JWT secret
-
-### Multi-Tenancy
-
-- Each school is a Zitadel organization
-- Users belong to organizations (schools)
-- Data is isolated by `schoolId`
-- SUPER_ADMIN can access all schools
-- SCHOOL_ADMIN limited to their school
-
-See [ZITADEL_SETUP.md](ZITADEL_SETUP.md) for detailed authentication setup.
-
-## 🧪 Testing
-
-### Backend Tests
-
-```bash
-cd backend
-
-# Unit tests
-npm test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-
-# Watch mode
-npm run test:watch
-```
-
-### Frontend Tests
-
-```bash
-cd frontend
-
-# Run tests (when implemented)
-npm test
-```
-
-## 🛠️ Development
-
-### Available Scripts
-
-#### Backend
-```bash
-npm run start          # Start production server
-npm run start:dev      # Start development server with watch
-npm run start:debug    # Start debug mode
-npm run build          # Build for production
-npm run lint           # Lint code
-npm run format         # Format code with Prettier
-npm run migration:generate  # Generate migration
-npm run migration:run       # Run migrations
-```
-
-#### Frontend
-```bash
-npm run dev           # Start development server
-npm run build         # Build for production
-npm run start         # Start production server
-npm run lint          # Lint code
-npm run type-check    # Check TypeScript types
-```
-
-### Database Migrations
-
-```bash
-cd backend
-
-# Generate migration
-npm run migration:generate -- src/migrations/MigrationName
-
-# Run migrations
-npm run migration:run
-
-# Revert migration
-npm run migration:revert
-```
-
-### API Documentation
-
-Swagger documentation is auto-generated and available at:
-- **Development**: http://localhost:5000/api-docs
-- **Production**: `{API_URL}/api-docs`
-
-## 🐛 Debugging
-
-### View Logs
-
-```bash
-# All services
-docker-compose logs -f
-
-# Specific service
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f zitadel
-```
-
-### Health Checks
-
-```bash
-# Backend health
-curl http://localhost:5000/api/health
-
-# Zitadel configuration
-curl http://localhost:8888/.well-known/openid-configuration
-```
-
-### Common Issues
-
-1. **Port conflicts**: Ensure ports 3000, 5000, 5432, 8080, 8888 are available
-2. **Database connection**: Check PostgreSQL is running and credentials are correct
-3. **Zitadel startup**: First-time setup may take 1-2 minutes
-4. **Token validation fails**: Verify Zitadel issuer URL and client configuration
-
-## 📚 Documentation
-
-- [Product Requirements](PRD.md)
-- [Development Guidelines](DevelopmentGuidelines.md)
-- [Multi-Tenancy Guide](MultiTenancyGuide.md)
-- [Zitadel Setup](ZITADEL_SETUP.md)
-- [AI Agent Guidelines](AGENTS.md)
-- [Contributing](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Make your changes
-4. Run tests and linting
-5. Commit your changes (`git commit -m 'feat: Add AmazingFeature'`)
-6. Push to the branch (`git push origin feature/AmazingFeature`)
-7. Open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-### Commit Convention
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation changes
-- `style:` Code style changes (formatting)
-- `refactor:` Code refactoring
-- `test:` Test additions or changes
-- `chore:` Build process or auxiliary tool changes
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
-## 👥 Contact & Support
-
-### Maintainer
-
-**Syed Meesum Ali**  
-- Email: [meesumdex@gmail.com](mailto:meesumdex@gmail.com)  
-- GitHub: [@meesum-Ali](https://github.com/meesum-ali)  
-- LinkedIn: [Syed Meesum Ali](https://linkedin.com/in/smeesumali)
-
-### Get Help
-
-- **GitHub Issues**: [Report a bug or request a feature](https://github.com/meesum-Ali/school-management-system/issues)
-- **Discussions**: [Join the conversation](https://github.com/meesum-Ali/school-management-system/discussions)
-- **Email**: [meesumdex@gmail.com](mailto:meesumdex@gmail.com)
-
-## 🙏 Acknowledgements
-
-This project is built with amazing open-source technologies:
-
-- **[Next.js](https://nextjs.org/)** - React framework for production
-- **[NestJS](https://nestjs.com/)** - Progressive Node.js framework
-- **[Zitadel](https://zitadel.com/)** - Modern authentication platform
-- **[Material-UI](https://mui.com/)** - React component library
-- **[TanStack Query](https://tanstack.com/query)** - Powerful data synchronization
-- **[TypeORM](https://typeorm.io/)** - ORM for TypeScript and JavaScript
-- **[PostgreSQL](https://www.postgresql.org/)** - Advanced open-source database
-- **[Docker](https://www.docker.com/)** - Containerization platform
-- **[TypeScript](https://www.typescriptlang.org/)** - Typed JavaScript
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-
-## 📊 Project Status
-
-- ✅ Core authentication with Zitadel
-- ✅ Multi-tenancy support
-- ✅ Student, class, and subject management
-- ✅ User and role management
-- ✅ Class scheduling
-- ✅ API documentation
-- 🚧 Advanced reporting (in progress)
-- 🚧 Mobile app (planned)
-- 🚧 Notification system (planned)
-
-## 🔒 Security
-
-If you discover a security vulnerability, please email [meesumdex@gmail.com](mailto:meesumdex@gmail.com) instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
-
----
-
-<div align="center">
-
-**⭐ Star this repository if you find it helpful!**
-
-Made with ❤️ by [Syed Meesum Ali](https://github.com/meesum-ali)
-
-</div>
+Review [`DevelopmentGuidelines.md`](DevelopmentGuidelines.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md) before raising pull requests. Respect the service-layer boundaries, keep tenant checks in place, and extend docs when behaviour changes.

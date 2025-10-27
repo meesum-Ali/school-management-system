@@ -1,6 +1,6 @@
 // Based on Zoho Books API for Customer Payments
 
-import { CustomField } from "./contact.entity"; // Re-use if applicable
+import { CustomField } from './contact.entity'; // Re-use if applicable
 
 interface InvoiceAllocated {
   invoice_id: string;
@@ -26,7 +26,7 @@ interface BankCharge {
 export interface CustomerPayment {
   payment_id: string;
   customer_id: string;
-  customer_name:string;
+  customer_name: string;
   payment_number: string; // System generated payment number
   payment_mode: string;
   payment_mode_formatted?: string;

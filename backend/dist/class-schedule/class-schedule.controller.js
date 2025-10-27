@@ -29,7 +29,8 @@ let ClassScheduleController = class ClassScheduleController {
     }
     async create(createClassScheduleDto, req) {
         if (req.user.role === user_entity_1.UserRole.TEACHER) {
-            if (createClassScheduleDto.teacherId && createClassScheduleDto.teacherId !== req.user.id) {
+            if (createClassScheduleDto.teacherId &&
+                createClassScheduleDto.teacherId !== req.user.id) {
                 throw new common_1.ForbiddenException('You can only assign yourself as a teacher');
             }
             createClassScheduleDto.teacherId = req.user.id;
@@ -37,7 +38,9 @@ let ClassScheduleController = class ClassScheduleController {
         return this.classScheduleService.create({
             ...createClassScheduleDto,
             schoolId: req.user.schoolId,
-            userId: req.user.role === user_entity_1.UserRole.TEACHER ? req.user.id : createClassScheduleDto.userId,
+            userId: req.user.role === user_entity_1.UserRole.TEACHER
+                ? req.user.id
+                : createClassScheduleDto.userId,
         });
     }
     async findAll(req) {
@@ -80,9 +83,19 @@ __decorate([
     (0, common_1.Post)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new class schedule' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CREATED, description: 'The class schedule has been successfully created.', type: class_schedule_entity_1.ClassSchedule }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Invalid input data' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Scheduling conflict detected' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CREATED,
+        description: 'The class schedule has been successfully created.',
+        type: class_schedule_entity_1.ClassSchedule,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Invalid input data',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Scheduling conflict detected',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
@@ -93,7 +106,11 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all class schedules for the current school' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Return all class schedules.', type: [class_schedule_entity_1.ClassSchedule] }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Return all class schedules.',
+        type: [class_schedule_entity_1.ClassSchedule],
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -104,7 +121,11 @@ __decorate([
     (0, common_1.Get)('class/:classId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get class schedules by class ID' }),
     (0, swagger_1.ApiParam)({ name: 'classId', description: 'ID of the class' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Return class schedules for the specified class.', type: [class_schedule_entity_1.ClassSchedule] }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Return class schedules for the specified class.',
+        type: [class_schedule_entity_1.ClassSchedule],
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Class not found' }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Param)('classId', common_1.ParseUUIDPipe)),
@@ -117,8 +138,15 @@ __decorate([
     (0, common_1.Get)('teacher/:teacherId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get schedules for a specific teacher' }),
     (0, swagger_1.ApiParam)({ name: 'teacherId', description: 'ID of the teacher' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Return schedules for the specified teacher.', type: [class_schedule_entity_1.ClassSchedule] }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Teacher not found' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Return schedules for the specified teacher.',
+        type: [class_schedule_entity_1.ClassSchedule],
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Teacher not found',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Param)('teacherId', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Request)()),
@@ -130,8 +158,15 @@ __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a specific class schedule by ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the class schedule' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Return the requested class schedule.', type: class_schedule_entity_1.ClassSchedule }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Class schedule not found' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Return the requested class schedule.',
+        type: class_schedule_entity_1.ClassSchedule,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Class schedule not found',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Request)()),
@@ -144,10 +179,23 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update a class schedule' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the class schedule to update' }),
     (0, swagger_1.ApiBody)({ type: update_class_schedule_dto_1.UpdateClassScheduleDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'The class schedule has been updated.', type: class_schedule_entity_1.ClassSchedule }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Invalid input data' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Class schedule not found' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Scheduling conflict detected' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'The class schedule has been updated.',
+        type: class_schedule_entity_1.ClassSchedule,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Invalid input data',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Class schedule not found',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Scheduling conflict detected',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Body)()),
@@ -161,8 +209,14 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a class schedule' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID of the class schedule to delete' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NO_CONTENT, description: 'The class schedule has been deleted.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Class schedule not found' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NO_CONTENT,
+        description: 'The class schedule has been deleted.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Class schedule not found',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Request)()),

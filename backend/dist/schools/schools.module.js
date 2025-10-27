@@ -13,7 +13,6 @@ const schools_service_1 = require("./schools.service");
 const schools_controller_1 = require("./schools.controller");
 const school_entity_1 = require("./entities/school.entity");
 const users_module_1 = require("../users/users.module");
-const auth_module_1 = require("../auth/auth.module");
 let SchoolsModule = class SchoolsModule {
 };
 exports.SchoolsModule = SchoolsModule;
@@ -22,7 +21,6 @@ exports.SchoolsModule = SchoolsModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([school_entity_1.School]),
             users_module_1.UsersModule,
-            (0, common_1.forwardRef)(() => auth_module_1.AuthModule),
         ],
         controllers: [schools_controller_1.SchoolsController],
         providers: [schools_service_1.SchoolsService],

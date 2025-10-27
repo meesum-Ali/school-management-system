@@ -17,48 +17,74 @@ class UpdateUserDto {
 }
 exports.UpdateUserDto = UpdateUserDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'john.doe.new', description: 'New unique username for the user' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'john.doe.new',
+        description: 'New unique username for the user',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "username", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'john.new@example.com', description: 'New unique email address for the user' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'john.new@example.com',
+        description: 'New unique email address for the user',
+    }),
     (0, class_validator_1.IsEmail)({}, { message: 'Please provide a valid email address' }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'NewP@$$wOrd123', description: 'New password for the user (min 8 characters)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'NewP@$$wOrd123',
+        description: 'New password for the user (min 8 characters)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.MinLength)(8, { message: 'Password must be at least 8 characters long' }),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Johnathan', description: 'New first name of the user' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Johnathan',
+        description: 'New first name of the user',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "firstName", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Doer', description: 'New last name of the user' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Doer',
+        description: 'New last name of the user',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "lastName", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsEnum)(user_entity_1.UserRole, { each: true, message: "Each role must be a valid UserRole enum value (e.g., 'admin', 'teacher')" }),
+    (0, class_validator_1.IsEnum)(user_entity_1.UserRole, {
+        each: true,
+        message: "Each role must be a valid UserRole enum value (e.g., 'admin', 'teacher')",
+    }),
     (0, class_validator_1.ArrayMinSize)(1),
     (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({ enum: user_entity_1.UserRole, isArray: true, example: [user_entity_1.UserRole.SCHOOL_ADMIN], description: 'Array of user roles' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        enum: user_entity_1.UserRole,
+        isArray: true,
+        example: [user_entity_1.UserRole.SCHOOL_ADMIN],
+        description: 'Array of user roles',
+    }),
     __metadata("design:type", Array)
 ], UpdateUserDto.prototype, "roles", void 0);
 __decorate([
     (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({ example: true, description: 'Whether the user account is active' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: true,
+        description: 'Whether the user account is active',
+    }),
     __metadata("design:type", Boolean)
 ], UpdateUserDto.prototype, "isActive", void 0);
 //# sourceMappingURL=update-user.dto.js.map

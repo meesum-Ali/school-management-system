@@ -1,4 +1,11 @@
-import { IsString, IsEmail, IsDateString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsDateString,
+  IsNotEmpty,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateStudentDto {
@@ -12,12 +19,18 @@ export class CreateStudentDto {
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty({ example: '2005-08-15', description: 'Date of birth of the student (YYYY-MM-DD)' })
+  @ApiProperty({
+    example: '2005-08-15',
+    description: 'Date of birth of the student (YYYY-MM-DD)',
+  })
   @IsDateString()
   @IsNotEmpty()
   dateOfBirth: Date; // TypeORM will handle conversion from string if needed, validation ensures it's a date string
 
-  @ApiProperty({ example: 'jane.doe@example.com', description: 'Email address of the student' })
+  @ApiProperty({
+    example: 'jane.doe@example.com',
+    description: 'Email address of the student',
+  })
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -27,7 +40,10 @@ export class CreateStudentDto {
   @IsNotEmpty()
   studentId: string;
 
-  @ApiPropertyOptional({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the class to enroll the student in (optional)' })
+  @ApiPropertyOptional({
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+    description: 'ID of the class to enroll the student in (optional)',
+  })
   @IsUUID()
   @IsOptional()
   classId?: string | null;

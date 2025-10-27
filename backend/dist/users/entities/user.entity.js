@@ -41,7 +41,9 @@ let User = class User {
             return false;
         }
         try {
-            if (!this.password.startsWith('$2b$') && !this.password.startsWith('$2a$') && !this.password.startsWith('$2y$')) {
+            if (!this.password.startsWith('$2b$') &&
+                !this.password.startsWith('$2a$') &&
+                !this.password.startsWith('$2y$')) {
                 console.error('Invalid bcrypt hash format');
                 return false;
             }
@@ -93,11 +95,11 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'text',
         array: true,
-        default: () => 'array[\'STUDENT\'::text]',
+        default: () => "array['STUDENT'::text]",
         transformer: {
             to: (value) => value,
-            from: (value) => value
-        }
+            from: (value) => value,
+        },
     }),
     (0, class_validator_1.IsEnum)(UserRole, { each: true }),
     __metadata("design:type", Array)
@@ -107,10 +109,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "schoolId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => school_entity_1.School, school => school.users, {
+    (0, typeorm_1.ManyToOne)(() => school_entity_1.School, (school) => school.users, {
         nullable: true,
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)
@@ -118,14 +120,14 @@ __decorate([
 __decorate([
     (0, typeorm_1.OneToOne)(() => student_entity_1.Student, (student) => student.user, {
         cascade: false,
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], User.prototype, "studentProfile", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => teacher_entity_1.Teacher, (teacher) => teacher.user, {
         cascade: false,
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], User.prototype, "teacherProfile", void 0);
@@ -145,9 +147,15 @@ __decorate([
 ], User.prototype, "hashPassword", null);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('users'),
-    (0, typeorm_1.Index)(['email', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }),
-    (0, typeorm_1.Index)(['username', 'schoolId'], { unique: true, where: `"schoolId" IS NOT NULL` }),
-    (0, typeorm_1.Index)(['email'], { unique: true, where: `"schoolId" IS NULL` }),
-    (0, typeorm_1.Index)(['username'], { unique: true, where: `"schoolId" IS NULL` })
+    (0, typeorm_1.Index)(['email', 'schoolId'], {
+        unique: true,
+        where: `"school_id" IS NOT NULL`,
+    }),
+    (0, typeorm_1.Index)(['username', 'schoolId'], {
+        unique: true,
+        where: `"school_id" IS NOT NULL`,
+    }),
+    (0, typeorm_1.Index)(['email'], { unique: true, where: `"school_id" IS NULL` }),
+    (0, typeorm_1.Index)(['username'], { unique: true, where: `"school_id" IS NULL` })
 ], User);
 //# sourceMappingURL=user.entity.js.map

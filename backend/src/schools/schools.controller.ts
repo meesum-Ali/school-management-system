@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { SchoolsService } from './schools.service';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
@@ -27,7 +37,9 @@ export class SchoolsController {
 
   @Get(':id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.SCHOOL_ADMIN) // Super Admin or School Admin (if part of this school - to be refined)
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<School | null> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<School | null> {
     // TODO: Add logic to ensure School Admin can only fetch their own school
     return this.schoolsService.findOne(id);
   }
@@ -36,7 +48,7 @@ export class SchoolsController {
   @Roles(UserRole.SUPER_ADMIN, UserRole.SCHOOL_ADMIN) // Super Admin or School Admin (if part of this school)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateSchoolDto: UpdateSchoolDto
+    @Body() updateSchoolDto: UpdateSchoolDto,
   ): Promise<School> {
     // TODO: Add logic to ensure School Admin can only update their own school
     return this.schoolsService.update(id, updateSchoolDto);

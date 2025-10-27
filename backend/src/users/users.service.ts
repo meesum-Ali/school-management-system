@@ -34,10 +34,18 @@ export class UsersService {
     });
   }
 
-  async create(createUserDto: CreateUserDto, // Current authenticated user (for context)
+  async create(
+    createUserDto: CreateUserDto, // Current authenticated user (for context)
     // schoolIdFromContext?: string | null
   ): Promise<UserDto> {
-    const { username, email, password, roles, schoolId: schoolIdFromDto, ...restOfDto } = createUserDto;
+    const {
+      username,
+      email,
+      password,
+      roles,
+      schoolId: schoolIdFromDto,
+      ...restOfDto
+    } = createUserDto;
 
     // Determine the schoolId for the new user.
     // This logic will be refined. For now, SUPER_ADMIN can specify it.
@@ -54,14 +62,22 @@ export class UsersService {
       whereClauses.push({ username, schoolId: null });
       whereClauses.push({ email, schoolId: null });
     }
-    const existingUser = await this.usersRepository.findOne({ where: whereClauses });
+    const existingUser = await this.usersRepository.findOne({
+      where: whereClauses,
+    });
 
     if (existingUser) {
       if (existingUser.username === username) {
-        throw new ConflictException(`Username "${username}" already exists` + (targetSchoolId ? ` in this school.` : `.`));
+        throw new ConflictException(
+          `Username "${username}" already exists` +
+            (targetSchoolId ? ` in this school.` : `.`),
+        );
       }
       if (existingUser.email === email) {
-        throw new ConflictException(`Email "${email}" already exists` + (targetSchoolId ? ` in this school.` : `.`));
+        throw new ConflictException(
+          `Email "${email}" already exists` +
+            (targetSchoolId ? ` in this school.` : `.`),
+        );
       }
     }
 
@@ -114,7 +130,9 @@ export class UsersService {
     let users: User[];
     if (contextualSchoolId) {
       // If a schoolId is provided (e.g., for a school admin), filter by that school
-      users = await this.usersRepository.find({ where: { schoolId: contextualSchoolId } });
+      users = await this.usersRepository.find({
+        where: { schoolId: contextualSchoolId },
+      });
     } else {
       // If no schoolId (e.g., for SUPER_ADMIN viewing all users, or global users)
       // This might need further refinement based on who is calling and what they should see
@@ -124,7 +142,10 @@ export class UsersService {
     return users.map((user) => this.mapUserToUserDto(user));
   }
 
-  async findOne(id: string, contextualSchoolId?: string | null): Promise<UserDto> {
+  async findOne(
+    id: string,
+    contextualSchoolId?: string | null,
+  ): Promise<UserDto> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
@@ -138,30 +159,38 @@ export class UsersService {
     return this.mapUserToUserDto(user);
   }
 
-  async findOneEntity(id: string, contextualSchoolId?: string | null): Promise<User | undefined> {
-    const queryBuilder = this.usersRepository.createQueryBuilder('user')
+  async findOneEntity(
+    id: string,
+    contextualSchoolId?: string | null,
+  ): Promise<User | undefined> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
       .addSelect('user.password') // Explicitly select the password field
       .where('user.id = :id', { id });
 
     const user = await queryBuilder.getOne();
-    
+
     if (user && contextualSchoolId && user.schoolId !== contextualSchoolId) {
       // For internal service use, returning undefined might be better than throwing
       return undefined;
     }
-    
+
     return user;
   }
 
-  async findOneByUsername(username: string, schoolId?: string | null): Promise<User | undefined> {
+  async findOneByUsername(
+    username: string,
+    schoolId?: string | null,
+  ): Promise<User | undefined> {
     // Used by AuthService, should return the full entity including password
     // If schoolId is provided, it's a school-specific user.
     // If schoolId is explicitly null, it's a global user.
     // If schoolId is undefined, it could be either, but this needs careful handling in AuthService.
     // For now, assume AuthService will provide the correct schoolId (or null for global users).
-    
+
     // Create a query builder to have more control over the query
-    const queryBuilder = this.usersRepository.createQueryBuilder('user')
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
       .addSelect('user.password') // Explicitly select the password field
       .where('user.username = :username', { username });
 
@@ -174,24 +203,34 @@ export class UsersService {
     }
 
     const user = await queryBuilder.getOne();
-    
+
     // If user is found and has a password, ensure it's mapped correctly
     if (user && user.password) {
       // The password is already mapped to the password property by TypeORM
       // because of the @Column({ name: 'password_hash' }) decorator
       return user;
     }
-    
+
     return user; // Will be undefined if not found
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, contextualSchoolId?: string | null): Promise<UserDto> {
-    const { password, schoolId: schoolIdFromDto, ...restOfDto } = updateUserDto as any; // schoolId should not be in UpdateUserDto for regular updates
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    contextualSchoolId?: string | null,
+  ): Promise<UserDto> {
+    const {
+      password,
+      schoolId: schoolIdFromDto,
+      ...restOfDto
+    } = updateUserDto as any; // schoolId should not be in UpdateUserDto for regular updates
 
     if (schoolIdFromDto) {
       // Prevent changing schoolId via this standard update method.
       // This should be a separate, more controlled administrative action if needed.
-      throw new ConflictException('Changing schoolId is not permitted via this endpoint.');
+      throw new ConflictException(
+        'Changing schoolId is not permitted via this endpoint.',
+      );
     }
 
     const userToUpdate = await this.usersRepository.findOneBy({ id });
@@ -210,11 +249,15 @@ export class UsersService {
     // Ensure that if username or email is being updated, they are unique within the user's school context
     if (restOfDto.username && restOfDto.username !== userToUpdate.username) {
       const existingUser = await this.usersRepository.findOne({
-        where: { username: restOfDto.username, schoolId: userToUpdate.schoolId }, // Check within the same schoolId context
+        where: {
+          username: restOfDto.username,
+          schoolId: userToUpdate.schoolId,
+        }, // Check within the same schoolId context
       });
       if (existingUser && existingUser.id !== id) {
         throw new ConflictException(
-          `Username '${restOfDto.username}' already exists` + (userToUpdate.schoolId ? ` in this school.` : '.')
+          `Username '${restOfDto.username}' already exists` +
+            (userToUpdate.schoolId ? ` in this school.` : '.'),
         );
       }
     }
@@ -224,7 +267,8 @@ export class UsersService {
       });
       if (existingUser && existingUser.id !== id) {
         throw new ConflictException(
-          `Email '${restOfDto.email}' already exists` + (userToUpdate.schoolId ? ` in this school.` : '.')
+          `Email '${restOfDto.email}' already exists` +
+            (userToUpdate.schoolId ? ` in this school.` : '.'),
         );
       }
     }
@@ -232,7 +276,6 @@ export class UsersService {
     // Merge the updates, excluding schoolId if it was somehow passed
     const { schoolId, ...validRestOfDto } = restOfDto;
     Object.assign(userToUpdate, validRestOfDto);
-
 
     // Handle password update separately if provided
     if (password) {

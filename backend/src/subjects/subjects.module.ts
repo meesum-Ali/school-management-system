@@ -10,7 +10,7 @@ import { SubjectsController } from './subjects.controller';
   providers: [SubjectsService],
   exports: [
     SubjectsService, // Optional: export the service
-    TypeOrmModule.forFeature([SubjectEntity]) // Export the repository to make it available for other modules
-  ]
+    TypeOrmModule.forFeature([SubjectEntity]), // Export the repository to make it available for other modules
+  ],
 })
 export class SubjectsModule {}

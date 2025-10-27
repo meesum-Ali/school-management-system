@@ -68,7 +68,7 @@ exports.AppModule = AppModule = __decorate([
                     return {
                         ...dbConfig,
                         autoLoadEntities: true,
-                        synchronize: configService.get('env') !== 'production',
+                        synchronize: false,
                     };
                 },
                 inject: [config_1.ConfigService],

@@ -1,14 +1,14 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
-  ManyToOne, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
   JoinColumn,
   Index,
   BeforeInsert,
-  BeforeUpdate
+  BeforeUpdate,
 } from 'typeorm';
 import { ClassEntity } from '../../classes/entities/class.entity';
 import { SubjectEntity } from '../../subjects/entities/subject.entity';
@@ -16,7 +16,13 @@ import { Teacher } from '../../teachers/entities/teacher.entity';
 import { User } from '../../users/entities/user.entity';
 import { School } from '../../schools/entities/school.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, IsUUID, ValidateIf } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  ValidateIf,
+} from 'class-validator';
 
 export enum DayOfWeek {
   MONDAY = 'MONDAY',
@@ -35,21 +41,29 @@ export enum TermEnum {
 }
 
 @Entity('class_schedule')
-@Index('IDX_UNIQUE_CLASS_SCHEDULE_SLOT', ['classId', 'dayOfWeek', 'startTime', 'academicYear', 'term', 'schoolId'], { 
-  unique: true
-})
-@Index('IDX_TEACHER_SCHEDULE_CONFLICT', ['teacherId', 'dayOfWeek', 'startTime', 'academicYear', 'term'], { 
-  unique: false
-})
+@Index(
+  'IDX_UNIQUE_CLASS_SCHEDULE_SLOT',
+  ['classId', 'dayOfWeek', 'startTime', 'academicYear', 'term', 'schoolId'],
+  {
+    unique: true,
+  },
+)
+@Index(
+  'IDX_TEACHER_SCHEDULE_CONFLICT',
+  ['teacherId', 'dayOfWeek', 'startTime', 'academicYear', 'term'],
+  {
+    unique: false,
+  },
+)
 export class ClassSchedule {
   @ApiProperty({ description: 'Unique identifier of the class schedule' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ApiProperty({ description: 'Reference to the class' })
-  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.schedules, { 
+  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.schedules, {
     onDelete: 'CASCADE',
-    lazy: true // Enable lazy loading
+    lazy: true, // Enable lazy loading
   })
   @JoinColumn({ name: 'class_id' })
   class: Promise<ClassEntity>;
@@ -61,9 +75,9 @@ export class ClassSchedule {
   classId: string;
 
   @ApiProperty({ description: 'Reference to the subject' })
-  @ManyToOne(() => SubjectEntity, (subject) => subject.classSchedules, { 
+  @ManyToOne(() => SubjectEntity, (subject) => subject.classSchedules, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'subject_id' })
   subject: Promise<SubjectEntity>;
@@ -75,30 +89,30 @@ export class ClassSchedule {
   subjectId: string;
 
   @ApiProperty({ description: 'Reference to the teacher', required: false })
-  @ManyToOne(() => Teacher, { 
+  @ManyToOne(() => Teacher, {
     onDelete: 'SET NULL',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'teacher_id' })
   teacher: Promise<Teacher>;
 
   @ApiProperty({ description: 'ID of the teacher', required: false })
   @IsUUID()
-  @ValidateIf(o => o.teacherId !== null && o.teacherId !== undefined)
+  @ValidateIf((o) => o.teacherId !== null && o.teacherId !== undefined)
   @Column({ name: 'teacher_id', type: 'uuid', nullable: true })
   teacherId?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Day of the week for the class',
     enum: DayOfWeek,
-    enumName: 'day_of_week_enum'
+    enumName: 'day_of_week_enum',
   })
   @IsEnum(DayOfWeek)
   @IsNotEmpty()
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: DayOfWeek,
-    enumName: 'day_of_week_enum'
+    enumName: 'day_of_week_enum',
   })
   dayOfWeek: DayOfWeek;
 
@@ -114,7 +128,10 @@ export class ClassSchedule {
   @Column({ type: 'time' })
   endTime: string;
 
-  @ApiProperty({ description: 'Room number where the class is held', required: false })
+  @ApiProperty({
+    description: 'Room number where the class is held',
+    required: false,
+  })
   @IsString()
   @Column({ name: 'room_number', type: 'varchar', length: 20, nullable: true })
   roomNumber?: string;
@@ -132,39 +149,45 @@ export class ClassSchedule {
   schoolId: string;
 
   @ApiProperty({ description: 'Reference to the school' })
-  @ManyToOne(() => School, { 
+  @ManyToOne(() => School, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'school_id' })
   school: Promise<School>;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Academic term',
     enum: TermEnum,
-    enumName: 'term_enum'
+    enumName: 'term_enum',
   })
   @IsEnum(TermEnum)
   @IsNotEmpty()
-  @Column({ 
+  @Column({
     type: 'enum',
     enum: TermEnum,
-    enumName: 'term_enum'
+    enumName: 'term_enum',
   })
   term: TermEnum;
 
   // For backward compatibility with direct user_id reference
-  @ApiProperty({ description: 'Reference to the user who created the schedule', required: false })
-  @ManyToOne(() => User, { 
+  @ApiProperty({
+    description: 'Reference to the user who created the schedule',
+    required: false,
+  })
+  @ManyToOne(() => User, {
     onDelete: 'SET NULL',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'user_id' })
   user?: Promise<User>;
 
-  @ApiProperty({ description: 'ID of the user who created the schedule', required: false })
+  @ApiProperty({
+    description: 'ID of the user who created the schedule',
+    required: false,
+  })
   @IsUUID()
-  @ValidateIf(o => o.userId !== null && o.userId !== undefined)
+  @ValidateIf((o) => o.userId !== null && o.userId !== undefined)
   @Column({ name: 'user_id', type: 'uuid', nullable: true })
   userId?: string;
 

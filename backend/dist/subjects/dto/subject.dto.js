@@ -20,36 +20,60 @@ class SubjectDto {
 }
 exports.SubjectDto = SubjectDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'd1e2f3a4-b5c6-7890-1234-567890abcdef', description: 'Unique identifier of the subject (UUID)' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'd1e2f3a4-b5c6-7890-1234-567890abcdef',
+        description: 'Unique identifier of the subject (UUID)',
+    }),
     __metadata("design:type", String)
 ], SubjectDto.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Introduction to Algebra', description: 'Name of the subject' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'Introduction to Algebra',
+        description: 'Name of the subject',
+    }),
     __metadata("design:type", String)
 ], SubjectDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'MATH101', description: 'Unique code for the subject', nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'MATH101',
+        description: 'Unique code for the subject',
+        nullable: true,
+    }),
     __metadata("design:type", String)
 ], SubjectDto.prototype, "code", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Basic concepts of algebra for beginners.', description: 'Description of the subject', nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Basic concepts of algebra for beginners.',
+        description: 'Description of the subject',
+        nullable: true,
+    }),
     __metadata("design:type", String)
 ], SubjectDto.prototype, "description", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ type: () => [class_basic_dto_1.ClassBasicDto], description: 'List of classes this subject is part of' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        type: () => [class_basic_dto_1.ClassBasicDto],
+        description: 'List of classes this subject is part of',
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], SubjectDto.prototype, "classes", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Date and time when the subject record was created' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Date and time when the subject record was created',
+    }),
     __metadata("design:type", Date)
 ], SubjectDto.prototype, "createdAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Date and time when the subject record was last updated' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Date and time when the subject record was last updated',
+    }),
     __metadata("design:type", Date)
 ], SubjectDto.prototype, "updatedAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-of-a-school', description: 'School ID the subject belongs to.' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-of-a-school',
+        description: 'School ID the subject belongs to.',
+    }),
     __metadata("design:type", String)
 ], SubjectDto.prototype, "schoolId", void 0);
 //# sourceMappingURL=subject.dto.js.map

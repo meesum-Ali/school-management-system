@@ -96,7 +96,10 @@ let ZohoClient = ZohoClient_1 = class ZohoClient {
             'X-Zoho-Organization-Id': this.zohoConfig.organizationId,
             'Content-Type': 'application/json;charset=UTF-8',
         };
-        const queryParams = { ...params, organization_id: this.zohoConfig.organizationId };
+        const queryParams = {
+            ...params,
+            organization_id: this.zohoConfig.organizationId,
+        };
         const config = {
             method,
             url,

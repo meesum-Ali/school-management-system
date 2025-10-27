@@ -16,37 +16,55 @@ class UpdateStudentDto {
 }
 exports.UpdateStudentDto = UpdateStudentDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Janet', description: 'Updated first name of the student' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Janet',
+        description: 'Updated first name of the student',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "firstName", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Doer', description: 'Updated last name of the student' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Doer',
+        description: 'Updated last name of the student',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: '2005-08-16', description: 'Updated date of birth (YYYY-MM-DD)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: '2005-08-16',
+        description: 'Updated date of birth (YYYY-MM-DD)',
+    }),
     (0, class_validator_1.IsDateString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Date)
 ], UpdateStudentDto.prototype, "dateOfBirth", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'janet.doe@example.com', description: 'Updated email address' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'janet.doe@example.com',
+        description: 'Updated email address',
+    }),
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'S1002', description: 'Updated unique student identifier' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'S1002',
+        description: 'Updated unique student identifier',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "studentId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the class to enroll the student in (optional, null to unenroll)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+        description: 'ID of the class to enroll the student in (optional, null to unenroll)',
+    }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

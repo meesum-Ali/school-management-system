@@ -12,10 +12,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const class_schedule_entity_1 = require("./entities/class-schedule.entity");
 const class_schedule_service_1 = require("./class-schedule.service");
 const class_schedule_controller_1 = require("./class-schedule.controller");
-const class_entity_1 = require("../classes/entities/class.entity");
-const subject_entity_1 = require("../subjects/entities/subject.entity");
-const teacher_entity_1 = require("../teachers/entities/teacher.entity");
-const user_entity_1 = require("../users/entities/user.entity");
 const classes_module_1 = require("../classes/classes.module");
 const teachers_module_1 = require("../teachers/teachers.module");
 const subjects_module_1 = require("../subjects/subjects.module");
@@ -25,16 +21,10 @@ exports.ClassScheduleModule = ClassScheduleModule;
 exports.ClassScheduleModule = ClassScheduleModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([
-                class_schedule_entity_1.ClassSchedule,
-                class_entity_1.ClassEntity,
-                subject_entity_1.SubjectEntity,
-                teacher_entity_1.Teacher,
-                user_entity_1.User,
-            ]),
-            (0, common_1.forwardRef)(() => classes_module_1.ClassesModule),
-            (0, common_1.forwardRef)(() => teachers_module_1.TeachersModule),
-            (0, common_1.forwardRef)(() => subjects_module_1.SubjectsModule),
+            typeorm_1.TypeOrmModule.forFeature([class_schedule_entity_1.ClassSchedule]),
+            classes_module_1.ClassesModule,
+            teachers_module_1.TeachersModule,
+            subjects_module_1.SubjectsModule,
         ],
         controllers: [class_schedule_controller_1.ClassScheduleController],
         providers: [class_schedule_service_1.ClassScheduleService],

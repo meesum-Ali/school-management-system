@@ -63,12 +63,30 @@ let StudentsController = class StudentsController {
 exports.StudentsController = StudentsController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new student (Admin only for their school)' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CREATED, description: 'Student created successfully.', type: student_dto_1.StudentDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Student ID or email already exists in this school.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Create a new student (Admin only for their school)',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CREATED,
+        description: 'Student created successfully.',
+        type: student_dto_1.StudentDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Student ID or email already exists in this school.',
+    }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -77,10 +95,22 @@ __decorate([
 ], StudentsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all students for the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'List of students retrieved successfully.', type: [student_dto_1.StudentDto] }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get all students for the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'List of students retrieved successfully.',
+        type: [student_dto_1.StudentDto],
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -88,13 +118,36 @@ __decorate([
 ], StudentsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get a student by ID from the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Student ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Student details retrieved successfully.', type: student_dto_1.StudentDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Student not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get a student by ID from the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Student ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Student details retrieved successfully.',
+        type: student_dto_1.StudentDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Student not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -103,15 +156,41 @@ __decorate([
 ], StudentsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update a student by ID in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Student ID' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update a student by ID in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Student ID',
+    }),
     (0, swagger_1.ApiBody)({ type: update_student_dto_1.UpdateStudentDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Student updated successfully.', type: student_dto_1.StudentDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Student not found.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data or invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Student ID or email already exists on another student.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Student updated successfully.',
+        type: student_dto_1.StudentDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Student not found.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data or invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Student ID or email already exists on another student.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Req)()),
@@ -121,13 +200,35 @@ __decorate([
 ], StudentsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Delete a student by ID in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Student ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NO_CONTENT, description: 'Student deleted successfully.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Student not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Delete a student by ID in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Student ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NO_CONTENT,
+        description: 'Student deleted successfully.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Student not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
@@ -137,13 +238,33 @@ __decorate([
 ], StudentsController.prototype, "remove", null);
 __decorate([
     (0, common_1.Patch)(':studentId/assign-class'),
-    (0, swagger_1.ApiOperation)({ summary: 'Assign or Unassign a student to/from a class in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'studentId', type: 'string', format: 'uuid', description: 'Student ID' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Assign or Unassign a student to/from a class in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'studentId',
+        type: 'string',
+        format: 'uuid',
+        description: 'Student ID',
+    }),
     (0, swagger_1.ApiBody)({ type: assign_class_dto_1.AssignClassDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Student class assignment updated successfully.', type: student_dto_1.StudentDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Student or Class not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Student class assignment updated successfully.',
+        type: student_dto_1.StudentDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Student or Class not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized.',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden.' }),
     __param(0, (0, common_1.Param)('studentId', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Body)()),
@@ -156,7 +277,11 @@ exports.StudentsController = StudentsController = __decorate([
     (0, swagger_1.ApiTags)('Students Management'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('students'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    })),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('zitadel'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN),
     __metadata("design:paramtypes", [students_service_1.StudentsService])

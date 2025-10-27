@@ -49,13 +49,17 @@ let UsersService = class UsersService {
             whereClauses.push({ username, schoolId: null });
             whereClauses.push({ email, schoolId: null });
         }
-        const existingUser = await this.usersRepository.findOne({ where: whereClauses });
+        const existingUser = await this.usersRepository.findOne({
+            where: whereClauses,
+        });
         if (existingUser) {
             if (existingUser.username === username) {
-                throw new common_1.ConflictException(`Username "${username}" already exists` + (targetSchoolId ? ` in this school.` : `.`));
+                throw new common_1.ConflictException(`Username "${username}" already exists` +
+                    (targetSchoolId ? ` in this school.` : `.`));
             }
             if (existingUser.email === email) {
-                throw new common_1.ConflictException(`Email "${email}" already exists` + (targetSchoolId ? ` in this school.` : `.`));
+                throw new common_1.ConflictException(`Email "${email}" already exists` +
+                    (targetSchoolId ? ` in this school.` : `.`));
             }
         }
         const user = new user_entity_1.User();
@@ -92,7 +96,9 @@ let UsersService = class UsersService {
     async findAll(contextualSchoolId) {
         let users;
         if (contextualSchoolId) {
-            users = await this.usersRepository.find({ where: { schoolId: contextualSchoolId } });
+            users = await this.usersRepository.find({
+                where: { schoolId: contextualSchoolId },
+            });
         }
         else {
             users = await this.usersRepository.find();
@@ -110,7 +116,8 @@ let UsersService = class UsersService {
         return this.mapUserToUserDto(user);
     }
     async findOneEntity(id, contextualSchoolId) {
-        const queryBuilder = this.usersRepository.createQueryBuilder('user')
+        const queryBuilder = this.usersRepository
+            .createQueryBuilder('user')
             .addSelect('user.password')
             .where('user.id = :id', { id });
         const user = await queryBuilder.getOne();
@@ -120,7 +127,8 @@ let UsersService = class UsersService {
         return user;
     }
     async findOneByUsername(username, schoolId) {
-        const queryBuilder = this.usersRepository.createQueryBuilder('user')
+        const queryBuilder = this.usersRepository
+            .createQueryBuilder('user')
             .addSelect('user.password')
             .where('user.username = :username', { username });
         if (schoolId !== undefined) {
@@ -151,10 +159,14 @@ let UsersService = class UsersService {
         }
         if (restOfDto.username && restOfDto.username !== userToUpdate.username) {
             const existingUser = await this.usersRepository.findOne({
-                where: { username: restOfDto.username, schoolId: userToUpdate.schoolId },
+                where: {
+                    username: restOfDto.username,
+                    schoolId: userToUpdate.schoolId,
+                },
             });
             if (existingUser && existingUser.id !== id) {
-                throw new common_1.ConflictException(`Username '${restOfDto.username}' already exists` + (userToUpdate.schoolId ? ` in this school.` : '.'));
+                throw new common_1.ConflictException(`Username '${restOfDto.username}' already exists` +
+                    (userToUpdate.schoolId ? ` in this school.` : '.'));
             }
         }
         if (restOfDto.email && restOfDto.email !== userToUpdate.email) {
@@ -162,7 +174,8 @@ let UsersService = class UsersService {
                 where: { email: restOfDto.email, schoolId: userToUpdate.schoolId },
             });
             if (existingUser && existingUser.id !== id) {
-                throw new common_1.ConflictException(`Email '${restOfDto.email}' already exists` + (userToUpdate.schoolId ? ` in this school.` : '.'));
+                throw new common_1.ConflictException(`Email '${restOfDto.email}' already exists` +
+                    (userToUpdate.schoolId ? ` in this school.` : '.'));
             }
         }
         const { schoolId, ...validRestOfDto } = restOfDto;

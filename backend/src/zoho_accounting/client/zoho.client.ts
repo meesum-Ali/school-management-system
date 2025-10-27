@@ -1,13 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { ZohoConfig, ZohoOAuthConfig } from './interfaces/zoho.config.interface';
+import {
+  ZohoConfig,
+  ZohoOAuthConfig,
+} from './interfaces/zoho.config.interface';
 import { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
 @Injectable()
@@ -37,7 +35,9 @@ export class ZohoClient {
       !this.zohoConfig.organizationId
       // !this.zohoConfig.redirectUri // Not strictly needed if refresh token is present
     ) {
-      this.logger.error('Zoho API client ID, client secret, or organization ID is missing from configuration.');
+      this.logger.error(
+        'Zoho API client ID, client secret, or organization ID is missing from configuration.',
+      );
       throw new Error('Zoho API configuration is incomplete.');
     }
   }
@@ -70,13 +70,17 @@ export class ZohoClient {
   private async getAccessToken(): Promise<string> {
     // In a real scenario, this would check expiry and refresh if needed
     // For now, we assume a valid access token is provided or can be refreshed
-    if (this.zohoConfig.accessToken) { // Simplified: check for expiry in real app
+    if (this.zohoConfig.accessToken) {
+      // Simplified: check for expiry in real app
       return this.zohoConfig.accessToken;
     }
     if (this.zohoConfig.refreshToken) {
       return this.refreshAccessToken();
     }
-    throw new HttpException('Zoho access token is unavailable and no refresh token is configured.', HttpStatus.UNAUTHORIZED);
+    throw new HttpException(
+      'Zoho access token is unavailable and no refresh token is configured.',
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 
   /**
@@ -89,7 +93,10 @@ export class ZohoClient {
   async refreshAccessToken(): Promise<string> {
     if (!this.zohoConfig.refreshToken) {
       this.logger.error('Zoho refresh token is not available.');
-      throw new HttpException('Zoho refresh token is not available.', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Zoho refresh token is not available.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const refreshTokenUrl = `${this.getAccountsBaseUrl()}/oauth/v2/token`;
@@ -116,8 +123,13 @@ export class ZohoClient {
         // Zoho typically doesn't change refresh tokens frequently unless they are revoked.
         return this.zohoConfig.accessToken;
       } else {
-        this.logger.error(`Failed to refresh Zoho access token. Response: ${JSON.stringify(response.data)}`);
-        throw new HttpException('Failed to refresh Zoho access token.', HttpStatus.UNAUTHORIZED);
+        this.logger.error(
+          `Failed to refresh Zoho access token. Response: ${JSON.stringify(response.data)}`,
+        );
+        throw new HttpException(
+          'Failed to refresh Zoho access token.',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
     } catch (error) {
       this.logger.error(
@@ -125,7 +137,9 @@ export class ZohoClient {
         error.stack,
       );
       if (error.response?.data) {
-        this.logger.error(`Zoho error response: ${JSON.stringify(error.response.data)}`);
+        this.logger.error(
+          `Zoho error response: ${JSON.stringify(error.response.data)}`,
+        );
         throw new HttpException(
           `Zoho API error during token refresh: ${error.response.data.error || error.message}`,
           error.response.status || HttpStatus.INTERNAL_SERVER_ERROR,
@@ -166,8 +180,10 @@ export class ZohoClient {
 
     // Zoho expects organization_id as a query parameter for some endpoints
     // and as a header for others. It's safer to include it as a query param by default.
-    const queryParams = { ...params, organization_id: this.zohoConfig.organizationId };
-
+    const queryParams = {
+      ...params,
+      organization_id: this.zohoConfig.organizationId,
+    };
 
     const config: AxiosRequestConfig = {
       method,
@@ -180,10 +196,14 @@ export class ZohoClient {
       config.data = data;
     }
 
-    this.logger.debug(`Making Zoho API request: ${method} ${url} with params: ${JSON.stringify(queryParams)}`);
+    this.logger.debug(
+      `Making Zoho API request: ${method} ${url} with params: ${JSON.stringify(queryParams)}`,
+    );
 
     try {
-      const response = await firstValueFrom(this.httpService.request<T>(config));
+      const response = await firstValueFrom(
+        this.httpService.request<T>(config),
+      );
       return response;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -194,7 +214,8 @@ export class ZohoClient {
         axiosError.stack,
       );
 
-      if (axiosError.response?.status === 401) { // Unauthorized
+      if (axiosError.response?.status === 401) {
+        // Unauthorized
         this.logger.warn('Zoho API returned 401. Attempting token refresh.');
         try {
           await this.refreshAccessToken();
@@ -202,10 +223,15 @@ export class ZohoClient {
           this.logger.log('Retrying Zoho API request after token refresh.');
           const newAccessToken = await this.getAccessToken();
           config.headers.Authorization = `Zoho-oauthtoken ${newAccessToken}`;
-          const retryResponse = await firstValueFrom(this.httpService.request<T>(config));
+          const retryResponse = await firstValueFrom(
+            this.httpService.request<T>(config),
+          );
           return retryResponse;
         } catch (refreshError) {
-          this.logger.error('Failed to refresh token or retry request after 401.', refreshError.stack);
+          this.logger.error(
+            'Failed to refresh token or retry request after 401.',
+            refreshError.stack,
+          );
           throw new HttpException(
             `Zoho API authentication failed after retry: ${refreshError.message}`,
             HttpStatus.UNAUTHORIZED,
@@ -238,7 +264,10 @@ export class ZohoClient {
    * @param params Optional query parameters.
    * @returns A promise that resolves to the AxiosResponse.
    */
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<AxiosResponse<T>> {
+  async get<T>(
+    endpoint: string,
+    params?: Record<string, any>,
+  ): Promise<AxiosResponse<T>> {
     return this.request<T>('GET', endpoint, undefined, params);
   }
 
@@ -250,7 +279,11 @@ export class ZohoClient {
    * @param params Optional query parameters.
    * @returns A promise that resolves to the AxiosResponse.
    */
-  async post<T>(endpoint: string, data: any, params?: Record<string, any>): Promise<AxiosResponse<T>> {
+  async post<T>(
+    endpoint: string,
+    data: any,
+    params?: Record<string, any>,
+  ): Promise<AxiosResponse<T>> {
     return this.request<T>('POST', endpoint, data, params);
   }
 
@@ -262,7 +295,11 @@ export class ZohoClient {
    * @param params Optional query parameters.
    * @returns A promise that resolves to the AxiosResponse.
    */
-  async put<T>(endpoint: string, data: any, params?: Record<string, any>): Promise<AxiosResponse<T>> {
+  async put<T>(
+    endpoint: string,
+    data: any,
+    params?: Record<string, any>,
+  ): Promise<AxiosResponse<T>> {
     return this.request<T>('PUT', endpoint, data, params);
   }
 
@@ -273,7 +310,10 @@ export class ZohoClient {
    * @param params Optional query parameters.
    * @returns A promise that resolves to the AxiosResponse.
    */
-  async delete<T>(endpoint: string, params?: Record<string, any>): Promise<AxiosResponse<T>> {
+  async delete<T>(
+    endpoint: string,
+    params?: Record<string, any>,
+  ): Promise<AxiosResponse<T>> {
     return this.request<T>('DELETE', endpoint, undefined, params);
   }
 }

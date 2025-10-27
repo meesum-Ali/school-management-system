@@ -38,15 +38,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => teacher_entity_1.Teacher, (teacher) => teacher.homeroomClasses, {
         onDelete: 'SET NULL',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'homeroom_teacher_id' }),
     __metadata("design:type", Promise)
 ], ClassEntity.prototype, "homeroomTeacher", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => subject_entity_1.SubjectEntity, subject => subject.classes, {
+    (0, typeorm_1.ManyToMany)(() => subject_entity_1.SubjectEntity, (subject) => subject.classes, {
         cascade: false,
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinTable)({
         name: 'class_subjects',
@@ -58,13 +58,13 @@ __decorate([
 __decorate([
     (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.currentClass, {
         cascade: false,
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], ClassEntity.prototype, "students", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => class_schedule_entity_1.ClassSchedule, (schedule) => schedule.class, {
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], ClassEntity.prototype, "schedules", void 0);
@@ -75,7 +75,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => school_entity_1.School, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)

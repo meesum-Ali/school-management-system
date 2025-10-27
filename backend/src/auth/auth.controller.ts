@@ -23,4 +23,3 @@ export class AuthController {
   // Zitadel OAuth flow is handled on the frontend
   // This controller can be extended for token refresh, logout, etc.
 }
-

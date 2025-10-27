@@ -44,13 +44,13 @@ __decorate([
 ], Teacher.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => class_entity_1.ClassEntity, (classEntity) => classEntity.homeroomTeacher, {
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], Teacher.prototype, "homeroomClasses", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => class_schedule_entity_1.ClassSchedule, (schedule) => schedule.teacher, {
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], Teacher.prototype, "classSchedules", void 0);
@@ -61,7 +61,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => school_entity_1.School, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)
@@ -69,7 +69,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User, (user) => user.teacherProfile, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", Promise)

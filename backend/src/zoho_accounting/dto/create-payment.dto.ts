@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateNested,
   Min,
-  IsPositive
+  IsPositive,
 } from 'class-validator';
 
 export class InvoicePaymentDto {
@@ -34,7 +34,7 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   @IsString()
   payment_mode: string; // e.g., "cash", "check", "creditcard", "banktransfer", "paypal", "stripe" etc.
-                        // Check Zoho documentation for full list of supported modes.
+  // Check Zoho documentation for full list of supported modes.
 
   @IsNotEmpty()
   @IsNumber()
@@ -60,14 +60,14 @@ export class CreatePaymentDto {
   @IsOptional()
   @IsString()
   account_id?: string; // ID of the account (e.g., bank account in Zoho Books) to which this payment is deposited.
-                       // Required by Zoho if multiple bank accounts are configured.
+  // Required by Zoho if multiple bank accounts are configured.
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => InvoicePaymentDto)
   invoices?: InvoicePaymentDto[]; // Array of invoices to which this payment should be applied.
-                                 // If not provided, payment is recorded as an excess payment/retainer.
+  // If not provided, payment is recorded as an excess payment/retainer.
 
   @IsOptional()
   @IsNumber()

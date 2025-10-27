@@ -1,16 +1,15 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SchoolsService } from './schools.service';
 import { SchoolsController } from './schools.controller';
 import { School } from './entities/school.entity';
-import { UsersModule } from '../users/users.module'; // For UserRole access if needed, and future admin user linking
-import { AuthModule } from '../auth/auth.module'; // For guards
+import { UsersModule } from '../users/users.module'; // For UserRole access if needed
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([School]),
-    UsersModule, // To make UserRole enum available and potentially UsersService
-    forwardRef(() => AuthModule), // Use forwardRef to handle circular dependency
+    UsersModule, // To make UserRole enum available
+    // Removed AuthModule import - guards can be used directly without importing the module (DDD: break circular dependency)
   ],
   controllers: [SchoolsController],
   providers: [SchoolsService],

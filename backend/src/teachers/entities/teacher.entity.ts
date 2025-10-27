@@ -1,4 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, Index, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  Index,
+  OneToOne,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { School } from '../../schools/entities/school.entity';
 import { ClassEntity } from '../../classes/entities/class.entity';
@@ -27,28 +38,28 @@ export class Teacher {
   userId?: string | null;
 
   @OneToMany(() => ClassEntity, (classEntity) => classEntity.homeroomTeacher, {
-    lazy: true
+    lazy: true,
   })
   homeroomClasses: Promise<ClassEntity[]>;
 
   @OneToMany(() => ClassSchedule, (schedule) => schedule.teacher, {
-    lazy: true
+    lazy: true,
   })
   classSchedules: Promise<ClassSchedule[]>;
 
   @Column({ name: 'school_id', type: 'uuid' })
   schoolId: string;
 
-  @ManyToOne(() => School, { 
+  @ManyToOne(() => School, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'school_id' })
   school: Promise<School>;
 
-  @OneToOne(() => User, (user) => user.teacherProfile, { 
+  @OneToOne(() => User, (user) => user.teacherProfile, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'user_id' })
   user: Promise<User>;

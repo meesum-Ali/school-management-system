@@ -25,14 +25,20 @@ export class ZohoAccountingService {
     contactDto: CreateContactDto,
     invoiceDtoWithoutCustomerId: Omit<CreateInvoiceDto, 'customer_id'>,
   ): Promise<{ contact: Contact; invoice: Invoice }> {
-    this.logger.log(`Workflow: Creating customer ${contactDto.contact_name} and an initial invoice.`);
+    this.logger.log(
+      `Workflow: Creating customer ${contactDto.contact_name} and an initial invoice.`,
+    );
 
     const contact = await this.contacts.createContact(contactDto);
     if (!contact || !contact.contact_id) {
       this.logger.error('Failed to create contact in the workflow.');
-      throw new Error('Failed to create contact during customer and invoice creation workflow.');
+      throw new Error(
+        'Failed to create contact during customer and invoice creation workflow.',
+      );
     }
-    this.logger.log(`Workflow: Customer ${contact.contact_name} (ID: ${contact.contact_id}) created.`);
+    this.logger.log(
+      `Workflow: Customer ${contact.contact_name} (ID: ${contact.contact_id}) created.`,
+    );
 
     const invoiceDtoWithCustomerId: CreateInvoiceDto = {
       ...invoiceDtoWithoutCustomerId,
@@ -41,11 +47,17 @@ export class ZohoAccountingService {
 
     const invoice = await this.invoices.createInvoice(invoiceDtoWithCustomerId);
     if (!invoice || !invoice.invoice_id) {
-        this.logger.error(`Failed to create invoice for contact ID ${contact.contact_id} in the workflow.`);
-        // Potentially: consider rolling back contact creation or marking it for review
-        throw new Error('Failed to create invoice during customer and invoice creation workflow.');
+      this.logger.error(
+        `Failed to create invoice for contact ID ${contact.contact_id} in the workflow.`,
+      );
+      // Potentially: consider rolling back contact creation or marking it for review
+      throw new Error(
+        'Failed to create invoice during customer and invoice creation workflow.',
+      );
     }
-    this.logger.log(`Workflow: Invoice ${invoice.invoice_number} (ID: ${invoice.invoice_id}) created for customer ${contact.contact_name}.`);
+    this.logger.log(
+      `Workflow: Invoice ${invoice.invoice_number} (ID: ${invoice.invoice_id}) created for customer ${contact.contact_name}.`,
+    );
 
     return { contact, invoice };
   }
@@ -60,7 +72,9 @@ export class ZohoAccountingService {
     referenceNumber?: string,
     depositToAccountId?: string, // Optional: Zoho account_id for deposit
   ): Promise<CustomerPayment> {
-    this.logger.log(`Workflow: Recording payment of ${paymentAmount} for invoice ${invoiceId} by customer ${customerId}.`);
+    this.logger.log(
+      `Workflow: Recording payment of ${paymentAmount} for invoice ${invoiceId} by customer ${customerId}.`,
+    );
 
     const paymentDto: CreatePaymentDto = {
       customer_id: customerId,
@@ -78,7 +92,9 @@ export class ZohoAccountingService {
     };
 
     const payment = await this.payments.recordPayment(paymentDto);
-    this.logger.log(`Workflow: Payment ${payment.payment_number} (ID: ${payment.payment_id}) recorded and applied.`);
+    this.logger.log(
+      `Workflow: Payment ${payment.payment_number} (ID: ${payment.payment_id}) recorded and applied.`,
+    );
     return payment;
   }
 

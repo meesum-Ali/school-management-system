@@ -38,4 +38,3 @@ export class AuthService {
   // Zitadel token validation happens via ZitadelStrategy
   // This service can be extended for additional auth-related tasks
 }
-

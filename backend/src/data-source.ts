@@ -21,8 +21,15 @@ if (envFile) {
 const appConfig = configuration();
 const dbConfig = appConfig.database;
 
-if (!dbConfig.host || !dbConfig.port || !dbConfig.username || !dbConfig.database) {
-  throw new Error('Database configuration is incomplete. Please check your environment variables.');
+if (
+  !dbConfig.host ||
+  !dbConfig.port ||
+  !dbConfig.username ||
+  !dbConfig.database
+) {
+  throw new Error(
+    'Database configuration is incomplete. Please check your environment variables.',
+  );
 }
 
 export const AppDataSource = new DataSource({
@@ -32,7 +39,15 @@ export const AppDataSource = new DataSource({
   username: dbConfig.username,
   password: dbConfig.password,
   database: dbConfig.database,
-  entities: [User, Student, ClassEntity, SubjectEntity, School, Teacher, ClassSchedule],
+  entities: [
+    User,
+    Student,
+    ClassEntity,
+    SubjectEntity,
+    School,
+    Teacher,
+    ClassSchedule,
+  ],
   migrations: [
     resolve(__dirname, './migrations/*.ts'),
     resolve(__dirname, './migrations/*.js'),

@@ -1,4 +1,4 @@
-import { CustomField } from "./contact.entity";
+import { CustomField } from './contact.entity';
 interface InvoiceAllocated {
     invoice_id: string;
     invoice_number: string;

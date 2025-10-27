@@ -53,7 +53,7 @@ __decorate([
     (0, typeorm_1.ManyToOne)(() => class_entity_1.ClassEntity, (classEntity) => classEntity.students, {
         nullable: true,
         onDelete: 'SET NULL',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'classId' }),
     __metadata("design:type", Promise)
@@ -69,7 +69,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => school_entity_1.School, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)
@@ -81,7 +81,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User, (user) => user.studentProfile, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", Promise)

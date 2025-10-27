@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsObject,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 // Based on Zoho's API, many fields are available.
@@ -71,7 +78,6 @@ export class CreateContactDto {
   @IsOptional()
   @IsObject()
   custom_fields?: any[];
-
 
   @IsOptional()
   @ValidateNested()

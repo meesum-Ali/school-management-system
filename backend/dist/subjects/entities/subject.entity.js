@@ -48,27 +48,30 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => school_entity_1.School, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)
 ], SubjectEntity.prototype, "school", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => class_entity_1.ClassEntity, cls => cls.subjects, {
+    (0, typeorm_1.ManyToMany)(() => class_entity_1.ClassEntity, (cls) => cls.subjects, {
         cascade: false,
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], SubjectEntity.prototype, "classes", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => class_schedule_entity_1.ClassSchedule, (schedule) => schedule.subject, {
-        lazy: true
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], SubjectEntity.prototype, "classSchedules", void 0);
 exports.SubjectEntity = SubjectEntity = __decorate([
     (0, typeorm_1.Entity)('subjects'),
     (0, typeorm_1.Index)(['name', 'schoolId'], { unique: true }),
-    (0, typeorm_1.Index)(['code', 'schoolId'], { unique: true, where: `"code" IS NOT NULL AND "schoolId" IS NOT NULL` })
+    (0, typeorm_1.Index)(['code', 'schoolId'], {
+        unique: true,
+        where: `"code" IS NOT NULL AND "school_id" IS NOT NULL`,
+    })
 ], SubjectEntity);
 //# sourceMappingURL=subject.entity.js.map

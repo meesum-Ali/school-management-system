@@ -1,4 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert, ManyToOne, JoinColumn, Index, OneToMany, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BeforeInsert,
+  ManyToOne,
+  JoinColumn,
+  Index,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator'; // class-validator is for DTOs, not directly used by entity save from service
 import * as bcrypt from 'bcrypt';
 import { School } from '../../schools/entities/school.entity';
@@ -33,8 +45,14 @@ export enum UserRole {
 }
 
 @Entity('users')
-@Index(['email', 'schoolId'], { unique: true, where: `"school_id" IS NOT NULL` }) // Unique email per school
-@Index(['username', 'schoolId'], { unique: true, where: `"school_id" IS NOT NULL` }) // Unique username per school
+@Index(['email', 'schoolId'], {
+  unique: true,
+  where: `"school_id" IS NOT NULL`,
+}) // Unique email per school
+@Index(['username', 'schoolId'], {
+  unique: true,
+  where: `"school_id" IS NOT NULL`,
+}) // Unique username per school
 @Index(['email'], { unique: true, where: `"school_id" IS NULL` }) // Globally unique email for users not tied to a school (e.g. super_admin)
 @Index(['username'], { unique: true, where: `"school_id" IS NULL` }) // Globally unique username for users not tied to a school
 export class User {
@@ -71,11 +89,11 @@ export class User {
   @Column({
     type: 'text',
     array: true,
-    default: () => 'array[\'STUDENT\'::text]', // Defaulting new users to STUDENT role
+    default: () => "array['STUDENT'::text]", // Defaulting new users to STUDENT role
     transformer: {
       to: (value: UserRole[]) => value,
-      from: (value: string[]) => value
-    }
+      from: (value: string[]) => value,
+    },
   })
   @IsEnum(UserRole, { each: true })
   roles: UserRole[];
@@ -83,23 +101,23 @@ export class User {
   @Column({ name: 'school_id', type: 'uuid', nullable: true })
   schoolId?: string | null; // Nullable for global users like SUPER_ADMIN
 
-  @ManyToOne(() => School, school => school.users, { 
-    nullable: true, 
+  @ManyToOne(() => School, (school) => school.users, {
+    nullable: true,
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   }) // onDelete: 'CASCADE' means if a school is deleted, its users are deleted.
   @JoinColumn({ name: 'school_id' })
   school: Promise<School> | null;
 
-  @OneToOne(() => Student, (student) => student.user, { 
+  @OneToOne(() => Student, (student) => student.user, {
     cascade: false,
-    lazy: true
+    lazy: true,
   })
   studentProfile: Promise<Student>;
 
-  @OneToOne(() => Teacher, (teacher) => teacher.user, { 
+  @OneToOne(() => Teacher, (teacher) => teacher.user, {
     cascade: false,
-    lazy: true
+    lazy: true,
   })
   teacherProfile: Promise<Teacher>;
 
@@ -111,7 +129,8 @@ export class User {
 
   @BeforeInsert()
   async hashPassword() {
-    if (this.password) { // Only hash if password is provided (e.g. on create or if explicitly being updated)
+    if (this.password) {
+      // Only hash if password is provided (e.g. on create or if explicitly being updated)
       const saltRounds = 10; // Or read from config
       this.password = await bcrypt.hash(this.password, saltRounds);
     }
@@ -123,19 +142,23 @@ export class User {
     console.log('Attempt:', attempt);
     console.log('Stored hash:', this.password);
     console.log('Hash length:', this.password?.length);
-    
+
     if (!this.password) {
       console.error('No password hash available for comparison');
       return false;
     }
-    
+
     try {
       // Ensure the stored hash is a valid bcrypt hash
-      if (!this.password.startsWith('$2b$') && !this.password.startsWith('$2a$') && !this.password.startsWith('$2y$')) {
+      if (
+        !this.password.startsWith('$2b$') &&
+        !this.password.startsWith('$2a$') &&
+        !this.password.startsWith('$2y$')
+      ) {
         console.error('Invalid bcrypt hash format');
         return false;
       }
-      
+
       const result = await bcrypt.compare(attempt, this.password);
       console.log('Password comparison result:', result);
       return result;

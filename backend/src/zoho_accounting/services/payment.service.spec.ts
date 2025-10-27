@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentService } from './payment.service';
 import { ZohoClient } from '../client/zoho.client';
 import { CreatePaymentDto, InvoicePaymentDto } from '../dto/create-payment.dto';
-import { CustomerPayment, ZohoPaymentResponse, ZohoPaymentsListResponse } from '../entities/payment.entity';
+import {
+  CustomerPayment,
+  ZohoPaymentResponse,
+  ZohoPaymentsListResponse,
+} from '../entities/payment.entity';
 import { of, throwError } from 'rxjs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosResponse, AxiosError } from 'axios';
@@ -89,21 +93,30 @@ describe('PaymentService', () => {
 
   describe('recordPayment', () => {
     it('should record a payment successfully', async () => {
-      mockZohoClient.post.mockResolvedValue(mockAxiosResponse(mockZohoPaymentResponse));
+      mockZohoClient.post.mockResolvedValue(
+        mockAxiosResponse(mockZohoPaymentResponse),
+      );
       const result = await service.recordPayment(mockPaymentDto);
       expect(result).toEqual(mockPaymentEntity);
-      expect(zohoClient.post).toHaveBeenCalledWith('customerpayments', mockPaymentDto);
+      expect(zohoClient.post).toHaveBeenCalledWith(
+        'customerpayments',
+        mockPaymentDto,
+      );
     });
 
     it('should throw error if zohoClient fails', async () => {
       mockZohoClient.post.mockRejectedValue(new Error('API Error'));
-      await expect(service.recordPayment(mockPaymentDto)).rejects.toThrow('API Error');
+      await expect(service.recordPayment(mockPaymentDto)).rejects.toThrow(
+        'API Error',
+      );
     });
   });
 
   describe('getPayment', () => {
     it('should retrieve a payment successfully', async () => {
-      mockZohoClient.get.mockResolvedValue(mockAxiosResponse(mockZohoPaymentResponse));
+      mockZohoClient.get.mockResolvedValue(
+        mockAxiosResponse(mockZohoPaymentResponse),
+      );
       const result = await service.getPayment('pay-123');
       expect(result).toEqual(mockPaymentEntity);
       expect(zohoClient.get).toHaveBeenCalledWith('customerpayments/pay-123');
@@ -121,11 +134,16 @@ describe('PaymentService', () => {
     const mockPaymentsListResponse: ZohoPaymentsListResponse = {
       code: 0,
       message: 'success',
-      customerpayments: [mockPaymentEntity, { ...mockPaymentEntity, payment_id: 'pay-456' }],
+      customerpayments: [
+        mockPaymentEntity,
+        { ...mockPaymentEntity, payment_id: 'pay-456' },
+      ],
     };
 
     it('should list payments successfully', async () => {
-      mockZohoClient.get.mockResolvedValue(mockAxiosResponse(mockPaymentsListResponse));
+      mockZohoClient.get.mockResolvedValue(
+        mockAxiosResponse(mockPaymentsListResponse),
+      );
       const params = { customer_id: 'cust-123' };
       const result = await service.listPayments(params);
       expect(result).toEqual(mockPaymentsListResponse.customerpayments);
@@ -133,31 +151,52 @@ describe('PaymentService', () => {
     });
 
     it('should return empty array if no payments found or unexpected response', async () => {
-      mockZohoClient.get.mockResolvedValue(mockAxiosResponse({ code: 0, message: 'success', customerpayments: null }));
+      mockZohoClient.get.mockResolvedValue(
+        mockAxiosResponse({
+          code: 0,
+          message: 'success',
+          customerpayments: null,
+        }),
+      );
       const result = await service.listPayments();
       expect(result).toEqual([]);
     });
   });
 
   describe('updatePayment', () => {
-    const updateDto: Partial<CreatePaymentDto> = { reference_number: 'Check #1001' };
-    const updatedPaymentEntity: CustomerPayment = { ...mockPaymentEntity, reference_number: 'Check #1001' };
-    const updatedResponse: ZohoPaymentResponse = { ...mockZohoPaymentResponse, payment: updatedPaymentEntity };
+    const updateDto: Partial<CreatePaymentDto> = {
+      reference_number: 'Check #1001',
+    };
+    const updatedPaymentEntity: CustomerPayment = {
+      ...mockPaymentEntity,
+      reference_number: 'Check #1001',
+    };
+    const updatedResponse: ZohoPaymentResponse = {
+      ...mockZohoPaymentResponse,
+      payment: updatedPaymentEntity,
+    };
 
     it('should update a payment successfully', async () => {
       mockZohoClient.put.mockResolvedValue(mockAxiosResponse(updatedResponse));
       const result = await service.updatePayment('pay-123', updateDto);
       expect(result).toEqual(updatedPaymentEntity);
-      expect(zohoClient.put).toHaveBeenCalledWith('customerpayments/pay-123', updateDto);
+      expect(zohoClient.put).toHaveBeenCalledWith(
+        'customerpayments/pay-123',
+        updateDto,
+      );
     });
   });
 
   describe('deletePayment', () => {
     it('should delete a payment successfully', async () => {
-      mockZohoClient.delete.mockResolvedValue(mockAxiosResponse({ code: 0, message: 'Payment deleted.' }));
+      mockZohoClient.delete.mockResolvedValue(
+        mockAxiosResponse({ code: 0, message: 'Payment deleted.' }),
+      );
       const result = await service.deletePayment('pay-123');
       expect(result).toBe(true);
-      expect(zohoClient.delete).toHaveBeenCalledWith('customerpayments/pay-123');
+      expect(zohoClient.delete).toHaveBeenCalledWith(
+        'customerpayments/pay-123',
+      );
     });
 
     it('should return false if payment not found for deletion (404)', async () => {

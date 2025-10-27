@@ -16,7 +16,10 @@ class UpdateClassDto {
 }
 exports.UpdateClassDto = UpdateClassDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Mathematics 10A - Advanced', description: 'Updated name of the class' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Mathematics 10A - Advanced',
+        description: 'Updated name of the class',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(2),
@@ -24,14 +27,20 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateClassDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Grade 10 - Section A', description: 'Updated level or grade of the class' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Grade 10 - Section A',
+        description: 'Updated level or grade of the class',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateClassDto.prototype, "level", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'b2c3d4e5-f6g7-8901-2345-67890abcdef1', description: 'Updated UUID of the homeroom teacher (User ID), or null to remove' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'b2c3d4e5-f6g7-8901-2345-67890abcdef1',
+        description: 'Updated UUID of the homeroom teacher (User ID), or null to remove',
+    }),
     (0, class_validator_1.IsUUID)('4'),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.Allow)(),

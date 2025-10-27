@@ -1,4 +1,4 @@
-import { CustomField } from "./contact.entity";
+import { CustomField } from './contact.entity';
 interface Address {
     address: string;
     city: string;

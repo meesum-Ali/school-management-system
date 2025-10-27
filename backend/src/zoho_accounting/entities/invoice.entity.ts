@@ -1,9 +1,10 @@
 // Based on Zoho Books API for Invoices
 // This interface represents the detailed structure of an invoice entity.
 
-import { ContactPerson, CustomField } from "./contact.entity"; // Re-use if applicable or define separately
+import { ContactPerson, CustomField } from './contact.entity'; // Re-use if applicable or define separately
 
-interface Address { // Simplified, use Contact's Address if more detail needed
+interface Address {
+  // Simplified, use Contact's Address if more detail needed
   address: string;
   city: string;
   state?: string;

@@ -1,4 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToMany, JoinTable, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { SubjectEntity } from '../../subjects/entities/subject.entity';
 import { Student } from '../../students/entities/student.entity';
 import { School } from '../../schools/entities/school.entity';
@@ -20,16 +32,16 @@ export class ClassEntity {
   @Column({ name: 'homeroom_teacher_id', type: 'uuid', nullable: true })
   homeroomTeacherId?: string | null;
 
-  @ManyToOne(() => Teacher, (teacher) => teacher.homeroomClasses, { 
+  @ManyToOne(() => Teacher, (teacher) => teacher.homeroomClasses, {
     onDelete: 'SET NULL',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'homeroom_teacher_id' })
   homeroomTeacher: Promise<Teacher> | null;
 
-  @ManyToMany(() => SubjectEntity, subject => subject.classes, { 
+  @ManyToMany(() => SubjectEntity, (subject) => subject.classes, {
     cascade: false,
-    lazy: true
+    lazy: true,
   })
   @JoinTable({
     name: 'class_subjects', // Name of the join table
@@ -38,23 +50,23 @@ export class ClassEntity {
   })
   subjects: Promise<SubjectEntity[]>;
 
-  @OneToMany(() => Student, (student) => student.currentClass, { 
+  @OneToMany(() => Student, (student) => student.currentClass, {
     cascade: false,
-    lazy: true
+    lazy: true,
   })
   students: Promise<Student[]>;
 
   @OneToMany(() => ClassSchedule, (schedule) => schedule.class, {
-    lazy: true
+    lazy: true,
   })
   schedules: Promise<ClassSchedule[]>;
 
   @Column({ name: 'school_id', type: 'uuid' })
   schoolId: string;
 
-  @ManyToOne(() => School, { 
+  @ManyToOne(() => School, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   }) // If school is deleted, its classes are deleted.
   @JoinColumn({ name: 'school_id' })
   school: Promise<School>;

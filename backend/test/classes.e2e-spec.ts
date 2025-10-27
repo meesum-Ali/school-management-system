@@ -29,7 +29,11 @@ describe('ClassesController (e2e)', () => {
     const email = `${username}@example.com`;
 
     await usersService.create({
-      username, email, password: testUserPassword, roles, isActive: true,
+      username,
+      email,
+      password: testUserPassword,
+      roles,
+      isActive: true,
     });
 
     const loginResponse = await request(app.getHttpServer())
@@ -44,7 +48,13 @@ describe('ClassesController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
 
     usersService = moduleFixture.get<UsersService>(UsersService);
@@ -54,11 +64,31 @@ describe('ClassesController (e2e)', () => {
 
   afterAll(async () => {
     // Clean up any globally created entities for this test suite
-    if (testClassId) await request(app.getHttpServer()).delete(`/classes/${testClassId}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (otherTestClassId) await request(app.getHttpServer()).delete(`/classes/${otherTestClassId}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testStudentId1) await request(app.getHttpServer()).delete(`/students/${testStudentId1}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testStudentId2) await request(app.getHttpServer()).delete(`/students/${testStudentId2}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testStudentId_otherClass) await request(app.getHttpServer()).delete(`/students/${testStudentId_otherClass}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
+    if (testClassId)
+      await request(app.getHttpServer())
+        .delete(`/classes/${testClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (otherTestClassId)
+      await request(app.getHttpServer())
+        .delete(`/classes/${otherTestClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testStudentId1)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId1}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testStudentId2)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId2}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testStudentId_otherClass)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId_otherClass}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
 
     await app.close();
   });
@@ -72,7 +102,10 @@ describe('ClassesController (e2e)', () => {
     };
   };
 
-  const createSampleStudentDto = (classId: string | null, suffix: string): any => {
+  const createSampleStudentDto = (
+    classId: string | null,
+    suffix: string,
+  ): any => {
     return {
       firstName: `StudentFN ${suffix}`,
       lastName: `StudentLN ${suffix}`,
@@ -108,7 +141,6 @@ describe('ClassesController (e2e)', () => {
       .send(otherClassDto);
     otherTestClassId = otherClassRes.body.id;
 
-
     // Create students: 2 for the main class, 1 for another class
     const studentDto1 = createSampleStudentDto(testClassId, `s1_clsmain`);
     const studentRes1 = await request(app.getHttpServer())
@@ -124,7 +156,10 @@ describe('ClassesController (e2e)', () => {
       .send(studentDto2);
     testStudentId2 = studentRes2.body.id;
 
-    const studentDtoOther = createSampleStudentDto(otherTestClassId, `s3_clsother`);
+    const studentDtoOther = createSampleStudentDto(
+      otherTestClassId,
+      `s3_clsother`,
+    );
     const studentResOther = await request(app.getHttpServer())
       .post('/students')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -134,13 +169,32 @@ describe('ClassesController (e2e)', () => {
 
   afterEach(async () => {
     // Clean up entities created in beforeEach
-    if (testStudentId1) await request(app.getHttpServer()).delete(`/students/${testStudentId1}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testStudentId2) await request(app.getHttpServer()).delete(`/students/${testStudentId2}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testStudentId_otherClass) await request(app.getHttpServer()).delete(`/students/${testStudentId_otherClass}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (testClassId) await request(app.getHttpServer()).delete(`/classes/${testClassId}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
-    if (otherTestClassId) await request(app.getHttpServer()).delete(`/classes/${otherTestClassId}`).set('Authorization', `Bearer ${adminToken}`).catch(() => {});
+    if (testStudentId1)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId1}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testStudentId2)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId2}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testStudentId_otherClass)
+      await request(app.getHttpServer())
+        .delete(`/students/${testStudentId_otherClass}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (testClassId)
+      await request(app.getHttpServer())
+        .delete(`/classes/${testClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
+    if (otherTestClassId)
+      await request(app.getHttpServer())
+        .delete(`/classes/${otherTestClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .catch(() => {});
   });
-
 
   describe('GET /classes/:classId/students (List Students in Class)', () => {
     it('should (ADMIN) list all students enrolled in a specific class', async () => {
@@ -164,7 +218,10 @@ describe('ClassesController (e2e)', () => {
 
     it('should (ADMIN) return an empty array for a class with no students', async () => {
       const newClassDto = createSampleClassDto('empty');
-      const newClassRes = await request(app.getHttpServer()).post('/classes').set('Authorization', `Bearer ${adminToken}`).send(newClassDto);
+      const newClassRes = await request(app.getHttpServer())
+        .post('/classes')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(newClassDto);
       const newClassId = newClassRes.body.id;
 
       const response = await request(app.getHttpServer())
@@ -174,7 +231,9 @@ describe('ClassesController (e2e)', () => {
       expect(response.body).toEqual([]);
 
       // Cleanup this new class
-      await request(app.getHttpServer()).delete(`/classes/${newClassId}`).set('Authorization', `Bearer ${adminToken}`);
+      await request(app.getHttpServer())
+        .delete(`/classes/${newClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`);
     });
 
     it('should (ADMIN) return 404 for a non-existent classId', async () => {
@@ -203,7 +262,9 @@ describe('ClassesController (e2e)', () => {
       expect(response.body.id).toEqual(testClassId);
       expect(Array.isArray(response.body.students)).toBe(true);
       expect(response.body.students.length).toBe(2);
-      const studentIdsInResponse = response.body.students.map((s: StudentDto) => s.id);
+      const studentIdsInResponse = response.body.students.map(
+        (s: StudentDto) => s.id,
+      );
       expect(studentIdsInResponse).toContain(testStudentId1);
       expect(studentIdsInResponse).toContain(testStudentId2);
       response.body.students.forEach((student: StudentDto) => {
@@ -213,25 +274,32 @@ describe('ClassesController (e2e)', () => {
     });
 
     it('should (ADMIN) return class details with empty students array if no students are enrolled', async () => {
-        const newClassDto = createSampleClassDto('empty_for_get');
-        const newClassRes = await request(app.getHttpServer()).post('/classes').set('Authorization', `Bearer ${adminToken}`).send(newClassDto);
-        const newClassId = newClassRes.body.id;
+      const newClassDto = createSampleClassDto('empty_for_get');
+      const newClassRes = await request(app.getHttpServer())
+        .post('/classes')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(newClassDto);
+      const newClassId = newClassRes.body.id;
 
-        const response = await request(app.getHttpServer())
-          .get(`/classes/${newClassId}`)
-          .set('Authorization', `Bearer ${adminToken}`)
-          .expect(HttpStatus.OK);
-        expect(response.body.students).toEqual([]);
+      const response = await request(app.getHttpServer())
+        .get(`/classes/${newClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(HttpStatus.OK);
+      expect(response.body.students).toEqual([]);
 
-        await request(app.getHttpServer()).delete(`/classes/${newClassId}`).set('Authorization', `Bearer ${adminToken}`);
-      });
+      await request(app.getHttpServer())
+        .delete(`/classes/${newClassId}`)
+        .set('Authorization', `Bearer ${adminToken}`);
+    });
   });
 
   // Keep original CRUD tests for classes, ensuring they don't conflict with new setup/teardown
   // Example: POST /classes (Create Class) - modified to use unique suffix and not interfere with global testClassId
   describe('POST /classes (Basic Create)', () => {
     it('should (ADMIN) create a new class with a unique name', async () => {
-      const classDto = createSampleClassDto(`post_test_${generateUniqueSuffix()}`);
+      const classDto = createSampleClassDto(
+        `post_test_${generateUniqueSuffix()}`,
+      );
       const response = await request(app.getHttpServer())
         .post('/classes')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -239,7 +307,9 @@ describe('ClassesController (e2e)', () => {
         .expect(HttpStatus.CREATED);
       expect(response.body.name).toEqual(classDto.name);
       // Clean up this specific class
-      await request(app.getHttpServer()).delete(`/classes/${response.body.id}`).set('Authorization', `Bearer ${adminToken}`);
+      await request(app.getHttpServer())
+        .delete(`/classes/${response.body.id}`)
+        .set('Authorization', `Bearer ${adminToken}`);
     });
   });
   // Other basic CRUD tests (GET all, PATCH, DELETE) should be similarly reviewed for isolation if they use shared IDs.

@@ -19,4 +19,4 @@ export interface AppConfig {
   apiPrefix: string;
   appVersion: string;
   apiDocsPath: string;
-} 
+}

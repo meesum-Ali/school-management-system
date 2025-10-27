@@ -17,10 +17,7 @@ let SuperAdminModule = class SuperAdminModule {
 exports.SuperAdminModule = SuperAdminModule;
 exports.SuperAdminModule = SuperAdminModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
-            config_1.ConfigModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]), config_1.ConfigModule],
         providers: [super_admin_service_1.SuperAdminService],
         exports: [super_admin_service_1.SuperAdminService],
     })

@@ -18,7 +18,10 @@ let ZitadelModule = class ZitadelModule {
 exports.ZitadelModule = ZitadelModule;
 exports.ZitadelModule = ZitadelModule = __decorate([
     (0, common_1.Module)({
-        imports: [passport_1.PassportModule.register({ defaultStrategy: 'zitadel' }), config_1.ConfigModule],
+        imports: [
+            passport_1.PassportModule.register({ defaultStrategy: 'zitadel' }),
+            config_1.ConfigModule,
+        ],
         providers: [zitadel_config_1.ZitadelConfigService, zitadel_strategy_1.ZitadelStrategy, zitadel_roles_guard_1.ZitadelRolesGuard],
         exports: [zitadel_config_1.ZitadelConfigService, zitadel_roles_guard_1.ZitadelRolesGuard],
     })

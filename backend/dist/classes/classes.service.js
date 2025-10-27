@@ -18,15 +18,15 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const class_entity_1 = require("./entities/class.entity");
-const subject_entity_1 = require("../subjects/entities/subject.entity");
 const class_dto_1 = require("./dto/class.dto");
 const users_service_1 = require("../users/users.service");
 const user_entity_1 = require("../users/entities/user.entity");
+const subjects_service_1 = require("../subjects/subjects.service");
 let ClassesService = ClassesService_1 = class ClassesService {
-    constructor(classesRepository, subjectsRepository, usersService) {
+    constructor(classesRepository, usersService, subjectsService) {
         this.classesRepository = classesRepository;
-        this.subjectsRepository = subjectsRepository;
         this.usersService = usersService;
+        this.subjectsService = subjectsService;
         this.logger = new common_1.Logger(ClassesService_1.name);
     }
     async mapClassToClassDto(classEntity) {
@@ -49,14 +49,14 @@ let ClassesService = ClassesService_1 = class ClassesService {
         let subjects = [];
         if (classEntity.subjects) {
             const loadedSubjects = await classEntity.subjects;
-            subjects = loadedSubjects.map(subject => ({
+            subjects = loadedSubjects.map((subject) => ({
                 id: subject.id,
                 name: subject.name,
                 code: subject.code,
                 description: subject.description,
                 createdAt: subject.createdAt,
                 updatedAt: subject.updatedAt,
-                schoolId: subject.schoolId
+                schoolId: subject.schoolId,
             }));
         }
         const classDto = new class_dto_1.ClassDto({
@@ -71,7 +71,7 @@ let ClassesService = ClassesService_1 = class ClassesService {
         });
         if (classEntity.subjects) {
             const subjects = await classEntity.subjects;
-            classDto.subjects = subjects.map(subject => this.mapSubjectToBasicDto(subject));
+            classDto.subjects = subjects.map((subject) => this.mapSubjectToBasicDto(subject));
         }
         if (classEntity.students) {
             const students = await classEntity.students;
@@ -93,7 +93,9 @@ let ClassesService = ClassesService_1 = class ClassesService {
     }
     async create(createClassDto, schoolId) {
         const { name, homeroomTeacherId } = createClassDto;
-        const existingClass = await this.classesRepository.findOne({ where: { name, schoolId } });
+        const existingClass = await this.classesRepository.findOne({
+            where: { name, schoolId },
+        });
         if (existingClass) {
             throw new common_1.ConflictException(`Class with name "${name}" already exists in this school.`);
         }
@@ -115,8 +117,10 @@ let ClassesService = ClassesService_1 = class ClassesService {
             return this.mapClassToClassDto(savedClass);
         }
         catch (error) {
-            if (error instanceof typeorm_2.QueryFailedError && error.code === '23505') {
-                if (error.message.includes('classes_name_school_id_idx') || error.message.includes('UQ_classes_name_schoolId')) {
+            if (error instanceof typeorm_2.QueryFailedError &&
+                error.code === '23505') {
+                if (error.message.includes('classes_name_school_id_idx') ||
+                    error.message.includes('UQ_classes_name_schoolId')) {
                     throw new common_1.ConflictException(`Class with name "${name}" already exists in this school.`);
                 }
             }
@@ -126,23 +130,23 @@ let ClassesService = ClassesService_1 = class ClassesService {
     async listClasses(schoolId) {
         const classes = await this.classesRepository.find({
             where: { schoolId },
-            relations: ['subjects', 'students']
+            relations: ['subjects', 'students'],
         });
-        const classDtos = await Promise.all(classes.map(cls => this.mapClassToClassDto(cls)));
+        const classDtos = await Promise.all(classes.map((cls) => this.mapClassToClassDto(cls)));
         return classDtos;
     }
     async findAll(schoolId) {
         const classes = await this.classesRepository.find({
             where: { schoolId },
-            relations: ['subjects', 'students']
+            relations: ['subjects', 'students'],
         });
-        const classDtos = await Promise.all(classes.map(classEntity => this.mapClassToClassDto(classEntity)));
+        const classDtos = await Promise.all(classes.map((classEntity) => this.mapClassToClassDto(classEntity)));
         return classDtos;
     }
     async findOne(id, schoolId) {
         const classEntity = await this.classesRepository.findOne({
             where: { id, schoolId },
-            relations: ['subjects', 'students']
+            relations: ['subjects', 'students'],
         });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${id}" not found in this school.`);
@@ -153,7 +157,7 @@ let ClassesService = ClassesService_1 = class ClassesService {
         const { name, homeroomTeacherId, ...restOfDto } = updateClassDto;
         const classToUpdate = await this.classesRepository.findOne({
             where: { id, schoolId },
-            relations: ['subjects', 'students']
+            relations: ['subjects', 'students'],
         });
         if (!classToUpdate) {
             throw new common_1.NotFoundException(`Class with ID "${id}" not found in this school.`);
@@ -161,7 +165,7 @@ let ClassesService = ClassesService_1 = class ClassesService {
         if (name && name !== classToUpdate.name) {
             const existingClass = await this.classesRepository.findOne({
                 where: { name, schoolId },
-                withDeleted: true
+                withDeleted: true,
             });
             if (existingClass && existingClass.id !== id) {
                 throw new common_1.ConflictException(`Class with name "${name}" already exists in this school.`);
@@ -201,7 +205,7 @@ let ClassesService = ClassesService_1 = class ClassesService {
     async remove(id, schoolId) {
         const classEntity = await this.classesRepository.findOne({
             where: { id, schoolId },
-            relations: ['students', 'subjects']
+            relations: ['students', 'subjects'],
         });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${id}" not found in this school.`);
@@ -222,32 +226,34 @@ let ClassesService = ClassesService_1 = class ClassesService {
         }
     }
     async assignSubject(classId, subjectId, schoolId) {
-        const [classEntity, subject] = await Promise.all([
-            this.classesRepository.findOne({
-                where: { id: classId, schoolId },
-                relations: ['subjects']
-            }),
-            this.subjectsRepository.findOne({
-                where: { id: subjectId, schoolId },
-                relations: ['classes']
-            })
-        ]);
+        const classEntity = await this.classesRepository.findOne({
+            where: { id: classId, schoolId },
+            relations: ['subjects'],
+        });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
         }
-        if (!subject) {
-            throw new common_1.NotFoundException(`Subject with ID "${subjectId}" not found in this school.`);
-        }
+        const subjectDto = await this.subjectsService.findOne(subjectId, schoolId);
         const subjects = await classEntity.subjects;
-        const subjectAlreadyAssigned = subjects.some(subject => subject.id === subjectId);
+        const subjectAlreadyAssigned = subjects.some((subject) => subject.id === subjectId);
         if (subjectAlreadyAssigned) {
-            throw new common_1.ConflictException(`Subject "${subject.name}" (ID: ${subjectId}) is already assigned to class "${classEntity.name}"`);
+            throw new common_1.ConflictException(`Subject "${subjectDto.name}" (ID: ${subjectId}) is already assigned to class "${classEntity.name}"`);
         }
         try {
-            const updatedSubjects = [...subjects, subject];
-            classEntity.subjects = Promise.resolve(updatedSubjects);
-            await this.classesRepository.save(classEntity);
-            return this.mapSubjectToBasicDto(subject);
+            await this.classesRepository
+                .createQueryBuilder()
+                .relation(class_entity_1.ClassEntity, 'subjects')
+                .of(classId)
+                .add(subjectId);
+            return {
+                id: subjectDto.id,
+                name: subjectDto.name,
+                code: subjectDto.code,
+                description: subjectDto.description,
+                createdAt: subjectDto.createdAt,
+                updatedAt: subjectDto.updatedAt,
+                schoolId: subjectDto.schoolId,
+            };
         }
         catch (error) {
             if (error instanceof typeorm_2.QueryFailedError) {
@@ -258,32 +264,26 @@ let ClassesService = ClassesService_1 = class ClassesService {
         }
     }
     async removeSubjectFromClass(classId, subjectId, schoolId) {
-        const [classEntity, subjectEntity] = await Promise.all([
-            this.classesRepository.findOne({
-                where: { id: classId, schoolId },
-                relations: ['subjects']
-            }),
-            this.subjectsRepository.findOne({
-                where: { id: subjectId, schoolId }
-            })
-        ]);
+        const classEntity = await this.classesRepository.findOne({
+            where: { id: classId, schoolId },
+            relations: ['subjects'],
+        });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
         }
-        if (!subjectEntity) {
-            throw new common_1.NotFoundException(`Subject with ID "${subjectId}" not found in this school.`);
-        }
+        const subjectDto = await this.subjectsService.findOne(subjectId, schoolId);
         const currentSubjects = await classEntity.subjects;
-        const subjectIndex = currentSubjects.findIndex(s => s.id === subjectId);
+        const subjectIndex = currentSubjects.findIndex((s) => s.id === subjectId);
         if (subjectIndex === -1) {
-            throw new common_1.NotFoundException(`Subject "${subjectEntity.name}" (ID: ${subjectId}) is not assigned to class "${classEntity.name}"`);
+            throw new common_1.NotFoundException(`Subject "${subjectDto.name}" (ID: ${subjectId}) is not assigned to class "${classEntity.name}"`);
         }
-        const updatedSubjects = [...currentSubjects];
-        updatedSubjects.splice(subjectIndex, 1);
-        classEntity.subjects = Promise.resolve(updatedSubjects);
         try {
-            await this.classesRepository.save(classEntity);
-            this.logger.log(`Successfully removed subject "${subjectEntity.name}" from class "${classEntity.name}"`);
+            await this.classesRepository
+                .createQueryBuilder()
+                .relation(class_entity_1.ClassEntity, 'subjects')
+                .of(classId)
+                .remove(subjectId);
+            this.logger.log(`Successfully removed subject "${subjectDto.name}" from class "${classEntity.name}"`);
             return await this.findOne(classId, schoolId);
         }
         catch (error) {
@@ -297,18 +297,18 @@ let ClassesService = ClassesService_1 = class ClassesService {
     async listSubjectsForClass(classId, schoolId) {
         const classEntity = await this.classesRepository.findOne({
             where: { id: classId, schoolId },
-            relations: ['subjects']
+            relations: ['subjects'],
         });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
         }
         const subjects = await classEntity.subjects;
-        return subjects.map(subject => this.mapSubjectToBasicDto(subject));
+        return subjects.map((subject) => this.mapSubjectToBasicDto(subject));
     }
     async listStudentsInClass(classId, schoolId) {
         const classEntity = await this.classesRepository.findOne({
             where: { id: classId, schoolId },
-            relations: ['students']
+            relations: ['students'],
         });
         if (!classEntity) {
             throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
@@ -317,7 +317,9 @@ let ClassesService = ClassesService_1 = class ClassesService {
             const students = await classEntity.students;
             const studentDtos = await Promise.all(students.map(async (student) => {
                 try {
-                    const currentClass = student.currentClass ? await student.currentClass : null;
+                    const currentClass = student.currentClass
+                        ? await student.currentClass
+                        : null;
                     return {
                         id: student.id,
                         firstName: student.firstName,
@@ -341,7 +343,7 @@ let ClassesService = ClassesService_1 = class ClassesService {
                         email: student.email,
                         studentId: student.studentId,
                         dateOfBirth: student.dateOfBirth,
-                        error: 'Error loading student details'
+                        error: 'Error loading student details',
                     };
                 }
             }));
@@ -357,9 +359,8 @@ exports.ClassesService = ClassesService;
 exports.ClassesService = ClassesService = ClassesService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(class_entity_1.ClassEntity)),
-    __param(1, (0, typeorm_1.InjectRepository)(subject_entity_1.SubjectEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        subjects_service_1.SubjectsService])
 ], ClassesService);
 //# sourceMappingURL=classes.service.js.map

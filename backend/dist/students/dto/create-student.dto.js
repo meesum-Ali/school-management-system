@@ -28,13 +28,19 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2005-08-15', description: 'Date of birth of the student (YYYY-MM-DD)' }),
+    (0, swagger_1.ApiProperty)({
+        example: '2005-08-15',
+        description: 'Date of birth of the student (YYYY-MM-DD)',
+    }),
     (0, class_validator_1.IsDateString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Date)
 ], CreateStudentDto.prototype, "dateOfBirth", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'jane.doe@example.com', description: 'Email address of the student' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'jane.doe@example.com',
+        description: 'Email address of the student',
+    }),
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
@@ -46,7 +52,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "studentId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'ID of the class to enroll the student in (optional)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+        description: 'ID of the class to enroll the student in (optional)',
+    }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

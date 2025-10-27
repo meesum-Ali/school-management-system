@@ -40,7 +40,8 @@ let UsersController = class UsersController {
             if (!schoolIdForCreation) {
                 throw new common_1.ConflictException('School context is required for Admin to create users.');
             }
-            if (createUserDto.schoolId && createUserDto.schoolId !== schoolIdForCreation) {
+            if (createUserDto.schoolId &&
+                createUserDto.schoolId !== schoolIdForCreation) {
                 throw new common_1.ConflictException('Admin users can only create users for their own school.');
             }
             createUserDto.schoolId = schoolIdForCreation;
@@ -69,11 +70,27 @@ __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN, user_entity_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new user' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CREATED, description: 'User created successfully.', type: user_dto_1.UserDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Username or email already exists.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CREATED,
+        description: 'User created successfully.',
+        type: user_dto_1.UserDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have required role.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Username or email already exists.',
+    }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -84,9 +101,19 @@ __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN, user_entity_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Get all users (respecting school context)' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'List of users retrieved successfully.', type: [user_dto_1.UserDto] }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'List of users retrieved successfully.',
+        type: [user_dto_1.UserDto],
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have required role.',
+    }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -96,12 +123,33 @@ __decorate([
     (0, common_1.Get)(':id'),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN, user_entity_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Get a user by ID (respecting school context)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'User details retrieved successfully.', type: user_dto_1.UserDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'User ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'User details retrieved successfully.',
+        type: user_dto_1.UserDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - User not found.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have required role.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -112,14 +160,38 @@ __decorate([
     (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN, user_entity_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Update a user by ID (respecting school context)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'User ID',
+    }),
     (0, swagger_1.ApiBody)({ type: update_user_dto_1.UpdateUserDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'User updated successfully.', type: user_dto_1.UserDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data or invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Username or email already exists on another user.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'User updated successfully.',
+        type: user_dto_1.UserDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - User not found.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data or invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Username or email already exists on another user.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Req)()),
@@ -131,12 +203,32 @@ __decorate([
     (0, common_1.Delete)(':id'),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN, user_entity_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a user by ID (respecting school context)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NO_CONTENT, description: 'User deleted successfully.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'User ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NO_CONTENT,
+        description: 'User deleted successfully.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - User not found.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have required role.',
+    }),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
@@ -148,7 +240,11 @@ exports.UsersController = UsersController = __decorate([
     (0, swagger_1.ApiTags)('Users Management'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('users'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    })),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('zitadel'), roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);

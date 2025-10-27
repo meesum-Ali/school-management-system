@@ -51,7 +51,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Reference to the class' }),
     (0, typeorm_1.ManyToOne)(() => class_entity_1.ClassEntity, (classEntity) => classEntity.schedules, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'class_id' }),
     __metadata("design:type", Promise)
@@ -67,7 +67,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Reference to the subject' }),
     (0, typeorm_1.ManyToOne)(() => subject_entity_1.SubjectEntity, (subject) => subject.classSchedules, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'subject_id' }),
     __metadata("design:type", Promise)
@@ -83,7 +83,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Reference to the teacher', required: false }),
     (0, typeorm_1.ManyToOne)(() => teacher_entity_1.Teacher, {
         onDelete: 'SET NULL',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'teacher_id' }),
     __metadata("design:type", Promise)
@@ -91,7 +91,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'ID of the teacher', required: false }),
     (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.ValidateIf)(o => o.teacherId !== null && o.teacherId !== undefined),
+    (0, class_validator_1.ValidateIf)((o) => o.teacherId !== null && o.teacherId !== undefined),
     (0, typeorm_1.Column)({ name: 'teacher_id', type: 'uuid', nullable: true }),
     __metadata("design:type", String)
 ], ClassSchedule.prototype, "teacherId", void 0);
@@ -99,14 +99,14 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Day of the week for the class',
         enum: DayOfWeek,
-        enumName: 'day_of_week_enum'
+        enumName: 'day_of_week_enum',
     }),
     (0, class_validator_1.IsEnum)(DayOfWeek),
     (0, class_validator_1.IsNotEmpty)(),
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: DayOfWeek,
-        enumName: 'day_of_week_enum'
+        enumName: 'day_of_week_enum',
     }),
     __metadata("design:type", String)
 ], ClassSchedule.prototype, "dayOfWeek", void 0);
@@ -125,7 +125,10 @@ __decorate([
     __metadata("design:type", String)
 ], ClassSchedule.prototype, "endTime", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Room number where the class is held', required: false }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Room number where the class is held',
+        required: false,
+    }),
     (0, class_validator_1.IsString)(),
     (0, typeorm_1.Column)({ name: 'room_number', type: 'varchar', length: 20, nullable: true }),
     __metadata("design:type", String)
@@ -148,7 +151,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Reference to the school' }),
     (0, typeorm_1.ManyToOne)(() => school_entity_1.School, {
         onDelete: 'CASCADE',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'school_id' }),
     __metadata("design:type", Promise)
@@ -157,30 +160,36 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Academic term',
         enum: TermEnum,
-        enumName: 'term_enum'
+        enumName: 'term_enum',
     }),
     (0, class_validator_1.IsEnum)(TermEnum),
     (0, class_validator_1.IsNotEmpty)(),
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: TermEnum,
-        enumName: 'term_enum'
+        enumName: 'term_enum',
     }),
     __metadata("design:type", String)
 ], ClassSchedule.prototype, "term", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Reference to the user who created the schedule', required: false }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Reference to the user who created the schedule',
+        required: false,
+    }),
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, {
         onDelete: 'SET NULL',
-        lazy: true
+        lazy: true,
     }),
     (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", Promise)
 ], ClassSchedule.prototype, "user", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'ID of the user who created the schedule', required: false }),
+    (0, swagger_1.ApiProperty)({
+        description: 'ID of the user who created the schedule',
+        required: false,
+    }),
     (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.ValidateIf)(o => o.userId !== null && o.userId !== undefined),
+    (0, class_validator_1.ValidateIf)((o) => o.userId !== null && o.userId !== undefined),
     (0, typeorm_1.Column)({ name: 'user_id', type: 'uuid', nullable: true }),
     __metadata("design:type", String)
 ], ClassSchedule.prototype, "userId", void 0);
@@ -204,10 +213,10 @@ __decorate([
 exports.ClassSchedule = ClassSchedule = __decorate([
     (0, typeorm_1.Entity)('class_schedule'),
     (0, typeorm_1.Index)('IDX_UNIQUE_CLASS_SCHEDULE_SLOT', ['classId', 'dayOfWeek', 'startTime', 'academicYear', 'term', 'schoolId'], {
-        unique: true
+        unique: true,
     }),
     (0, typeorm_1.Index)('IDX_TEACHER_SCHEDULE_CONFLICT', ['teacherId', 'dayOfWeek', 'startTime', 'academicYear', 'term'], {
-        unique: false
+        unique: false,
     })
 ], ClassSchedule);
 //# sourceMappingURL=class-schedule.entity.js.map

@@ -16,7 +16,10 @@ class UpdateSubjectDto {
 }
 exports.UpdateSubjectDto = UpdateSubjectDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Advanced Algebra', description: 'Updated name of the subject' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Advanced Algebra',
+        description: 'Updated name of the subject',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(2),
@@ -24,7 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateSubjectDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'ALG201', description: 'Updated unique code for the subject (or null to remove)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'ALG201',
+        description: 'Updated unique code for the subject (or null to remove)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.MinLength)(3),
@@ -32,7 +38,10 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateSubjectDto.prototype, "code", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'In-depth exploration of algebraic concepts.', description: 'Updated description of the subject (or null to remove)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'In-depth exploration of algebraic concepts.',
+        description: 'Updated description of the subject (or null to remove)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.Allow)(),

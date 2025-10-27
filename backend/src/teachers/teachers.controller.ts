@@ -38,10 +38,7 @@ export class TeachersController {
   }
 
   @Get(':id')
-  findOne(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Request() req,
-  ) {
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     return this.teachersService.findOne(id, req.user.schoolId);
   }
 

@@ -147,15 +147,12 @@ We aim to foster a strong DevOps culture, emphasizing collaboration, automation,
 
 ## 7. Key Insights from Product Requirements Document (PRD)
 
-*(This section is a placeholder to integrate specific principles, constraints, or goals outlined in the "School Management System PRD.pdf". As the AI assistant drafting this document does not have direct access to the PRD, project stakeholders familiar with the PRD should contribute to this section.)*
+The living PRD (`PRD.md`) defines the product outcomes the engineering roadmap supports. Keep the following highlights in mind while designing solutions:
 
-Please consider adding details from the PRD related to:
+- **Business goals:** digitise core school operations, reach ≥1,000 monthly active schools within 12 months, and deliver ≥40 admin hours saved per school each month.
+- **Personas:** Admin (configuration & reporting), Teacher (attendance & grading), Accountant (fees & reconciliation), Parent (progress visibility). Features should respect their distinct needs and permissions.
+- **Functional scope:** Multi-tenant provisioning, authentication/RBAC, student/teacher/class/subject management, attendance, grades, fees, dashboards, and tenant-level settings. Modules outside this list fall into post-MVP exploration unless product signs off.
+- **Non-functional targets:** 99.9% uptime, secure-by-default posture (OWASP Top 10, SOC-2 readiness), p95 dashboard response under 2s at 1k RPS, observability via structured logging and metrics.
+- **Roadmap alignment:** Asynchronous messaging, richer reporting, and mobile experiences are Phase 2+ initiatives. Build today’s solutions so that future event-driven and microservice work can grow from the current modular boundaries.
 
-- **Core Business Goals:** What are the overarching business objectives the School Management System aims to achieve?
-- **Target Audience & User Personas:** Who are the primary users, and what are their key needs and expectations?
-- **Non-Functional Requirements:** Are there specific performance, scalability, security, or usability requirements from the PRD that should guide development?
-- **Key Features & Scope:** Are there any high-level feature descriptions or scope limitations in the PRD that have architectural implications?
-- **Success Metrics:** How will the success of the project be measured according to the PRD?
-- **Any other critical information:** Any other guiding principles or constraints from the PRD that developers should be aware of.
-
-Incorporating these insights will ensure that our development practices and architectural choices are directly aligned with the product vision.
+When in doubt, validate new architecture or scope changes against these PRD commitments and involve product stakeholders for deviations.

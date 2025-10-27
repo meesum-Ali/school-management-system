@@ -41,38 +41,38 @@ __decorate([
     __metadata("design:type", String)
 ], School.prototype, "adminUserId", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => user_entity_1.User, user => user.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => user_entity_1.User, (user) => user.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "users", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, student => student.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "students", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => class_entity_1.ClassEntity, classEntity => classEntity.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => class_entity_1.ClassEntity, (classEntity) => classEntity.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "classes", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => subject_entity_1.SubjectEntity, subject => subject.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => subject_entity_1.SubjectEntity, (subject) => subject.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "subjects", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => teacher_entity_1.Teacher, teacher => teacher.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => teacher_entity_1.Teacher, (teacher) => teacher.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "teachers", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => class_schedule_entity_1.ClassSchedule, schedule => schedule.school, {
-        lazy: true
+    (0, typeorm_1.OneToMany)(() => class_schedule_entity_1.ClassSchedule, (schedule) => schedule.school, {
+        lazy: true,
     }),
     __metadata("design:type", Promise)
 ], School.prototype, "classSchedules", void 0);

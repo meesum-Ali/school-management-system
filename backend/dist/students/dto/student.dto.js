@@ -16,7 +16,10 @@ class StudentDto {
 }
 exports.StudentDto = StudentDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'Unique identifier of the student (UUID)' }),
+    (0, swagger_1.ApiProperty)({
+        example: '123e4567-e89b-12d3-a456-426614174000',
+        description: 'Unique identifier of the student (UUID)',
+    }),
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], StudentDto.prototype, "id", void 0);
@@ -31,13 +34,19 @@ __decorate([
     __metadata("design:type", String)
 ], StudentDto.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2005-04-15', description: 'Date of birth of the student (YYYY-MM-DD)' }),
+    (0, swagger_1.ApiProperty)({
+        example: '2005-04-15',
+        description: 'Date of birth of the student (YYYY-MM-DD)',
+    }),
     (0, class_validator_1.IsDateString)({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Date of birth should not be empty' }),
     __metadata("design:type", Date)
 ], StudentDto.prototype, "dateOfBirth", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'john.doe@example.com', description: 'Email address of the student' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'john.doe@example.com',
+        description: 'Email address of the student',
+    }),
     (0, class_validator_1.IsEmail)({}, { message: 'Please provide a valid email address' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Email should not be empty' }),
     __metadata("design:type", String)
@@ -51,31 +60,40 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         example: '123e4567-e89b-12d3-a456-426614174000',
         description: 'ID of the class the student belongs to (UUID)',
-        nullable: true
+        nullable: true,
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], StudentDto.prototype, "classId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2023-01-01T00:00:00.000Z', description: 'Date when the student was created' }),
+    (0, swagger_1.ApiProperty)({
+        example: '2023-01-01T00:00:00.000Z',
+        description: 'Date when the student was created',
+    }),
     __metadata("design:type", Date)
 ], StudentDto.prototype, "createdAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2023-01-01T00:00:00.000Z', description: 'Date when the student was last updated' }),
+    (0, swagger_1.ApiProperty)({
+        example: '2023-01-01T00:00:00.000Z',
+        description: 'Date when the student was last updated',
+    }),
     __metadata("design:type", Date)
 ], StudentDto.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         example: 'Grade 10-A',
         description: 'Name of the current class the student belongs to',
-        nullable: true
+        nullable: true,
     }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], StudentDto.prototype, "currentClassName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-of-a-school', description: 'School ID the student belongs to.' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-of-a-school',
+        description: 'School ID the student belongs to.',
+    }),
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], StudentDto.prototype, "schoolId", void 0);
@@ -93,13 +111,19 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2005-04-15', description: 'Date of birth of the student (YYYY-MM-DD)' }),
+    (0, swagger_1.ApiProperty)({
+        example: '2005-04-15',
+        description: 'Date of birth of the student (YYYY-MM-DD)',
+    }),
     (0, class_validator_1.IsDateString)({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Date of birth should not be empty' }),
     __metadata("design:type", Date)
 ], CreateStudentDto.prototype, "dateOfBirth", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'john.doe@example.com', description: 'Email address of the student' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'john.doe@example.com',
+        description: 'Email address of the student',
+    }),
     (0, class_validator_1.IsEmail)({}, { message: 'Please provide a valid email address' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Email should not be empty' }),
     __metadata("design:type", String)
@@ -113,7 +137,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         example: '123e4567-e89b-12d3-a456-426614174000',
         description: 'ID of the class the student belongs to (UUID)',
-        nullable: true
+        nullable: true,
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
@@ -123,29 +147,44 @@ class UpdateStudentDto {
 }
 exports.UpdateStudentDto = UpdateStudentDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'John', description: 'Updated first name of the student' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'John',
+        description: 'Updated first name of the student',
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "firstName", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Doe', description: 'Updated last name of the student' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Doe',
+        description: 'Updated last name of the student',
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: '2005-04-15', description: 'Updated date of birth (YYYY-MM-DD)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: '2005-04-15',
+        description: 'Updated date of birth (YYYY-MM-DD)',
+    }),
     (0, class_validator_1.IsDateString)({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Date)
 ], UpdateStudentDto.prototype, "dateOfBirth", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'john.doe@example.com', description: 'Updated email address' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'john.doe@example.com',
+        description: 'Updated email address',
+    }),
     (0, class_validator_1.IsEmail)({}, { message: 'Please provide a valid email address' }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'STU20230001', description: 'Updated student ID' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'STU20230001',
+        description: 'Updated student ID',
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "studentId", void 0);
@@ -153,7 +192,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         example: '123e4567-e89b-12d3-a456-426614174000',
         description: 'Updated class ID (UUID)',
-        nullable: true
+        nullable: true,
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),

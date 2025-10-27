@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm';
 import { Student } from './entities/student.entity';
-import { ClassEntity } from '../classes/entities/class.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentDto } from './dto/student.dto';
+import { ClassesService } from '../classes/classes.service';
 export declare class StudentsService {
-    private studentsRepository;
-    private classesRepository;
-    constructor(studentsRepository: Repository<Student>, classesRepository: Repository<ClassEntity>);
+    private readonly studentsRepository;
+    private readonly classesService;
+    constructor(studentsRepository: Repository<Student>, classesService: ClassesService);
     private mapStudentToStudentDto;
     create(createStudentDto: CreateStudentDto, schoolId: string): Promise<StudentDto>;
     findAll(schoolId: string): Promise<StudentDto[]>;

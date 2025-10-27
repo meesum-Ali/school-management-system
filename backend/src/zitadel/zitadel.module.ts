@@ -6,7 +6,10 @@ import { ZitadelStrategy } from './zitadel.strategy';
 import { ZitadelRolesGuard } from './zitadel-roles.guard';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'zitadel' }), ConfigModule],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'zitadel' }),
+    ConfigModule,
+  ],
   providers: [ZitadelConfigService, ZitadelStrategy, ZitadelRolesGuard],
   exports: [ZitadelConfigService, ZitadelRolesGuard],
 })

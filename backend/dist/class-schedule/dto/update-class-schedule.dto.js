@@ -22,7 +22,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'ID of the class',
         required: false,
-        format: 'uuid'
+        format: 'uuid',
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
@@ -32,7 +32,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'ID of the subject',
         required: false,
-        format: 'uuid'
+        format: 'uuid',
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
@@ -42,7 +42,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'ID of the teacher',
         required: false,
-        format: 'uuid'
+        format: 'uuid',
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
@@ -53,7 +53,7 @@ __decorate([
         description: 'Day of the week for the class',
         enum: class_schedule_entity_1.DayOfWeek,
         enumName: 'DayOfWeek',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsEnum)(class_schedule_entity_1.DayOfWeek),
     (0, class_validator_1.IsOptional)(),
@@ -63,7 +63,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Start time of the class in HH:MM:SS format',
         example: '09:00:00',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Matches)(/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/, {
@@ -76,7 +76,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'End time of the class in HH:MM:SS format',
         example: '10:30:00',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Matches)(/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/, {
@@ -89,7 +89,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Room number where the class will be held',
         required: false,
-        example: 'A101'
+        example: 'A101',
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -99,7 +99,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Academic year in YYYY-YYYY format',
         example: '2023-2024',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -110,7 +110,7 @@ __decorate([
         description: 'Academic term',
         enum: class_schedule_entity_1.TermEnum,
         enumName: 'TermEnum',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsEnum)(class_schedule_entity_1.TermEnum),
     (0, class_validator_1.IsOptional)(),
@@ -120,7 +120,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'ID of the school',
         format: 'uuid',
-        required: false
+        required: false,
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
@@ -130,7 +130,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'ID of the user updating the schedule (for backward compatibility)',
         required: false,
-        format: 'uuid'
+        format: 'uuid',
     }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),

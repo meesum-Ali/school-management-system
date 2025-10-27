@@ -12,8 +12,8 @@ import { ZohoAccountingService } from './zoho_accounting.service';
   imports: [
     HttpModule, // For ZohoClient to make HTTP requests
     ConfigModule, // For ZohoClient to access environment variables
-                  // If ConfigModule is not global, you might need to configure it here:
-                  // ConfigModule.forRoot({ isGlobal: true }) or specific load method
+    // If ConfigModule is not global, you might need to configure it here:
+    // ConfigModule.forRoot({ isGlobal: true }) or specific load method
   ],
   providers: [
     ZohoClient,

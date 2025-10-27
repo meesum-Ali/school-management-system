@@ -22,12 +22,16 @@ let SchoolsService = class SchoolsService {
         this.schoolsRepository = schoolsRepository;
     }
     async create(createSchoolDto) {
-        const existingSchoolByName = await this.schoolsRepository.findOne({ where: { name: createSchoolDto.name } });
+        const existingSchoolByName = await this.schoolsRepository.findOne({
+            where: { name: createSchoolDto.name },
+        });
         if (existingSchoolByName) {
             throw new common_1.ConflictException(`School with name "${createSchoolDto.name}" already exists.`);
         }
         if (createSchoolDto.domain) {
-            const existingSchoolByDomain = await this.schoolsRepository.findOne({ where: { domain: createSchoolDto.domain } });
+            const existingSchoolByDomain = await this.schoolsRepository.findOne({
+                where: { domain: createSchoolDto.domain },
+            });
             if (existingSchoolByDomain) {
                 throw new common_1.ConflictException(`School with domain "${createSchoolDto.domain}" already exists.`);
             }
@@ -52,13 +56,17 @@ let SchoolsService = class SchoolsService {
     async update(id, updateSchoolDto) {
         const school = await this.findOne(id);
         if (updateSchoolDto.name && updateSchoolDto.name !== school.name) {
-            const existingSchoolByName = await this.schoolsRepository.findOne({ where: { name: updateSchoolDto.name } });
+            const existingSchoolByName = await this.schoolsRepository.findOne({
+                where: { name: updateSchoolDto.name },
+            });
             if (existingSchoolByName && existingSchoolByName.id !== id) {
                 throw new common_1.ConflictException(`School with name "${updateSchoolDto.name}" already exists.`);
             }
         }
         if (updateSchoolDto.domain && updateSchoolDto.domain !== school.domain) {
-            const existingSchoolByDomain = await this.schoolsRepository.findOne({ where: { domain: updateSchoolDto.domain } });
+            const existingSchoolByDomain = await this.schoolsRepository.findOne({
+                where: { domain: updateSchoolDto.domain },
+            });
             if (existingSchoolByDomain && existingSchoolByDomain.id !== id) {
                 throw new common_1.ConflictException(`School with domain "${updateSchoolDto.domain}" already exists.`);
             }

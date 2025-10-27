@@ -47,7 +47,7 @@ let ClassScheduleService = class ClassScheduleService {
         const schedule = await this.classScheduleRepository.findOne({
             where: {
                 id,
-                school: { id: schoolId }
+                school: { id: schoolId },
             },
             relations: ['class', 'subject', 'teacher', 'user', 'school'],
         });
@@ -82,7 +82,7 @@ let ClassScheduleService = class ClassScheduleService {
         return this.classScheduleRepository.find({
             where: {
                 class: { id: classId },
-                school: { id: schoolId }
+                school: { id: schoolId },
             },
             relations: ['subject', 'teacher', 'user', 'class'],
             order: { dayOfWeek: 'ASC', startTime: 'ASC' },
@@ -93,14 +93,14 @@ let ClassScheduleService = class ClassScheduleService {
         return this.classScheduleRepository.find({
             where: {
                 teacher: { id: teacherId },
-                school: { id: schoolId }
+                school: { id: schoolId },
             },
             relations: ['class', 'subject', 'teacher', 'user'],
             order: { dayOfWeek: 'ASC', startTime: 'ASC' },
         });
     }
     async checkForSchedulingConflicts(schedule, excludeId) {
-        const { classId, subjectId, teacherId, dayOfWeek, startTime, endTime, academicYear, term, schoolId } = schedule;
+        const { classId, subjectId, teacherId, dayOfWeek, startTime, endTime, academicYear, term, schoolId, } = schedule;
         const classConflict = await this.classScheduleRepository.findOne({
             where: {
                 class: { id: classId },
@@ -142,9 +142,6 @@ exports.ClassScheduleService = ClassScheduleService;
 exports.ClassScheduleService = ClassScheduleService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(class_schedule_entity_1.ClassSchedule)),
-    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => classes_service_1.ClassesService))),
-    __param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => teachers_service_1.TeachersService))),
-    __param(3, (0, common_1.Inject)((0, common_1.forwardRef)(() => subjects_service_1.SubjectsService))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         classes_service_1.ClassesService,
         teachers_service_1.TeachersService,

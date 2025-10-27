@@ -73,7 +73,12 @@ describe('SubjectsService', () => {
 
   describe('create', () => {
     const createDto: CreateSubjectDto = { name: 'Science', code: 'SCI101' };
-    const createdEntity = { ...baseMockSubjectEntity, ...createDto, id: 'new-uuid', classes: Promise.resolve([]) };
+    const createdEntity = {
+      ...baseMockSubjectEntity,
+      ...createDto,
+      id: 'new-uuid',
+      classes: Promise.resolve([]),
+    };
 
     it('should create and return a subject DTO if name and code are unique', async () => {
       repository.findOne.mockResolvedValueOnce(null);
@@ -81,7 +86,10 @@ describe('SubjectsService', () => {
       repository.save.mockResolvedValue(createdEntity);
 
       const result = await service.create(createDto, 'school-uuid-1');
-      expect(repository.create).toHaveBeenCalledWith({ ...createDto, schoolId: 'school-uuid-1' });
+      expect(repository.create).toHaveBeenCalledWith({
+        ...createDto,
+        schoolId: 'school-uuid-1',
+      });
       expect(repository.save).toHaveBeenCalledWith(createdEntity);
       expect(result.name).toEqual(createDto.name);
     });
@@ -89,15 +97,18 @@ describe('SubjectsService', () => {
 
   describe('findAll', () => {
     it('should return an array of subject DTOs', async () => {
-        repository.find.mockResolvedValue([baseMockSubjectEntity]);
-        const result = await service.findAll('school-uuid-1');
-        expect(result[0].name).toEqual(baseMockSubjectEntity.name);
-      });
+      repository.find.mockResolvedValue([baseMockSubjectEntity]);
+      const result = await service.findAll('school-uuid-1');
+      expect(result[0].name).toEqual(baseMockSubjectEntity.name);
+    });
   });
 
   describe('findOne', () => {
     it('should return a subject DTO with classes if found', async () => {
-      const subjectWithClasses = { ...baseMockSubjectEntity, classes: Promise.resolve([new ClassEntity()]) };
+      const subjectWithClasses = {
+        ...baseMockSubjectEntity,
+        classes: Promise.resolve([new ClassEntity()]),
+      };
       repository.findOne.mockResolvedValueOnce(subjectWithClasses);
       const result = await service.findOne('subject-uuid-1', 'school-uuid-1');
       expect(result.classes.length).toBeGreaterThan(0);
@@ -109,28 +120,37 @@ describe('SubjectsService', () => {
     const updatedEntity = { ...baseMockSubjectEntity, ...updateDto };
 
     it('should update and return a subject DTO if found', async () => {
-        repository.findOneBy.mockResolvedValueOnce(baseMockSubjectEntity);
-        repository.findOne.mockResolvedValueOnce(null); // for conflict check
-        repository.save.mockResolvedValue(updatedEntity);
-        repository.findOne.mockResolvedValueOnce(updatedEntity); // for the final fetch
-        const result = await service.update('subject-uuid-1', updateDto, 'school-uuid-1');
-        expect(result.name).toEqual(updateDto.name);
-      });
+      repository.findOneBy.mockResolvedValueOnce(baseMockSubjectEntity);
+      repository.findOne.mockResolvedValueOnce(null); // for conflict check
+      repository.save.mockResolvedValue(updatedEntity);
+      repository.findOne.mockResolvedValueOnce(updatedEntity); // for the final fetch
+      const result = await service.update(
+        'subject-uuid-1',
+        updateDto,
+        'school-uuid-1',
+      );
+      expect(result.name).toEqual(updateDto.name);
+    });
   });
 
   describe('remove', () => {
     it('should remove a subject successfully', async () => {
-        repository.findOneBy.mockResolvedValue(baseMockSubjectEntity);
-        repository.delete.mockResolvedValue({ affected: 1, raw: {} });
-        await expect(service.remove('subject-uuid-1', 'school-uuid-1')).resolves.toBeUndefined();
-      });
+      repository.findOneBy.mockResolvedValue(baseMockSubjectEntity);
+      repository.delete.mockResolvedValue({ affected: 1, raw: {} });
+      await expect(
+        service.remove('subject-uuid-1', 'school-uuid-1'),
+      ).resolves.toBeUndefined();
+    });
   });
 
   describe('listClassesForSubject', () => {
-      it('should list classes for a subject', async () => {
-          repository.findOne.mockResolvedValue(baseMockSubjectEntity);
-          const result = await service.listClassesForSubject('subject-uuid-1', 'school-uuid-1');
-          expect(result).toBeDefined();
-      });
+    it('should list classes for a subject', async () => {
+      repository.findOne.mockResolvedValue(baseMockSubjectEntity);
+      const result = await service.listClassesForSubject(
+        'subject-uuid-1',
+        'school-uuid-1',
+      );
+      expect(result).toBeDefined();
+    });
   });
 });

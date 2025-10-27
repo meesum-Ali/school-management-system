@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 import { ClassEntity } from '../../classes/entities/class.entity';
 import { School } from '../../schools/entities/school.entity';
@@ -20,7 +30,10 @@ export class Student {
   lastName: string;
 
   @Column({ type: 'date' })
-  @IsDateString({}, { message: 'Date of birth must be a valid date string (YYYY-MM-DD)'}) // For DTO validation, entity type is Date
+  @IsDateString(
+    {},
+    { message: 'Date of birth must be a valid date string (YYYY-MM-DD)' },
+  ) // For DTO validation, entity type is Date
   @IsNotEmpty({ message: 'Date of birth should not be empty' })
   dateOfBirth: Date;
 
@@ -33,10 +46,10 @@ export class Student {
   @IsNotEmpty({ message: 'Student ID should not be empty' })
   studentId: string;
 
-  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.students, { 
-    nullable: true, 
+  @ManyToOne(() => ClassEntity, (classEntity) => classEntity.students, {
+    nullable: true,
     onDelete: 'SET NULL',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'classId' }) // This explicitly defines the FK column name
   currentClass: Promise<ClassEntity> | null;
@@ -47,9 +60,9 @@ export class Student {
   @Column({ name: 'school_id', type: 'uuid' }) // Not nullable, a student must belong to a school
   schoolId: string;
 
-  @ManyToOne(() => School, { 
+  @ManyToOne(() => School, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   }) // If school is deleted, its students are deleted.
   @JoinColumn({ name: 'school_id' })
   school: Promise<School>;
@@ -57,9 +70,9 @@ export class Student {
   @Column({ name: 'user_id', type: 'uuid', nullable: true })
   userId?: string | null;
 
-  @OneToOne(() => User, (user) => user.studentProfile, { 
+  @OneToOne(() => User, (user) => user.studentProfile, {
     onDelete: 'CASCADE',
-    lazy: true
+    lazy: true,
   })
   @JoinColumn({ name: 'user_id' })
   user: Promise<User>;

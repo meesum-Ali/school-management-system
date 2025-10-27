@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const auth_service_1 = require("./auth.service");
 const users_module_1 = require("../users/users.module");
 const schools_module_1 = require("../schools/schools.module");
@@ -20,6 +21,10 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             users_module_1.UsersModule,
             (0, common_1.forwardRef)(() => schools_module_1.SchoolsModule),
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'fallback-secret',
+                signOptions: { expiresIn: '1d' },
+            }),
         ],
         providers: [auth_service_1.AuthService],
         controllers: [auth_controller_1.AuthController],

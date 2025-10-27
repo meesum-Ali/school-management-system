@@ -18,7 +18,10 @@ class ClassBasicDto {
 }
 exports.ClassBasicDto = ClassBasicDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'c1d2e3f4-a5b6-7890-1234-567890abcdef', description: 'Unique identifier of the class (UUID)' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'c1d2e3f4-a5b6-7890-1234-567890abcdef',
+        description: 'Unique identifier of the class (UUID)',
+    }),
     __metadata("design:type", String)
 ], ClassBasicDto.prototype, "id", void 0);
 __decorate([
@@ -26,23 +29,37 @@ __decorate([
     __metadata("design:type", String)
 ], ClassBasicDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Grade 10', description: 'Level or grade of the class' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'Grade 10',
+        description: 'Level or grade of the class',
+    }),
     __metadata("design:type", String)
 ], ClassBasicDto.prototype, "level", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', description: 'UUID of the homeroom teacher (User ID)', nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+        description: 'UUID of the homeroom teacher (User ID)',
+        nullable: true,
+    }),
     __metadata("design:type", String)
 ], ClassBasicDto.prototype, "homeroomTeacherId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Date and time when the class record was created' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Date and time when the class record was created',
+    }),
     __metadata("design:type", Date)
 ], ClassBasicDto.prototype, "createdAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Date and time when the class record was last updated' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Date and time when the class record was last updated',
+    }),
     __metadata("design:type", Date)
 ], ClassBasicDto.prototype, "updatedAt", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-of-a-school', description: 'School ID the class belongs to.' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'uuid-of-a-school',
+        description: 'School ID the class belongs to.',
+    }),
     __metadata("design:type", String)
 ], ClassBasicDto.prototype, "schoolId", void 0);
 //# sourceMappingURL=class-basic.dto.js.map

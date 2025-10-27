@@ -40,4 +40,4 @@ export default (): AppConfig => ({
   apiPrefix: process.env.API_PREFIX || '/api',
   appVersion: process.env.APP_VERSION || '1.0.0',
   apiDocsPath: process.env.API_DOCS_PATH || '/api-docs',
-}); 
+});

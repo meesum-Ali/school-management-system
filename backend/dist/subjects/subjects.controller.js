@@ -63,12 +63,30 @@ let SubjectsController = class SubjectsController {
 exports.SubjectsController = SubjectsController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new subject for the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CREATED, description: 'Subject created successfully.', type: subject_dto_1.SubjectDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Subject name or code already exists in this school.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Create a new subject for the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CREATED,
+        description: 'Subject created successfully.',
+        type: subject_dto_1.SubjectDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Subject name or code already exists in this school.',
+    }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -77,10 +95,22 @@ __decorate([
 ], SubjectsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all subjects for the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'List of subjects retrieved successfully.', type: [subject_dto_1.SubjectDto] }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get all subjects for the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'List of subjects retrieved successfully.',
+        type: [subject_dto_1.SubjectDto],
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -88,13 +118,36 @@ __decorate([
 ], SubjectsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get a subject by ID from the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Subject ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Subject details retrieved successfully.', type: subject_dto_1.SubjectDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Subject not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Get a subject by ID from the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Subject ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Subject details retrieved successfully.',
+        type: subject_dto_1.SubjectDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Subject not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -103,15 +156,41 @@ __decorate([
 ], SubjectsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update a subject by ID in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Subject ID' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Update a subject by ID in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Subject ID',
+    }),
     (0, swagger_1.ApiBody)({ type: update_subject_dto_1.UpdateSubjectDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Subject updated successfully.', type: subject_dto_1.SubjectDto }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Subject not found.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data or invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.CONFLICT, description: 'Conflict - Subject name or code already exists on another subject.' }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Subject updated successfully.',
+        type: subject_dto_1.SubjectDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Subject not found.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid input data or invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.CONFLICT,
+        description: 'Conflict - Subject name or code already exists on another subject.',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Req)()),
@@ -121,13 +200,35 @@ __decorate([
 ], SubjectsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Delete a subject by ID in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: 'string', format: 'uuid', description: 'Subject ID' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NO_CONTENT, description: 'Subject deleted successfully.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Not Found - Subject not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role or school context missing.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "Delete a subject by ID in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'id',
+        type: 'string',
+        format: 'uuid',
+        description: 'Subject ID',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NO_CONTENT,
+        description: 'Subject deleted successfully.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Not Found - Subject not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.BAD_REQUEST,
+        description: 'Bad Request - Invalid UUID format.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized - Token missing or invalid.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.FORBIDDEN,
+        description: 'Forbidden - User does not have ADMIN role or school context missing.',
+    }),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
@@ -137,11 +238,28 @@ __decorate([
 ], SubjectsController.prototype, "remove", null);
 __decorate([
     (0, common_1.Get)(':subjectId/classes'),
-    (0, swagger_1.ApiOperation)({ summary: 'List all classes for a subject in the admin\'s school (Admin only)' }),
-    (0, swagger_1.ApiParam)({ name: 'subjectId', type: 'string', format: 'uuid', description: 'ID of the subject' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.OK, description: 'Classes for the subject retrieved successfully.', type: [class_dto_1.ClassDto] }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.NOT_FOUND, description: 'Subject not found in this school.' }),
-    (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: "List all classes for a subject in the admin's school (Admin only)",
+    }),
+    (0, swagger_1.ApiParam)({
+        name: 'subjectId',
+        type: 'string',
+        format: 'uuid',
+        description: 'ID of the subject',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.OK,
+        description: 'Classes for the subject retrieved successfully.',
+        type: [class_dto_1.ClassDto],
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.NOT_FOUND,
+        description: 'Subject not found in this school.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: common_1.HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized.',
+    }),
     (0, swagger_1.ApiResponse)({ status: common_1.HttpStatus.FORBIDDEN, description: 'Forbidden.' }),
     __param(0, (0, common_1.Param)('subjectId', common_1.ParseUUIDPipe)),
     __param(1, (0, common_1.Req)()),
@@ -155,7 +273,11 @@ exports.SubjectsController = SubjectsController = __decorate([
     (0, common_1.Controller)('subjects'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('zitadel'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    })),
     __metadata("design:paramtypes", [subjects_service_1.SubjectsService])
 ], SubjectsController);
 //# sourceMappingURL=subjects.controller.js.map

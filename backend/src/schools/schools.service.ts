@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import { School } from './entities/school.entity';
@@ -14,18 +18,28 @@ export class SchoolsService {
 
   async create(createSchoolDto: CreateSchoolDto): Promise<School> {
     // Check if school with the same name or domain already exists
-    const existingSchoolByName = await this.schoolsRepository.findOne({ where: { name: createSchoolDto.name } });
+    const existingSchoolByName = await this.schoolsRepository.findOne({
+      where: { name: createSchoolDto.name },
+    });
     if (existingSchoolByName) {
-      throw new ConflictException(`School with name "${createSchoolDto.name}" already exists.`);
+      throw new ConflictException(
+        `School with name "${createSchoolDto.name}" already exists.`,
+      );
     }
     if (createSchoolDto.domain) {
-      const existingSchoolByDomain = await this.schoolsRepository.findOne({ where: { domain: createSchoolDto.domain } });
+      const existingSchoolByDomain = await this.schoolsRepository.findOne({
+        where: { domain: createSchoolDto.domain },
+      });
       if (existingSchoolByDomain) {
-        throw new ConflictException(`School with domain "${createSchoolDto.domain}" already exists.`);
+        throw new ConflictException(
+          `School with domain "${createSchoolDto.domain}" already exists.`,
+        );
       }
     }
 
-    const school = this.schoolsRepository.create(createSchoolDto as DeepPartial<School>);
+    const school = this.schoolsRepository.create(
+      createSchoolDto as DeepPartial<School>,
+    );
     return this.schoolsRepository.save(school);
   }
 
@@ -52,19 +66,30 @@ export class SchoolsService {
 
     // Check for conflicts if name or domain is being updated
     if (updateSchoolDto.name && updateSchoolDto.name !== school.name) {
-      const existingSchoolByName = await this.schoolsRepository.findOne({ where: { name: updateSchoolDto.name } });
+      const existingSchoolByName = await this.schoolsRepository.findOne({
+        where: { name: updateSchoolDto.name },
+      });
       if (existingSchoolByName && existingSchoolByName.id !== id) {
-        throw new ConflictException(`School with name "${updateSchoolDto.name}" already exists.`);
+        throw new ConflictException(
+          `School with name "${updateSchoolDto.name}" already exists.`,
+        );
       }
     }
     if (updateSchoolDto.domain && updateSchoolDto.domain !== school.domain) {
-      const existingSchoolByDomain = await this.schoolsRepository.findOne({ where: { domain: updateSchoolDto.domain } });
+      const existingSchoolByDomain = await this.schoolsRepository.findOne({
+        where: { domain: updateSchoolDto.domain },
+      });
       if (existingSchoolByDomain && existingSchoolByDomain.id !== id) {
-        throw new ConflictException(`School with domain "${updateSchoolDto.domain}" already exists.`);
+        throw new ConflictException(
+          `School with domain "${updateSchoolDto.domain}" already exists.`,
+        );
       }
     }
 
-    this.schoolsRepository.merge(school, updateSchoolDto as DeepPartial<School>);
+    this.schoolsRepository.merge(
+      school,
+      updateSchoolDto as DeepPartial<School>,
+    );
     return this.schoolsRepository.save(school);
   }
 

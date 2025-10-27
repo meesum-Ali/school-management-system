@@ -16,21 +16,30 @@ class CreateSubjectDto {
 }
 exports.CreateSubjectDto = CreateSubjectDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Introduction to Algebra', description: 'Name of the subject' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'Introduction to Algebra',
+        description: 'Name of the subject',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(2),
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'MATH101', description: 'Unique code for the subject' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'MATH101',
+        description: 'Unique code for the subject',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.MinLength)(3),
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "code", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'Basic concepts of algebra for beginners.', description: 'Optional description of the subject' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'Basic concepts of algebra for beginners.',
+        description: 'Optional description of the subject',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

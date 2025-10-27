@@ -14,7 +14,6 @@ const classes_service_1 = require("./classes.service");
 const classes_controller_1 = require("./classes.controller");
 const subjects_module_1 = require("../subjects/subjects.module");
 const users_module_1 = require("../users/users.module");
-const class_schedule_module_1 = require("../class-schedule/class-schedule.module");
 let ClassesModule = class ClassesModule {
 };
 exports.ClassesModule = ClassesModule;
@@ -24,14 +23,13 @@ exports.ClassesModule = ClassesModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([class_entity_1.ClassEntity]),
             subjects_module_1.SubjectsModule,
             users_module_1.UsersModule,
-            (0, common_1.forwardRef)(() => class_schedule_module_1.ClassScheduleModule),
         ],
         controllers: [classes_controller_1.ClassesController],
         providers: [classes_service_1.ClassesService],
         exports: [
             classes_service_1.ClassesService,
-            typeorm_1.TypeOrmModule.forFeature([class_entity_1.ClassEntity])
-        ]
+            typeorm_1.TypeOrmModule.forFeature([class_entity_1.ClassEntity]),
+        ],
     })
 ], ClassesModule);
 //# sourceMappingURL=classes.module.js.map

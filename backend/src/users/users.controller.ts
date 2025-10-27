@@ -15,7 +15,14 @@ import {
   Req, // Import Req to access the request object
   ConflictException,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,7 +35,13 @@ import { UserRole } from './entities/user.entity';
 @ApiTags('Users Management')
 @ApiBearerAuth() // Indicates all routes in this controller require Bearer token
 @Controller('users')
-@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }),
+)
 @UseGuards(AuthGuard('zitadel'), RolesGuard)
 // Default role for most operations might be ADMIN (school admin)
 // SUPER_ADMIN will have explicit overrides or broader access via service logic
@@ -36,7 +49,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Helper to extract contextualSchoolId - this will be replaced by actual JWT logic
-  private getContextualSchoolId(req: any, userRoles: UserRole[]): string | null | undefined {
+  private getContextualSchoolId(
+    req: any,
+    userRoles: UserRole[],
+  ): string | null | undefined {
     // Placeholder: In a real scenario, 'req.user.schoolId' would come from JWT.
     // If the user is SUPER_ADMIN, they operate globally by default (contextualSchoolId = undefined)
     // unless they specify a schoolId in a DTO (for creation).
@@ -50,23 +66,49 @@ export class UsersController {
   @Post()
   @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN) // School Admin or Super Admin
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'User created successfully.', type: UserDto })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' })
-  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Conflict - Username or email already exists.' })
-  async create(@Body() createUserDto: CreateUserDto, @Req() req: any): Promise<UserDto> {
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User created successfully.',
+    type: UserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request - Invalid input data.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Token missing or invalid.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden - User does not have required role.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Conflict - Username or email already exists.',
+  })
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @Req() req: any,
+  ): Promise<UserDto> {
     let schoolIdForCreation = createUserDto.schoolId; // SUPER_ADMIN can specify
 
     if (!req.user.roles.includes(UserRole.SUPER_ADMIN)) {
       // If not SUPER_ADMIN, user must be ADMIN, and schoolId is from their context
       schoolIdForCreation = req.user.schoolId;
       if (!schoolIdForCreation) {
-         throw new ConflictException('School context is required for Admin to create users.');
+        throw new ConflictException(
+          'School context is required for Admin to create users.',
+        );
       }
       // Admin cannot set schoolId via DTO, it's their own school
-      if (createUserDto.schoolId && createUserDto.schoolId !== schoolIdForCreation) {
-        throw new ConflictException('Admin users can only create users for their own school.');
+      if (
+        createUserDto.schoolId &&
+        createUserDto.schoolId !== schoolIdForCreation
+      ) {
+        throw new ConflictException(
+          'Admin users can only create users for their own school.',
+        );
       }
       createUserDto.schoolId = schoolIdForCreation; // Ensure DTO reflects admin's school
     }
@@ -78,9 +120,19 @@ export class UsersController {
   @Get()
   @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get all users (respecting school context)' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'List of users retrieved successfully.', type: [UserDto] })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'List of users retrieved successfully.',
+    type: [UserDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Token missing or invalid.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden - User does not have required role.',
+  })
   async findAll(@Req() req: any): Promise<UserDto[]> {
     const contextualSchoolId = this.getContextualSchoolId(req, req.user.roles);
     return this.usersService.findAll(contextualSchoolId);
@@ -89,13 +141,37 @@ export class UsersController {
   @Get(':id')
   @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get a user by ID (respecting school context)' })
-  @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'User details retrieved successfully.', type: UserDto })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' })
-  async findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: any): Promise<UserDto> {
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    format: 'uuid',
+    description: 'User ID',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User details retrieved successfully.',
+    type: UserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Not Found - User not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request - Invalid UUID format.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Token missing or invalid.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden - User does not have required role.',
+  })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: any,
+  ): Promise<UserDto> {
     const contextualSchoolId = this.getContextualSchoolId(req, req.user.roles);
     return this.usersService.findOne(id, contextualSchoolId);
   }
@@ -103,14 +179,38 @@ export class UsersController {
   @Patch(':id')
   @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update a user by ID (respecting school context)' })
-  @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    format: 'uuid',
+    description: 'User ID',
+  })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'User updated successfully.', type: UserDto })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid input data or invalid UUID format.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have ADMIN role.' })
-  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Conflict - Username or email already exists on another user.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User updated successfully.',
+    type: UserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Not Found - User not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request - Invalid input data or invalid UUID format.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Token missing or invalid.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden - User does not have ADMIN role.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Conflict - Username or email already exists on another user.',
+  })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -125,14 +225,37 @@ export class UsersController {
   @Delete(':id')
   @Roles(UserRole.SCHOOL_ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user by ID (respecting school context)' })
-  @ApiParam({ name: 'id', type: 'string', format: 'uuid', description: 'User ID' })
-  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'User deleted successfully.' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found - User not found.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request - Invalid UUID format.' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized - Token missing or invalid.' })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden - User does not have required role.' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    format: 'uuid',
+    description: 'User ID',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'User deleted successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Not Found - User not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request - Invalid UUID format.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized - Token missing or invalid.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden - User does not have required role.',
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: any): Promise<void> {
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: any,
+  ): Promise<void> {
     const contextualSchoolId = this.getContextualSchoolId(req, req.user.roles);
     return this.usersService.remove(id, contextualSchoolId);
   }

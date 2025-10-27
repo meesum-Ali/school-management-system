@@ -1,9 +1,10 @@
 export interface DatabaseConfig {
+    type: 'postgres';
     host: string;
     port: number;
     username: string;
     password: string;
-    name: string;
+    database: string;
 }
 export interface JwtConfig {
     secret: string;

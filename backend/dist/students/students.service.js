@@ -17,11 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const student_entity_1 = require("./entities/student.entity");
-const class_entity_1 = require("../classes/entities/class.entity");
+const classes_service_1 = require("../classes/classes.service");
 let StudentsService = class StudentsService {
-    constructor(studentsRepository, classesRepository) {
+    constructor(studentsRepository, classesService) {
         this.studentsRepository = studentsRepository;
-        this.classesRepository = classesRepository;
+        this.classesService = classesService;
     }
     async mapStudentToStudentDto(student) {
         let currentClassName = null;
@@ -70,16 +70,21 @@ let StudentsService = class StudentsService {
                 schoolId,
             });
             if (classId) {
-                const classExists = await this.classesRepository.findOneBy({ id: classId, schoolId });
-                if (!classExists) {
-                    throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
+                try {
+                    await this.classesService.findOne(classId, schoolId);
+                }
+                catch (error) {
+                    if (error instanceof common_1.NotFoundException) {
+                        throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
+                    }
+                    throw error;
                 }
                 studentToCreate.classId = classId;
             }
             const savedStudent = await this.studentsRepository.save(studentToCreate);
             const studentWithRelations = await this.studentsRepository.findOne({
                 where: { id: savedStudent.id },
-                relations: ['currentClass']
+                relations: ['currentClass'],
             });
             if (!studentWithRelations) {
                 throw new common_1.NotFoundException('Failed to create student');
@@ -87,7 +92,8 @@ let StudentsService = class StudentsService {
             return await this.mapStudentToStudentDto(studentWithRelations);
         }
         catch (error) {
-            if (error instanceof typeorm_2.QueryFailedError && error.code === '23505') {
+            if (error instanceof typeorm_2.QueryFailedError &&
+                error.code === '23505') {
                 if (error.message.includes('studentId')) {
                     throw new common_1.ConflictException(`Student ID "${createStudentDto.studentId}" already exists.`);
                 }
@@ -103,7 +109,7 @@ let StudentsService = class StudentsService {
             where: { schoolId },
             relations: ['currentClass'],
         });
-        const studentDtos = await Promise.all(students.map(student => this.mapStudentToStudentDto(student)));
+        const studentDtos = await Promise.all(students.map((student) => this.mapStudentToStudentDto(student)));
         return studentDtos;
     }
     async findOne(id, schoolId) {
@@ -120,7 +126,7 @@ let StudentsService = class StudentsService {
         const { studentId: newStudentId, email: newEmail, classId: newClassId, ...restOfDto } = updateStudentDto;
         const studentToUpdate = await this.studentsRepository.findOne({
             where: { id, schoolId },
-            relations: ['currentClass']
+            relations: ['currentClass'],
         });
         if (!studentToUpdate) {
             throw new common_1.NotFoundException(`Student with ID "${id}" not found in this school.`);
@@ -131,12 +137,16 @@ let StudentsService = class StudentsService {
                 studentToUpdate.currentClass = null;
             }
             else {
-                const classExists = await this.classesRepository.findOneBy({ id: newClassId, schoolId });
-                if (!classExists) {
-                    throw new common_1.NotFoundException(`Class with ID "${newClassId}" not found in this school.`);
+                try {
+                    const classDto = await this.classesService.findOne(newClassId, schoolId);
+                    studentToUpdate.classId = newClassId;
                 }
-                studentToUpdate.classId = newClassId;
-                studentToUpdate.currentClass = Promise.resolve(classExists);
+                catch (error) {
+                    if (error instanceof common_1.NotFoundException) {
+                        throw new common_1.NotFoundException(`Class with ID "${newClassId}" not found in this school.`);
+                    }
+                    throw error;
+                }
             }
         }
         if (newStudentId && newStudentId !== studentToUpdate.studentId) {
@@ -163,7 +173,8 @@ let StudentsService = class StudentsService {
             return await this.mapStudentToStudentDto(updatedStudent);
         }
         catch (error) {
-            if (error instanceof typeorm_2.QueryFailedError && error.code === '23505') {
+            if (error instanceof typeorm_2.QueryFailedError &&
+                error.code === '23505') {
                 if (error.message.includes('studentId')) {
                     throw new common_1.ConflictException(`Student ID "${updateStudentDto.studentId}" already exists.`);
                 }
@@ -185,14 +196,22 @@ let StudentsService = class StudentsService {
         }
     }
     async assignStudentToClass(studentId, classId, schoolId) {
-        const student = await this.studentsRepository.findOneBy({ id: studentId, schoolId });
+        const student = await this.studentsRepository.findOneBy({
+            id: studentId,
+            schoolId,
+        });
         if (!student) {
             throw new common_1.NotFoundException(`Student with ID "${studentId}" not found in this school.`);
         }
         if (classId) {
-            const classExists = await this.classesRepository.findOneBy({ id: classId, schoolId });
-            if (!classExists) {
-                throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
+            try {
+                await this.classesService.findOne(classId, schoolId);
+            }
+            catch (error) {
+                if (error instanceof common_1.NotFoundException) {
+                    throw new common_1.NotFoundException(`Class with ID "${classId}" not found in this school.`);
+                }
+                throw error;
             }
         }
         student.classId = classId;
@@ -204,8 +223,7 @@ exports.StudentsService = StudentsService;
 exports.StudentsService = StudentsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
-    __param(1, (0, typeorm_1.InjectRepository)(class_entity_1.ClassEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        classes_service_1.ClassesService])
 ], StudentsService);
 //# sourceMappingURL=students.service.js.map

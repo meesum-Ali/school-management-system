@@ -1,4 +1,12 @@
-import { IsUUID, IsString, IsEnum, IsOptional, IsTimeZone, IsNotEmpty, Matches } from 'class-validator';
+import {
+  IsUUID,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsTimeZone,
+  IsNotEmpty,
+  Matches,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { DayOfWeek, TermEnum } from '../entities/class-schedule.entity';
 
@@ -18,18 +26,18 @@ export class CreateClassScheduleDto {
   @IsOptional()
   teacherId?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Day of the week for the class',
     enum: DayOfWeek,
-    enumName: 'DayOfWeek'
+    enumName: 'DayOfWeek',
   })
   @IsEnum(DayOfWeek)
   @IsNotEmpty()
   dayOfWeek: DayOfWeek;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Start time of the class in HH:MM:SS format',
-    example: '09:00:00'
+    example: '09:00:00',
   })
   @IsString()
   @Matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/, {
@@ -38,9 +46,9 @@ export class CreateClassScheduleDto {
   @IsNotEmpty()
   startTime: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'End time of the class in HH:MM:SS format',
-    example: '10:30:00'
+    example: '10:30:00',
   })
   @IsString()
   @Matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/, {
@@ -49,44 +57,45 @@ export class CreateClassScheduleDto {
   @IsNotEmpty()
   endTime: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Room number where the class will be held',
     required: false,
-    example: 'A101'
+    example: 'A101',
   })
   @IsString()
   @IsOptional()
   roomNumber?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Academic year in YYYY-YYYY format',
-    example: '2023-2024'
+    example: '2023-2024',
   })
   @IsString()
   @IsNotEmpty()
   academicYear: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Academic term',
     enum: TermEnum,
-    enumName: 'TermEnum'
+    enumName: 'TermEnum',
   })
   @IsEnum(TermEnum)
   @IsNotEmpty()
   term: TermEnum;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'ID of the school',
-    format: 'uuid'
+    format: 'uuid',
   })
   @IsUUID()
   @IsNotEmpty()
   schoolId: string;
 
-  @ApiProperty({ 
-    description: 'ID of the user creating the schedule (for backward compatibility)',
+  @ApiProperty({
+    description:
+      'ID of the user creating the schedule (for backward compatibility)',
     required: false,
-    format: 'uuid'
+    format: 'uuid',
   })
   @IsUUID()
   @IsOptional()

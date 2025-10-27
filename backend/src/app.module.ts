@@ -27,58 +27,58 @@ import { SuperAdminModule } from './core/super-admin/super-admin.module';
 import { ZitadelModule } from './zitadel/zitadel.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-     // Import other modules as needed
+// Import other modules as needed
 
-     @Module({
-       imports: [
-         ZitadelModule,
-         ConfigModule.forRoot({
-           isGlobal: true,
-           load: [configuration],
-           validationSchema: Joi.object({
-             NODE_ENV: Joi.string()
-               .valid('development', 'production', 'test')
-               .default('development'),
-             PORT: Joi.number().default(5000), // Default here is fine, main.ts uses ConfigService
-             DATABASE_HOST: Joi.string().required(),
-             DATABASE_PORT: Joi.number().required(),
-             DATABASE_USER: Joi.string().required(),
-             DATABASE_PASSWORD: Joi.string().required(),
-             DATABASE_NAME: Joi.string().required(),
-             JWT_SECRET: Joi.string().required(),
-             JWT_EXPIRATION: Joi.string().default('3600s'),
-             LOG_LEVEL: Joi.string().default('debug'),
-             API_PREFIX: Joi.string().default('/api'),
-           }),
-         }),
-         StudentsModule,
-         UsersModule,
-         AuthModule,
-         ClassesModule,
-         SubjectsModule,
-         SchoolsModule,
-         TeachersModule,
-         ClassScheduleModule,
-         HealthModule,
-         SuperAdminModule,
-         TypeOrmModule.forRootAsync({
-           imports: [ConfigModule],
-           useFactory: (configService: ConfigService) => {
-             const dbConfig = configService.get('database');
-             return {
-               ...dbConfig,
-               autoLoadEntities: true,
-               synchronize: false, // Disabled - use migrations instead
-             };
-           },
-           inject: [ConfigService],
-         }),
-       ],
-       controllers: [AppController],
-       providers: [
-         AppService,
-         // Zitadel auth is handled via @UseGuards(AuthGuard('zitadel')) on controllers
-         // No global guard needed - use @Public() decorator for public routes
-       ],
-     })
-     export class AppModule {}
+@Module({
+  imports: [
+    ZitadelModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development'),
+        PORT: Joi.number().default(5000), // Default here is fine, main.ts uses ConfigService
+        DATABASE_HOST: Joi.string().required(),
+        DATABASE_PORT: Joi.number().required(),
+        DATABASE_USER: Joi.string().required(),
+        DATABASE_PASSWORD: Joi.string().required(),
+        DATABASE_NAME: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION: Joi.string().default('3600s'),
+        LOG_LEVEL: Joi.string().default('debug'),
+        API_PREFIX: Joi.string().default('/api'),
+      }),
+    }),
+    StudentsModule,
+    UsersModule,
+    AuthModule,
+    ClassesModule,
+    SubjectsModule,
+    SchoolsModule,
+    TeachersModule,
+    ClassScheduleModule,
+    HealthModule,
+    SuperAdminModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const dbConfig = configService.get('database');
+        return {
+          ...dbConfig,
+          autoLoadEntities: true,
+          synchronize: false, // Disabled - use migrations instead
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    // Zitadel auth is handled via @UseGuards(AuthGuard('zitadel')) on controllers
+    // No global guard needed - use @Public() decorator for public routes
+  ],
+})
+export class AppModule {}
