@@ -12,7 +12,7 @@ Your **School Management System** is a modern, full-stack SaaS platform designed
 ┌────────────────────────────────────────────────────────────────┐
 │                    CLIENT (Browser)                            │
 │  ┌──────────────────────────────────────────────────────────┐ │
-│  │         Next.js 14 Frontend (React + TypeScript)         │ │
+│  │         Next.js 16 Frontend (React + TypeScript)         │ │
 │  │  • Server & Client Components                            │ │
 │  │  • React Query (Caching & State)                         │ │
 │  │  • Material UI + Tailwind (Styling)                      │ │

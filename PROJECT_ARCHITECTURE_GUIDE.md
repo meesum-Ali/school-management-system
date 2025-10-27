@@ -21,7 +21,7 @@ Your School Management System is a **full-stack SaaS application** with multi-te
 ┌─────────────────────────────────────────────────────────────────┐
 │                         CLIENT BROWSER                          │
 │  ┌───────────────────────────────────────────────────────────┐  │
-│  │           Next.js 14 Frontend (Port 3000/3001)            │  │
+│  │           Next.js 16 Frontend (Port 3000/3001)            │  │
 │  │  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐  │  │
 │  │  │ React Pages │→ │ React Query  │→ │  Axios API Client│ │  │
 │  │  │   (UI/UX)   │  │ (State Mgmt) │  │  (HTTP Calls)   │  │  │
@@ -78,9 +78,9 @@ Your School Management System is a **full-stack SaaS application** with multi-te
 
 ## 🛠️ Technology Stack
 
-### **Frontend (Next.js 14)**
+### **Frontend (Next.js 16)**
 ```yaml
-Framework: Next.js 14 (App Router)
+Framework: Next.js 16 (App Router)
 Language: TypeScript (Strict Mode)
 UI Library: 
   - React 18
@@ -123,7 +123,7 @@ Web Server: Nginx (reverse proxy)
 
 ```
 frontend/
-├── app/                          # Next.js 14 App Router
+├── app/                          # Next.js 16 App Router
 │   ├── layout.tsx               # Root layout with providers
 │   ├── page.tsx                 # Landing page
 │   ├── admin/                   # Admin panel routes

@@ -29,7 +29,7 @@ Welcome to the comprehensive documentation for your School Management System. Th
 
 **What's Inside**:
 - ✅ System overview with visual diagrams
-- ✅ Technology stack breakdown (Next.js 14, NestJS 10, PostgreSQL)
+- ✅ Technology stack breakdown (Next.js 16, NestJS 10, PostgreSQL, Nginx)
 - ✅ Layer-by-layer architecture explanation
 - ✅ Complete data flow analysis (request → database → response)
 - ✅ Authentication & authorization deep dive

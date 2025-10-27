@@ -1,6 +1,6 @@
 # Quick Start Checklist: Adding New Modules
 
-This is a practical, step-by-step checklist for adding new features to the school management system. Follow this when adding any new module (Teacher Portal, Student Portal, Attendance, etc.).
+This is a practical, step-by-step checklist for adding new features to the school management system. Nginx serves the Next.js 16 frontend and proxies API requests to the backend. Follow this when adding any new module (Teacher Portal, Student Portal, Attendance, etc.).
 
 ---
 
@@ -38,7 +38,7 @@ nest g service module-name
 
 Create `src/module-name/entities/module-name.entity.ts`:
 
-```typescript
+````
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { School } from '../../schools/entities/school.entity';
 

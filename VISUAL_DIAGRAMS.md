@@ -8,7 +8,7 @@
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                              PRESENTATION LAYER                          │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │                     Next.js 14 Frontend                           │  │
+│  │                     Next.js 16 Frontend                           │  │
 │  │                                                                   │  │
 │  │  ┏━━━━━━━━━━━━┓  ┏━━━━━━━━━━━┓  ┏━━━━━━━━━━━┓  ┏━━━━━━━━━━━┓  │  │
 │  │  ┃   Admin    ┃  ┃  Teacher   ┃  ┃  Student   ┃  ┃   Auth     ┃  │  │
@@ -202,61 +202,62 @@ StudentForm component renders
     ↓
 Admin fills form:
   - First Name: "John"
-  - Last Name: "Doe"
-  - Email: "john.doe@school.com"
-  - Date of Birth: "2010-05-15"
-  - Student ID: "S2025001"
-  - Class: "Grade 10A"
-    ↓
-Admin clicks "Submit"
-
-
-┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 2: Frontend Validation                                        │
-└─────────────────────────────────────────────────────────────────────┘
-
-React Hook Form + Yup validation:
-    ✓ First Name: required, string
-    ✓ Last Name: required, string
-    ✓ Email: required, valid email format
-    ✓ Date of Birth: required, valid date
-    ✓ Student ID: required, string
-    ✓ Class ID: optional, valid UUID
-    ↓
-Form data prepared:
-{
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@school.com",
-  dateOfBirth: "2010-05-15",
-  studentId: "S2025001",
-  classId: "class-uuid-123"
-}
-
-
-┌─────────────────────────────────────────────────────────────────────┐
-│  STEP 3: React Query Mutation                                       │
-└─────────────────────────────────────────────────────────────────────┘
-
-// hooks/useStudents.ts
-const createMutation = useCreateStudent();
-createMutation.mutate(formData);
-    ↓
-Triggers: createStudent(formData)
-    ↓
-// lib/api.ts
-POST /api/students
-Headers: {
-  "Authorization": "Bearer <JWT>",
-  "Content-Type": "application/json"
-}
-Body: {
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@school.com",
-  "dateOfBirth": "2010-05-15",
-  "studentId": "S2025001",
-  "classId": "class-uuid-123"
+  ```
+  ┌────────────────────────────────────────────────────────────┐
+  │                              PRESENTATION LAYER                          │
+  │  ┌──────────────────────────────────────────────────────┐  │
+  │  │                     Next.js 16 Frontend                           │  │
+  │  │                                                                   │  │
+  │  │  ┏━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━┓  │  │
+  │  │  ┃   Admin    ┃  ┃  Teacher   ┃  ┃  Student   ┃  ┃   Auth     ┃  │  │
+  │  │  ┃  Portal    ┃  ┃  Portal    ┃  ┃  Portal    ┃  ┃   Pages    ┃  │  │
+  │  │  ┗━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━┛  │  │
+  │  │         ↓               ↓               ↓               ↓         │  │
+  │  │  ┌──────────────────────────────────────────────────────┐  │  │
+  │  │  │           React Query (State Management & Caching)          │  │  │
+  │  │  └──────────────────────────────────────────────────────┘  │  │
+  │  │         ↓               ↓               ↓               ↓         │  │
+  │  │  ┌──────────────────────────────────────────────────────┐  │  │
+  │  │  │                 Axios HTTP Client + JWT Auth                │  │  │
+  │  │  └──────────────────────────────────────────────────────┘  │  │
+  │  └──────────────────────────────────────────────────────┘  │
+  └────────────────────────────────────────────────────────────┘
+    │
+    ▼
+  ┌────────────────────────────────────────────────────────────┐
+  │                NGINX (Reverse Proxy, Static Files)         │
+  └────────────────────────────────────────────────────────────┘
+    │
+    ▼
+  ┌────────────────────────────────────────────────────────────┐
+  │                        API GATEWAY LAYER                  │
+  │  ┌────────────┐  ┌────────────┐  ┌───────────────┐   │  │
+  │  │   Swagger   │  │    CORS     │  │   Global Validation     │  │  │
+  │  │    Docs     │  │  Middleware │  │      (Pipes)            │  │  │
+  │  └────────────┘  └────────────┘  └───────────────┘   │  │
+  └────────────────────────────────────────────────────────────┘
+    │
+    ▼
+  ┌────────────────────────────────────────────────────────────┐
+  │                     SECURITY & AUTH LAYER                 │
+  │  ┌────────────┐  ┌────────────┐  ┌───────────────┐ │  │
+  │  │  Zitadel OIDC    │  │  Auth Guard     │  │   Role Guard    │ │  │
+  │  │  JWT Validation  │→│  (Passport)     │→│   (RBAC)        │ │  │
+  │  └────────────┘  └────────────┘  └───────────────┘ │  │
+  └────────────────────────────────────────────────────────────┘
+    │
+    ▼
+  ┌────────────────────────────────────────────────────────────┐
+  │                       CONTROLLER LAYER                    │
+  │   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌───────┐ │  │
+  │   │ Students │ │ Teachers │ │  Classes │ │ Subjects │ │  ...  │ │  │
+  │   │Controller│ │Controller│ │Controller│ │Controller│ │       │ │  │
+  │   └───────┬──┴───────┬──┴───────┬──┴───────┬──┴───────┬──┴───────┘ │  │
+  │           │            │            │            │                     │
+  │  ┌──────────────────────────────────────────────────────┐  │
+  │  │              BUSINESS LOGIC / SERVICE LAYER                      │  │
+  │  │   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐          │  │
+  ...existing code...
 }
 
 
