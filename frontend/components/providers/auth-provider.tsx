@@ -127,11 +127,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     let isMounted = true
     ;(async () => {
       try {
-        const res = await fetch('/api/me', { cache: 'no-store' })
+        const res = await fetch('/_api/auth/me', { cache: 'no-store' })
         if (res.ok) {
           const data = await res.json()
-          if (isMounted && data?.isAuthenticated && data?.user) {
-            setUser(data.user)
+          if (isMounted && data?.authenticated && data?.user) {
+            setUser({
+              id: data.user.id,
+              username: data.user.username,
+              roles: data.user.roles as UserRole[],
+              schoolId: data.user.schoolId || null,
+            })
             setIsAuthenticated(true)
             setIsLoading(false)
             return
