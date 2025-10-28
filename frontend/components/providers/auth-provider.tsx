@@ -10,6 +10,7 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react'
+import { usePathname } from 'next/navigation'
 import api from '@/lib/api'
 import { UserRole } from '@/types/user'
 import { jwtDecode } from 'jwt-decode'
@@ -63,6 +64,7 @@ export { AuthContext }
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const pathname = usePathname() // Track route changes
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -125,7 +127,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     let isMounted = true
-    ;(async () => {
+    const fetchAuth = async () => {
       try {
         const res = await fetch('/api/auth/me', { 
           cache: 'no-store',
@@ -159,11 +161,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
       if (isMounted) setIsLoading(false)
-    })()
+    }
+
+    fetchAuth()
+
     return () => {
       isMounted = false
     }
-  }, [loadUserFromToken])
+  }, [loadUserFromToken, pathname]) // Re-run when pathname changes (route navigation)
 
   const login = async (
     username: string,
