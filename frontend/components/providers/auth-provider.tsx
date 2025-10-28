@@ -127,7 +127,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     let isMounted = true
     ;(async () => {
       try {
-        const res = await fetch('/_api/auth/me', { cache: 'no-store' })
+        const res = await fetch('/api/auth/me', { 
+          cache: 'no-store',
+          credentials: 'include' // Include cookies in the request
+        })
         if (res.ok) {
           const data = await res.json()
           if (isMounted && data?.authenticated && data?.user) {
@@ -142,8 +145,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             return
           }
         }
-      } catch {
-        // ignore and fallback
+      } catch (err) {
+        console.error('Failed to fetch auth from /api/auth/me:', err)
       }
       // Fallback to localStorage for legacy/local auth
       if (typeof window !== 'undefined') {

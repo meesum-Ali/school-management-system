@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic'
 import React from 'react'
 import { useSubjects, useDeleteSubject } from '@/hooks/useSubjects'
-import AdminLayout from '@/components/Layout/AdminLayout'
 import SubjectList from '@/components/Subjects/SubjectList'
 import Notification from '@/components/Layout/Notification'
 
@@ -22,27 +21,25 @@ export default function SubjectsPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className='container mx-auto p-4'>
-        {(error || deleteSubjectMutation.error) && (
-          <Notification
-            message={
-              error instanceof Error
-                ? error.message
-                : deleteSubjectMutation.error instanceof Error
-                  ? deleteSubjectMutation.error.message
-                  : 'An error occurred'
-            }
-            type='error'
-            onClose={() => deleteSubjectMutation.reset()}
-          />
-        )}
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <SubjectList subjects={subjects} onDelete={handleDelete} />
-        )}
-      </div>
-    </AdminLayout>
+    <div className='container mx-auto p-4'>
+      {(error || deleteSubjectMutation.error) && (
+        <Notification
+          message={
+            error instanceof Error
+              ? error.message
+              : deleteSubjectMutation.error instanceof Error
+                ? deleteSubjectMutation.error.message
+                : 'An error occurred'
+          }
+          type='error'
+          onClose={() => deleteSubjectMutation.reset()}
+        />
+      )}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <SubjectList subjects={subjects} onDelete={handleDelete} />
+      )}
+    </div>
   )
 }

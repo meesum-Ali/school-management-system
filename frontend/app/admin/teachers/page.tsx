@@ -11,11 +11,7 @@ export default function TeachersPage() {
   const deleteTeacherMutation = useDeleteTeacher()
 
   const handleDelete = async (id: string) => {
-    if (
-      window.confirm(
-        'Are you sure you want to delete this teacher? This action cannot be undone.'
-      )
-    ) {
+    if (window.confirm('Are you sure?')) {
       try {
         await deleteTeacherMutation.mutateAsync(id)
       } catch (err) {
@@ -39,22 +35,12 @@ export default function TeachersPage() {
           onClose={() => deleteTeacherMutation.reset()}
         />
       )}
-
-      {deleteTeacherMutation.isSuccess && (
-        <Notification
-          message='Teacher deleted successfully'
-          type='success'
-          onClose={() => deleteTeacherMutation.reset()}
-        />
-      )}
-
       {isLoading ? (
-        <div className='flex justify-center items-center h-64'>
-          <p className='text-gray-500'>Loading teachers...</p>
-        </div>
+        <p>Loading...</p>
       ) : (
         <TeacherList teachers={teachers} onDelete={handleDelete} />
       )}
     </div>
   )
 }
+

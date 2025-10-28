@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     // Check auth status from server
-    fetch('/_api/auth/me', { credentials: 'include' })
+    fetch('/api/auth/me', { credentials: 'include' })
       .then((res) => {
         if (res.ok) {
           return res.json()

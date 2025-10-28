@@ -46,10 +46,11 @@ export class ZitadelConfigService {
   }
 
   getJwksUri(): string {
-    const issuer = this.configService.get<string>(
-      'ZITADEL_ISSUER',
-      'http://localhost:8888',
+    // Use internal URL for fetching JWKS keys (backend to nginx/zitadel)
+    const jwksBaseUrl = this.configService.get<string>(
+      'ZITADEL_JWKS_URI',
+      'http://nginx',
     );
-    return `${issuer}/oauth/v2/keys`;
+    return `${jwksBaseUrl}/oauth/v2/keys`;
   }
 }

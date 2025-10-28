@@ -3,7 +3,8 @@ import config from '../lib/config' // Centralized apiUrl
 import { getToken } from './browser' // Browser-only token accessor
 
 const api = axios.create({
-  baseURL: config.apiUrl, // Use the centralized apiUrl
+  // Route all frontend requests through Next.js proxy, which injects Authorization from cookies
+  baseURL: '/fe-api',
   headers: {
     'Content-Type': 'application/json',
   },

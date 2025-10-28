@@ -11,13 +11,14 @@ export const teacherKeys = {
 /**
  * Fetch all teachers for the current school
  */
-export function useTeachers() {
+export function useTeachers(initialData?: Teacher[]) {
   return useQuery({
     queryKey: teacherKeys.all,
     queryFn: async () => {
       const { data } = await api.get<Teacher[]>('/teachers')
       return data
     },
+    initialData,
   })
 }
 

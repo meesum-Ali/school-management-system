@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
   ParseUUIDPipe,
+  Logger,
 } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
@@ -22,10 +23,13 @@ import { UserRole } from '../users/entities/user.entity';
 @UseGuards(AuthGuard('zitadel'), RolesGuard)
 @Roles(UserRole.SCHOOL_ADMIN) // Removed ADMIN as it's no longer a valid role
 export class TeachersController {
+  private readonly logger = new Logger(TeachersController.name);
+  
   constructor(private readonly teachersService: TeachersService) {}
 
   @Post()
   create(@Body() createTeacherDto: CreateTeacherDto, @Request() req) {
+    this.logger.log(`POST /teachers - User: ${req.user?.userId}`);
     return this.teachersService.create({
       ...createTeacherDto,
       schoolId: req.user.schoolId,
@@ -34,6 +38,7 @@ export class TeachersController {
 
   @Get()
   findAll(@Request() req) {
+    this.logger.log(`GET /teachers - User: ${req.user?.userId}, SchoolId: ${req.user?.schoolId}`);
     return this.teachersService.findAll(req.user.schoolId);
   }
 

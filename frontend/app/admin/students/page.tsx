@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic'
 import React from 'react'
 import { useStudents, useDeleteStudent } from '@/hooks/useStudents'
-import AdminLayout from '@/components/Layout/AdminLayout'
 import StudentList from '@/components/Students/StudentList'
 import Notification from '@/components/Layout/Notification'
 
@@ -22,27 +21,25 @@ export default function StudentsPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className='container mx-auto p-4'>
-        {(error || deleteStudentMutation.error) && (
-          <Notification
-            message={
-              error instanceof Error
-                ? error.message
-                : deleteStudentMutation.error instanceof Error
-                  ? deleteStudentMutation.error.message
-                  : 'An error occurred'
-            }
-            type='error'
-            onClose={() => deleteStudentMutation.reset()}
-          />
-        )}
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <StudentList students={students} onDelete={handleDelete} />
-        )}
-      </div>
-    </AdminLayout>
+    <div className='container mx-auto p-4'>
+      {(error || deleteStudentMutation.error) && (
+        <Notification
+          message={
+            error instanceof Error
+              ? error.message
+              : deleteStudentMutation.error instanceof Error
+                ? deleteStudentMutation.error.message
+                : 'An error occurred'
+          }
+          type='error'
+          onClose={() => deleteStudentMutation.reset()}
+        />
+      )}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <StudentList students={students} onDelete={handleDelete} />
+      )}
+    </div>
   )
 }
