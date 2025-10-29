@@ -9,7 +9,6 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StudentsModule } from './students/students.module';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { SchoolsModule } from './schools/schools.module';
@@ -43,7 +42,6 @@ import { ZitadelModule } from './zitadel/zitadel.module';
     }),
     StudentsModule,
     UsersModule,
-    AuthModule,
     ClassesModule,
     SubjectsModule,
     SchoolsModule,
@@ -67,8 +65,7 @@ import { ZitadelModule } from './zitadel/zitadel.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // Zitadel auth is handled via @UseGuards(AuthGuard('zitadel')) on controllers
-    // No global guard needed - use @Public() decorator for public routes
+            // Local JWT removed; only Zitadel OIDC is supported now
   ],
 })
 export class AppModule {}

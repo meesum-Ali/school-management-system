@@ -28,8 +28,8 @@ let ZitadelConfigService = class ZitadelConfigService {
         };
     }
     getJwksUri() {
-        const issuer = this.configService.get('ZITADEL_ISSUER', 'http://localhost:8888');
-        return `${issuer}/oauth/v2/keys`;
+        const jwksBaseUrl = this.configService.get('ZITADEL_JWKS_URI', 'http://nginx');
+        return `${jwksBaseUrl}/oauth/v2/keys`;
     }
 };
 exports.ZitadelConfigService = ZitadelConfigService;

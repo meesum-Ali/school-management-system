@@ -36,6 +36,52 @@ The compose file in the repository exposes Zitadel at http://localhost:8888 with
    - `STUDENT`
 2. Assign the appropriate role(s) to each user or service account you create.
 
+### Automate via API token (PAT or Service User) (optional)
+
+You can automate project role creation using either a Personal Access Token (PAT) or an OAuth2 access token obtained with a Service User (client credentials). If you don’t see “Personal Access Tokens” in your Console, use the Service User method.
+
+1) Get your Project ID (Console → Your Project → Details → ID).
+
+2) Choose a token method:
+
+   - PAT (if enabled in your instance): Create a PAT in the Console (User Menu → Personal Access Tokens) with permissions to manage the project.
+
+   - Service User (recommended for automation):
+      - Create a Service User in your organization.
+      - Create an OIDC application (type: API) that uses client secret authentication.
+      - Assign the Service User as a project member with sufficient permissions (e.g., Project Owner/Admin) so it can manage roles.
+      - Fetch an access token via client credentials:
+
+      ```bash
+      # Example scopes; consult your Zitadel version docs for the exact role management scope
+      export ZITADEL_ISSUER=http://localhost
+      export ZITADEL_CLIENT_ID=<api-client-id>
+      export ZITADEL_CLIENT_SECRET=<api-client-secret>
+      export ZITADEL_SCOPES="openid profile email"  # plus role-management scopes for your version
+
+      TOKEN=$(./utils/zitadel/fetch-token-client-credentials.sh)
+      ```
+
+3) Run the role creation script (from repo root):
+
+```bash
+export ZITADEL_ISSUER=http://localhost
+export ZITADEL_PROJECT_ID=<your-project-id>
+
+# Use one of the following depending on your method
+export ZITADEL_PAT=<your-personal-access-token>
+# or
+export ZITADEL_TOKEN="$TOKEN"   # token obtained via client credentials
+
+# If your Zitadel version exposes a different prefix, override:
+# export ZITADEL_API_PREFIX=/v2/management
+
+./utils/zitadel/create-roles.sh
+```
+
+This script ensures the following roles exist in the project: `SUPER_ADMIN`, `SCHOOL_ADMIN`, `TEACHER`, `STUDENT`, and `GUARDIAN`.
+If a role already exists, it will be skipped. If you see 404 for the endpoint, try changing `ZITADEL_API_PREFIX` as indicated above and consult your Zitadel version docs. If the request is unauthorized, adjust the scopes and permissions of your Service User/application accordingly.
+
 ## 5. Create an Organisation per School
 
 - Zitadel organisations map to schools/tenants in the application.

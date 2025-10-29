@@ -1,6 +1,5 @@
 import axios from 'axios'
 import config from '../lib/config' // Centralized apiUrl
-import { getToken } from './browser' // Browser-only token accessor
 
 const api = axios.create({
   // Route all frontend requests through Next.js proxy, which injects Authorization from cookies
@@ -11,18 +10,7 @@ const api = axios.create({
   withCredentials: true, // Include cookies in requests
 })
 
-api.interceptors.request.use((config) => {
-  // Safe on server: getToken() returns null when not in the browser
-  const token = getToken()
-  if (token) {
-    if (config.headers) {
-      ;(config.headers as any).Authorization = `Bearer ${token}`
-    } else {
-      config.headers = { Authorization: `Bearer ${token}` } as any
-    }
-  }
-  return config
-})
+// No interceptor needed - /fe-api proxy injects Authorization from httpOnly cookies
 
 export default api
 

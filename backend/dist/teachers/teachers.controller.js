@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var TeachersController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeachersController = void 0;
 const common_1 = require("@nestjs/common");
@@ -21,17 +22,20 @@ const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const user_entity_1 = require("../users/entities/user.entity");
-let TeachersController = class TeachersController {
+let TeachersController = TeachersController_1 = class TeachersController {
     constructor(teachersService) {
         this.teachersService = teachersService;
+        this.logger = new common_1.Logger(TeachersController_1.name);
     }
     create(createTeacherDto, req) {
+        this.logger.log(`POST /teachers - User: ${req.user?.userId}`);
         return this.teachersService.create({
             ...createTeacherDto,
             schoolId: req.user.schoolId,
         });
     }
     findAll(req) {
+        this.logger.log(`GET /teachers - User: ${req.user?.userId}, SchoolId: ${req.user?.schoolId}`);
         return this.teachersService.findAll(req.user.schoolId);
     }
     findOne(id, req) {
@@ -85,7 +89,7 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], TeachersController.prototype, "remove", null);
-exports.TeachersController = TeachersController = __decorate([
+exports.TeachersController = TeachersController = TeachersController_1 = __decorate([
     (0, common_1.Controller)('teachers'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('zitadel'), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(user_entity_1.UserRole.SCHOOL_ADMIN),

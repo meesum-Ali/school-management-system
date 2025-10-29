@@ -52,8 +52,7 @@ services:
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=sms_db
-      - JWT_SECRET=your_jwt_secret_key_here
-      - JWT_EXPIRES_IN=1d
+      # Legacy JWT_SECRET removed - Zitadel OIDC only
       # Super Admin Configuration
       - SUPERADMIN_USERNAME=${SUPERADMIN_USERNAME:-meesum}
       - SUPERADMIN_EMAIL=${SUPERADMIN_EMAIL:-meesum@example.com}

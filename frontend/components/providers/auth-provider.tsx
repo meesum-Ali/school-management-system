@@ -74,11 +74,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const decoded = jwtDecode<DecodedJwtPayload>(token)
       // Check token expiration
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token')
-          document.cookie =
-            'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-        }
         setIsAuthenticated(false)
         setUser(null)
         api.defaults.headers.Authorization = ''
@@ -114,11 +109,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       api.defaults.headers.Authorization = `Bearer ${token}`
     } catch (error) {
       console.error('Failed to decode token or token expired:', error)
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token')
-        document.cookie =
-          'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-      }
       setIsAuthenticated(false)
       setUser(null)
       api.defaults.headers.Authorization = ''
@@ -150,16 +140,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       } catch (err) {
         console.error('Failed to fetch auth from /api/auth/me:', err)
       }
-      // Fallback to localStorage for legacy/local auth
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('token')
-        if (token) {
-          loadUserFromToken(token)
-        } else {
-          setIsAuthenticated(false)
-          setUser(null)
-        }
-      }
+      // No localStorage fallback - Zitadel-only auth via cookies
+      setIsAuthenticated(false)
+      setUser(null)
       if (isMounted) setIsLoading(false)
     }
 
@@ -175,43 +158,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     password: string,
     schoolIdentifier?: string,
   ) => {
-    try {
-      interface LoginPayload {
-        username: string
-        password: string
-        schoolIdentifier?: string
-      }
-      const loginPayload: LoginPayload = { username, password }
-      if (schoolIdentifier) {
-        loginPayload.schoolIdentifier = schoolIdentifier
-      }
-      const response = await api.post<{ access_token: string }>(
-        '/auth/login',
-        loginPayload,
-      )
-      const { access_token } = response.data
-
-      // Store in both localStorage and cookie for SSR compatibility
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', access_token)
-        // Set cookie with 7-day expiration
-        const expirationDate = new Date()
-        expirationDate.setDate(expirationDate.getDate() + 7)
-        document.cookie = `token=${access_token}; path=/; expires=${expirationDate.toUTCString()}; SameSite=Strict`
-      }
-
-      loadUserFromToken(access_token)
-    } catch (error) {
-      console.error('Login failed:', error)
-      throw error
-    }
+    // Redirect to Zitadel OIDC flow instead of local login
+    const redirectPath = typeof window !== 'undefined' ? window.location.pathname : '/admin/dashboard';
+    window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectPath)}`;
   }
 
   const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token')
-      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-    }
     setIsAuthenticated(false)
     setUser(null)
     api.defaults.headers.Authorization = ''

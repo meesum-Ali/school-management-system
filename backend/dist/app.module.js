@@ -16,7 +16,6 @@ const Joi = require("joi");
 const typeorm_1 = require("@nestjs/typeorm");
 const students_module_1 = require("./students/students.module");
 const users_module_1 = require("./users/users.module");
-const auth_module_1 = require("./auth/auth.module");
 const classes_module_1 = require("./classes/classes.module");
 const subjects_module_1 = require("./subjects/subjects.module");
 const schools_module_1 = require("./schools/schools.module");
@@ -53,7 +52,6 @@ exports.AppModule = AppModule = __decorate([
             }),
             students_module_1.StudentsModule,
             users_module_1.UsersModule,
-            auth_module_1.AuthModule,
             classes_module_1.ClassesModule,
             subjects_module_1.SubjectsModule,
             schools_module_1.SchoolsModule,

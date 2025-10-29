@@ -7,7 +7,7 @@ This repository delivers a Next.js 16 frontend and a NestJS 10 backend. The stat
 ## Repository Snapshot
 - **Frontend**: Next.js 16 App Router, TypeScript (strict), React Query (TanStack), Material UI 7, Tailwind, custom Auth context
 - **Backend**: NestJS 10, TypeORM targeting PostgreSQL, resource-first modules (students, classes, etc.), Swagger docs, request-scoped multi-tenant helpers
-- **Auth**: Zitadel OIDC (JWT, JWKS) plus legacy local login fallback
+- **Auth**: Zitadel OIDC only (JWT, JWKS); legacy local login removed (Oct 2025)
 - **Tooling**: Docker Compose for Postgres + Zitadel, Jest unit tests (91/91 passing), lint/build/test npm scripts per package
 - **Infrastructure**: Nginx reverse proxy for static file serving and API routing
 - **Notable repos state**: `backend/dist/` and `node_modules/` folders are committed; revisit when adjusting CI/CD expectations
@@ -103,9 +103,8 @@ classEntity.subjects.push(subject); // ❌
 ## Actionable Focus for Agents
 
 ### High Priority (Post Phase 1)
-1. **Align auth roles**: Create a mapper that converts Zitadel role claims to the internal `UserRole` enum and swap controllers to a single guard.
-2. **Harmonize tenant context**: Standardize on `schoolId` everywhere; update `TenantProvider` and guards to enforce it.
-3. **Structured logging**: Replace console.log with NestJS Logger service across all modules.
+1. **Harmonize tenant context**: Standardize on `schoolId` everywhere; update `TenantProvider` and guards to enforce it.
+2. **Structured logging**: Replace console.log with NestJS Logger service across all modules.
 
 ### Medium Priority
 4. **Decouple validation from entities**: Migrate validation decorators from TypeORM entities to DTOs and enforce invariants through domain constructors.

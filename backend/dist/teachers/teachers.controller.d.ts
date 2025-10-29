@@ -3,6 +3,7 @@ import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 export declare class TeachersController {
     private readonly teachersService;
+    private readonly logger;
     constructor(teachersService: TeachersService);
     create(createTeacherDto: CreateTeacherDto, req: any): Promise<import("./entities/teacher.entity").Teacher>;
     findAll(req: any): Promise<import("./entities/teacher.entity").Teacher[]>;

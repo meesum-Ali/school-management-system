@@ -1,2 +1,1 @@
-export declare class AuthModule {
-}
+export {};
